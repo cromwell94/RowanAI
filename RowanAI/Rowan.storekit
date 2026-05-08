@@ -1,0 +1,141 @@
+{
+  "identifier" : "rowan_storekit_config",
+  "nonConsumableProducts" : [],
+  "nonRenewingSubscriptionProducts" : [],
+  "products" : [],
+  "settings" : {
+    "_storefront" : "USA",
+    "_storefrontForServices" : "USA",
+    "_billingIssuesEnabled" : false,
+    "_locale" : "en_US",
+    "_renewalRate" : 3600,
+    "_storeKitErrors" : []
+  },
+  "subscriptionGroups" : [
+    {
+      "id" : "rowan_pro_group",
+      "localizations" : [
+        {
+          "description" : "Full access to all Rowan features",
+          "displayName" : "Rowan Pro",
+          "locale" : "en_US"
+        }
+      ],
+      "name" : "Rowan Pro",
+      "subscriptions" : [
+        {
+          "adHocOffers" : [],
+          "codeOffers" : [],
+          "displayPrice" : "14.99",
+          "familyShareable" : false,
+          "groupNumber" : 1,
+          "internalID" : "rowan_pro_monthly",
+          "introductoryOffer" : {
+            "displayPrice" : "0.00",
+            "internalID" : "monthly_trial",
+            "numberOfPeriods" : 1,
+            "paymentMode" : "free",
+            "subscriptionPeriod" : "P7D"
+          },
+          "localizations" : [
+            {
+              "description" : "Unlimited Cyrano coaching, all avatars, full RI Score tracking, Relationship Mode, and more.",
+              "displayName" : "Rowan Pro",
+              "locale" : "en_US"
+            }
+          ],
+          "productID" : "com.rakitastudios.RowanAI.pro.monthly",
+          "recurringSubscriptionPeriod" : "P1M",
+          "referenceName" : "Rowan Pro Monthly",
+          "subscriptionGroupID" : "rowan_pro_group",
+          "type" : "RecurringSubscription"
+        },
+        {
+          "adHocOffers" : [],
+          "codeOffers" : [],
+          "displayPrice" : "99.99",
+          "familyShareable" : false,
+          "groupNumber" : 2,
+          "internalID" : "rowan_pro_annual",
+          "introductoryOffer" : {
+            "displayPrice" : "0.00",
+            "internalID" : "annual_trial",
+            "numberOfPeriods" : 1,
+            "paymentMode" : "free",
+            "subscriptionPeriod" : "P7D"
+          },
+          "localizations" : [
+            {
+              "description" : "Everything in Rowan Pro, billed annually. Save 44% vs monthly.",
+              "displayName" : "Rowan Pro — Annual",
+              "locale" : "en_US"
+            }
+          ],
+          "productID" : "com.rakitastudios.RowanAI.pro.annual",
+          "recurringSubscriptionPeriod" : "P1Y",
+          "referenceName" : "Rowan Pro Annual",
+          "subscriptionGroupID" : "rowan_pro_group",
+          "type" : "RecurringSubscription"
+        },
+        {
+          "adHocOffers" : [],
+          "codeOffers" : [],
+          "displayPrice" : "24.99",
+          "familyShareable" : false,
+          "groupNumber" : 3,
+          "internalID" : "rowan_proplus_monthly",
+          "introductoryOffer" : {
+            "displayPrice" : "0.00",
+            "internalID" : "proplus_monthly_trial",
+            "numberOfPeriods" : 1,
+            "paymentMode" : "free",
+            "subscriptionPeriod" : "P7D"
+          },
+          "localizations" : [
+            {
+              "description" : "Everything in Pro plus Cyrano Live — real-time AI earpiece coaching, priority response speed, and early access to new features.",
+              "displayName" : "Rowan Pro+",
+              "locale" : "en_US"
+            }
+          ],
+          "productID" : "com.rakitastudios.RowanAI.proplus.monthly",
+          "recurringSubscriptionPeriod" : "P1M",
+          "referenceName" : "Rowan Pro+ Monthly",
+          "subscriptionGroupID" : "rowan_pro_group",
+          "type" : "RecurringSubscription"
+        },
+        {
+          "adHocOffers" : [],
+          "codeOffers" : [],
+          "displayPrice" : "159.99",
+          "familyShareable" : false,
+          "groupNumber" : 4,
+          "internalID" : "rowan_proplus_annual",
+          "introductoryOffer" : {
+            "displayPrice" : "0.00",
+            "internalID" : "proplus_annual_trial",
+            "numberOfPeriods" : 1,
+            "paymentMode" : "free",
+            "subscriptionPeriod" : "P7D"
+          },
+          "localizations" : [
+            {
+              "description" : "Everything in Rowan Pro+, billed annually. Save 47% vs monthly.",
+              "displayName" : "Rowan Pro+ — Annual",
+              "locale" : "en_US"
+            }
+          ],
+          "productID" : "com.rakitastudios.RowanAI.proplus.annual",
+          "recurringSubscriptionPeriod" : "P1Y",
+          "referenceName" : "Rowan Pro+ Annual",
+          "subscriptionGroupID" : "rowan_pro_group",
+          "type" : "RecurringSubscription"
+        }
+      ]
+    }
+  ],
+  "version" : {
+    "major" : 3,
+    "minor" : 0
+  }
+}
