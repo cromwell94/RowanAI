@@ -1,0 +1,6 @@
+livekit-agents>=0.8.0
+livekit-agents[openai]
+livekit-agents[deepgram]
+livekit-agents[silero]
+livekit-agents[anthropic]
+python-dotenv
