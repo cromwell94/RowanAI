@@ -580,35 +580,31 @@ struct PaywallView: View {
         }
     }
 
-    let proFeatures: [(String, String)] = [
-        ("bubble.left.and.bubble.right.fill", "Unlimited Cyrano replies — every day"),
-        ("doc.text.magnifyingglass",          "Unlimited Date Debriefs"),
-        ("person.2.fill",                     "Archive unlimited connections"),
-        ("graduationcap.fill",                "Full Conversation Coach — all scenarios"),
-        ("book.fill",                         "All lesson categories unlocked"),
-        ("bolt.fill",                         "Challenge Mode with AI scoring"),
-        ("bell.badge.fill",                   "Smart match reminders"),
-        ("chart.xyaxis.line",                 "Weekly progress insights"),
-        ("heart.fill",                        "Relationship — couples coaching tools"),
-    ]
-
+    // MARK: - Products
+    //
+    // Annual is the default after the paywall redesign — the in-paywall
+    // monthly/annual toggle was removed in favour of a cleaner narrative
+    // flow. Users who prefer monthly billing can switch via the App Store
+    // subscription settings post-purchase.
     var monthly: Product? { store.products.first { $0.id == RowanProduct.monthlyPro.rawValue } }
     var annual: Product?  { store.products.first { $0.id == RowanProduct.annualPro.rawValue } }
     var proPlusMonthly: Product? { store.products.first { $0.id == RowanProduct.monthlyProPlus.rawValue } }
     var proPlusAnnual: Product?  { store.products.first { $0.id == RowanProduct.annualProPlus.rawValue } }
 
-    @State private var billingCycle: PaywallBilling = .annual
+    /// Annual Pro — what the "Start 7-Day Free Trial" CTA buys.
+    var proProduct: Product? { annual }
+    /// Annual Pro+ — what the "Get Cyrano Live" CTA buys.
+    var proPlusProduct: Product? { proPlusAnnual }
 
-    enum PaywallBilling { case monthly, annual }
+    @State private var purchasingProPlus = false
 
-    /// The Pro product matching the currently-selected billing cycle.
-    var selectedProByCycle: Product? {
-        billingCycle == .annual ? annual : monthly
-    }
-    /// The Pro+ product matching the currently-selected billing cycle.
-    var selectedProPlusByCycle: Product? {
-        billingCycle == .annual ? proPlusAnnual : proPlusMonthly
-    }
+    // Pro+ uses a brand-distinct gold gradient on borders and badge fills.
+    static let goldGradient = LinearGradient(
+        colors: [Color(hex: "F4D03F"), Color(hex: "C0A020")],
+        startPoint: .topLeading,
+        endPoint: .bottomTrailing
+    )
+    static let proPlusNavy = Color(hex: "1B2B4B")
 
     var body: some View {
         ZStack {
@@ -622,17 +618,10 @@ struct PaywallView: View {
         }
         .onAppear {
             withAnimation(.spring(response: 0.6, dampingFraction: 0.8).delay(0.1)) { on = true }
-            if let annual = annual { selectedProduct = annual }
             // Kick off a load if the manager hasn't loaded yet — covers the
             // case where the paywall is the first thing the user opens.
             if store.products.isEmpty && store.loadState != .loading {
                 store.retryLoad()
-            }
-        }
-        // When products land after onAppear, default the selection to annual.
-        .onChange(of: store.products.count) { _, _ in
-            if selectedProduct == nil, let annual = annual {
-                selectedProduct = annual
             }
         }
     }
@@ -654,125 +643,475 @@ struct PaywallView: View {
             .padding(.horizontal, SP.lg).padding(.top, 16)
 
             ScrollView(showsIndicators: false) {
-                VStack(spacing: SP.xl) {
-
-                    // 7-day free trial callout — pinned at the very top.
-                    trialCallout
-                        .opacity(on ? 1 : 0).offset(y: on ? 0 : -6)
-
-                    // Header — primary trial pitch on top, reason-specific
-                    // copy underneath as supporting context.
-                    VStack(spacing: 12) {
-                        RowanLogo(size: 52)
-                            .scaleEffect(on ? 1 : 0.5).opacity(on ? 1 : 0)
-
-                        VStack(spacing: 6) {
-                            Text("Try any plan free for 7 days")
-                                .font(RWF.display(28))
-                                .foregroundStyle(LinearGradient.accent)
-                                .multilineTextAlignment(.center)
-                                .fixedSize(horizontal: false, vertical: true)
-                            Text(reason.headline)
-                                .font(RWF.head(15)).foregroundColor(.rwTextPrimary)
-                                .multilineTextAlignment(.center)
-                                .fixedSize(horizontal: false, vertical: true)
-                            Text(reason.subheadline)
-                                .font(RWF.body()).foregroundColor(.rwTextSecondary)
-                                .multilineTextAlignment(.center)
-                                .fixedSize(horizontal: false, vertical: true)
-                        }
+                VStack(spacing: 28) {
+                    hero
                         .opacity(on ? 1 : 0).offset(y: on ? 0 : 10)
-                    }
-
-                    // Features
-                    VStack(spacing: 10) {
-                        ForEach(proFeatures, id: \.0) { feature in
-                            HStack(spacing: 12) {
-                                Image(systemName: feature.0)
-                                    .font(.system(size: 14, weight: .semibold, design: .rounded))
-                                    .foregroundStyle(LinearGradient.accent)
-                                    .frame(width: 28)
-                                Text(feature.1).font(RWF.body()).foregroundColor(.rwTextPrimary)
-                                Spacer()
-                            }
-                        }
-                    }
-                    .padding(SP.lg).background(Color.rwSurface)
-                    .clipShape(RoundedRectangle(cornerRadius: RR.xl))
-                    .opacity(on ? 1 : 0)
-
-                    // Pricing options — side-by-side annual + monthly with
-                    // skeleton / cached / error fallbacks.
-                    pricingSection
+                    momentCards
                         .opacity(on ? 1 : 0)
-
-                    // CTA
-                    VStack(spacing: 12) {
-                        RWButton(isPurchasing ? "Processing..." : "Start 7-Day Free Trial") {
-                            guard let product = selectedProduct else { return }
-                            isPurchasing = true
-                            Task {
-                                let success = await store.purchase(product)
-                                isPurchasing = false
-                                if success { withAnimation { showSuccess = true } }
-                            }
-                        }
-                        .disabled(isPurchasing || selectedProduct == nil)
-
-                        if !store.purchaseError.isEmpty {
-                            Text(store.purchaseError).font(RWF.cap()).foregroundColor(.rwDanger)
-                        }
-
-                        Text("7-day free trial, then auto-renews. Cancel anytime in your Apple ID settings. No charges during trial.")
-                            .font(.system(size: 11, design: .rounded)).foregroundColor(.rwTextMuted)
-                            .multilineTextAlignment(.center)
-                    }
-                    .opacity(on ? 1 : 0)
-
-                    // Restore + legal — pinned at the very bottom per Apple
-                    // submission guidance (Restore visible, Terms + Privacy
-                    // links reachable from the paywall).
-                    VStack(spacing: 10) {
-                        Button("Restore Purchases") {
-                            Task { await store.restore() }
-                        }
-                        .font(RWF.cap()).foregroundColor(.rwTextSecondary)
-
-                        HStack(spacing: 14) {
-                            Button("Terms of Service") { showTerms = true }
-                                .font(.system(size: 11, design: .rounded)).foregroundColor(.rwTextMuted)
-                            Text("·").font(.system(size: 11, design: .rounded)).foregroundColor(.rwTextMuted)
-                            Button("Privacy Policy") { showTerms = true }
-                                .font(.system(size: 11, design: .rounded)).foregroundColor(.rwTextMuted)
-                        }
-                    }
-                    .opacity(on ? 1 : 0)
-
+                    socialProof
+                        .opacity(on ? 1 : 0)
+                    tierCardsSection
+                        .opacity(on ? 1 : 0)
+                    trustRow
+                        .opacity(on ? 1 : 0)
+                    ctaButtons
+                        .opacity(on ? 1 : 0)
+                    legalFooter
+                        .opacity(on ? 1 : 0)
                     Spacer().frame(height: 40)
                 }
                 .padding(.horizontal, SP.lg)
+                .padding(.top, 8)
             }
         }
         .sheet(isPresented: $showTerms) { TermsSheet() }
     }
 
-    private var trialCallout: some View {
-        HStack(spacing: 10) {
-            Image(systemName: "gift.fill")
-                .font(.system(size: 15, weight: .semibold, design: .rounded))
-                .foregroundStyle(LinearGradient.accent)
-            VStack(alignment: .leading, spacing: 2) {
-                Text("7-day free trial").font(RWF.head(14)).foregroundColor(.rwTextPrimary)
-                Text("Try every Pro feature. Cancel anytime, no charge.")
-                    .font(RWF.cap(11)).foregroundColor(.rwTextSecondary)
+    // MARK: - Section 1 — Hero with timeline
+
+    private var hero: some View {
+        VStack(spacing: 18) {
+            VStack(spacing: 8) {
+                Text("Try Rowan free for 7 days")
+                    .font(.system(size: 30, weight: .bold, design: .rounded))
+                    .foregroundColor(.rwTextPrimary)
+                    .multilineTextAlignment(.center)
+                    .fixedSize(horizontal: false, vertical: true)
+                Text("Cancel anytime. No charge until day 8.")
+                    .font(RWF.body(15))
+                    .foregroundColor(.rwTextSecondary)
+                    .multilineTextAlignment(.center)
             }
+            timeline
+                .padding(.top, 4)
+        }
+    }
+
+    private var timeline: some View {
+        VStack(spacing: 10) {
+            HStack(spacing: 0) {
+                timelineDot(filled: true)
+                timelineConnector
+                timelineDot(filled: true)
+                timelineConnector
+                timelineDot(filled: false)
+            }
+            HStack(alignment: .top, spacing: 0) {
+                timelineLabel(day: "Day 1", tag: "Free", alignment: .leading)
+                timelineLabel(day: "Day 7", tag: "Reminder", alignment: .center)
+                timelineLabel(day: "Day 8", tag: "First charge", alignment: .trailing)
+            }
+        }
+        .padding(.horizontal, 4)
+    }
+
+    private func timelineDot(filled: Bool) -> some View {
+        Group {
+            if filled {
+                Circle().fill(LinearGradient.accent)
+            } else {
+                Circle()
+                    .fill(Color.rwBackground)
+                    .overlay(Circle().stroke(LinearGradient.accent, lineWidth: 2))
+            }
+        }
+        .frame(width: 14, height: 14)
+    }
+
+    private var timelineConnector: some View {
+        Rectangle()
+            .fill(LinearGradient.accent)
+            .frame(height: 2)
+            .frame(maxWidth: .infinity)
+    }
+
+    private func timelineLabel(day: String, tag: String, alignment: HorizontalAlignment) -> some View {
+        VStack(alignment: alignment, spacing: 2) {
+            Text(day).font(RWF.head(12)).foregroundColor(.rwTextPrimary)
+            Text(tag).font(RWF.cap(11)).foregroundColor(.rwTextSecondary)
+        }
+        .frame(maxWidth: .infinity, alignment: Alignment(horizontal: alignment, vertical: .top))
+    }
+
+    // MARK: - Section 2 — Moment cards (swipeable)
+
+    private struct Moment: Identifiable {
+        let id = UUID()
+        let icon: String
+        let headline: String
+        let body: String
+    }
+
+    private var moments: [Moment] {
+        [
+            Moment(icon: "sparkles",
+                   headline: "Cyrano reads between the lines",
+                   body: "Drop a screenshot. Get a reply that actually works."),
+            Moment(icon: "person.wave.2.fill",
+                   headline: "Practice before the real thing",
+                   body: "Real-time voice simulation. 5 personalities. No judgment."),
+            Moment(icon: "chart.line.uptrend.xyaxis",
+                   headline: "Watch yourself get better",
+                   body: "6 dimensions. 0 to 1000. Actual measurable growth.")
+        ]
+    }
+
+    private var momentCards: some View {
+        TabView {
+            ForEach(moments) { m in
+                momentCard(m)
+            }
+        }
+        .tabViewStyle(.page(indexDisplayMode: .always))
+        .indexViewStyle(.page(backgroundDisplayMode: .always))
+        .frame(height: 240)
+    }
+
+    private func momentCard(_ m: Moment) -> some View {
+        VStack(spacing: 14) {
+            Image(systemName: m.icon)
+                .font(.system(size: 40, weight: .semibold, design: .rounded))
+                .foregroundStyle(LinearGradient.accent)
+            Text(m.headline)
+                .font(.system(size: 19, weight: .bold, design: .rounded))
+                .foregroundColor(.rwTextPrimary)
+                .multilineTextAlignment(.center)
+                .fixedSize(horizontal: false, vertical: true)
+            Text(m.body)
+                .font(RWF.body(14))
+                .foregroundColor(.rwTextSecondary)
+                .multilineTextAlignment(.center)
+                .fixedSize(horizontal: false, vertical: true)
             Spacer()
         }
-        .padding(.horizontal, SP.md).padding(.vertical, 10)
-        .background(Color.rwAccent.opacity(0.08))
-        .clipShape(RoundedRectangle(cornerRadius: RR.lg))
-        .overlay(RoundedRectangle(cornerRadius: RR.lg).stroke(Color.rwAccent.opacity(0.25), lineWidth: 1))
+        .padding(SP.lg)
+        .padding(.bottom, 28)  // leave room for the dot indicators
+        .frame(maxWidth: .infinity)
     }
+
+    // MARK: - Section 3 — Social proof
+
+    private var socialProof: some View {
+        HStack(spacing: 8) {
+            Text("★★★★★")
+                .font(.system(size: 14, weight: .bold, design: .rounded))
+                .foregroundColor(.rwAccent)
+            Text("Loved by people who take connection seriously")
+                .font(RWF.body(13))
+                .foregroundColor(.rwTextPrimary)
+                .multilineTextAlignment(.center)
+                .fixedSize(horizontal: false, vertical: true)
+        }
+        .frame(maxWidth: .infinity)
+    }
+
+    // MARK: - Section 4 — Tier cards
+
+    @ViewBuilder
+    private var tierCardsSection: some View {
+        if !store.products.isEmpty {
+            VStack(spacing: 12) {
+                freeTierCard
+                proTierCard
+                proPlusTierCard
+            }
+        } else {
+            pricingFallback
+        }
+    }
+
+    @ViewBuilder
+    private var pricingFallback: some View {
+        switch store.loadState {
+        case .failed(let message):
+            loadErrorCard(message: message)
+        case .loading, .idle:
+            VStack(spacing: 10) {
+                SkeletonPricingCard()
+                SkeletonPricingCard()
+                SkeletonPricingCard()
+            }
+        case .loaded:
+            loadErrorCard(message: "No subscriptions are currently available. If you've previously subscribed, try Restore Purchases.")
+        }
+    }
+
+    private var freeTierCard: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            HStack {
+                Text("Free")
+                    .font(RWF.head(18))
+                    .foregroundColor(.rwTextPrimary)
+                Spacer()
+                if !store.isPro {
+                    Text("Current Plan")
+                        .font(.system(size: 11, weight: .semibold, design: .rounded))
+                        .foregroundColor(.rwTextSecondary)
+                }
+            }
+            Text("$0")
+                .font(.system(size: 22, weight: .bold, design: .rounded))
+                .foregroundColor(.rwTextPrimary)
+            VStack(alignment: .leading, spacing: 7) {
+                limitRow("10 Cyrano replies/day")
+                limitRow("2 The Sim sessions/week")
+                limitRow("5 Archive connections")
+                limitRow("Basic RI Score view")
+            }
+        }
+        .padding(SP.lg)
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .background(Color.rwSurface)
+        .clipShape(RoundedRectangle(cornerRadius: RR.xl))
+    }
+
+    private func limitRow(_ text: String) -> some View {
+        HStack(alignment: .firstTextBaseline, spacing: 8) {
+            Image(systemName: "minus")
+                .font(.system(size: 11, weight: .bold, design: .rounded))
+                .foregroundColor(.rwTextMuted)
+                .frame(width: 12)
+            Text(text)
+                .font(RWF.body(13))
+                .foregroundColor(.rwTextSecondary)
+        }
+    }
+
+    private var proTierCard: some View {
+        let priceText = proProduct?.displayPrice ?? "—"
+        return ZStack(alignment: .topTrailing) {
+            VStack(alignment: .leading, spacing: 12) {
+                Text("Pro")
+                    .font(RWF.head(18))
+                    .foregroundColor(.rwTextPrimary)
+                HStack(alignment: .lastTextBaseline, spacing: 6) {
+                    Text(priceText)
+                        .font(.system(size: 26, weight: .bold, design: .rounded))
+                        .foregroundColor(.rwTextPrimary)
+                    Text("/year")
+                        .font(RWF.cap(12))
+                        .foregroundColor(.rwTextSecondary)
+                }
+                VStack(alignment: .leading, spacing: 8) {
+                    proFeatureRow("Unlimited Cyrano coaching")
+                    proFeatureRow("All avatars · all environments")
+                    proFeatureRow("Full RI Score with history")
+                    proFeatureRow("Relationship Mode")
+                }
+            }
+            .padding(SP.lg)
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .background(Color.rwCard)
+            .clipShape(RoundedRectangle(cornerRadius: RR.xl))
+            .overlay(
+                RoundedRectangle(cornerRadius: RR.xl)
+                    .stroke(LinearGradient.accent, lineWidth: 2)
+            )
+
+            // "Most Popular" badge — top right.
+            Text("Most Popular")
+                .font(.system(size: 10, weight: .bold, design: .rounded))
+                .foregroundColor(.white)
+                .padding(.horizontal, 10)
+                .padding(.vertical, 4)
+                .background(Color.rwAccent)
+                .clipShape(Capsule())
+                .offset(x: -16, y: 12)
+        }
+        .shadow(color: Color.rwShadow, radius: 10, x: 0, y: 3)
+    }
+
+    private func proFeatureRow(_ text: String) -> some View {
+        HStack(alignment: .firstTextBaseline, spacing: 8) {
+            Image(systemName: "checkmark.circle.fill")
+                .font(.system(size: 13, design: .rounded))
+                .foregroundStyle(LinearGradient.accent)
+                .frame(width: 14)
+            Text(text)
+                .font(RWF.body(14))
+                .foregroundColor(.rwTextPrimary)
+                .fixedSize(horizontal: false, vertical: true)
+        }
+    }
+
+    private var proPlusTierCard: some View {
+        let priceText = proPlusProduct?.displayPrice ?? "—"
+        return ZStack(alignment: .topTrailing) {
+            VStack(alignment: .leading, spacing: 14) {
+                Text("Pro+")
+                    .font(RWF.head(20))
+                    .foregroundColor(.white)
+                HStack(alignment: .lastTextBaseline, spacing: 6) {
+                    Text(priceText)
+                        .font(.system(size: 28, weight: .bold, design: .rounded))
+                        .foregroundColor(.white)
+                    Text("/year")
+                        .font(RWF.cap(12))
+                        .foregroundColor(.white.opacity(0.7))
+                }
+                VStack(alignment: .leading, spacing: 8) {
+                    proPlusFeatureRow("Everything in Pro")
+                    proPlusFeatureRow("Cyrano Live — real-time AI in your earpiece")
+                    proPlusFeatureRow("Priority Cyrano response speed")
+                    proPlusFeatureRow("Early access to new features")
+                }
+            }
+            // Slightly larger card than Pro per the spec.
+            .padding(.horizontal, SP.lg)
+            .padding(.vertical, SP.xl)
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .background(Self.proPlusNavy)
+            .clipShape(RoundedRectangle(cornerRadius: RR.xl))
+            .overlay(
+                RoundedRectangle(cornerRadius: RR.xl)
+                    .stroke(Self.goldGradient, lineWidth: 2)
+            )
+
+            // "Cyrano Live Included" gold badge — top right.
+            HStack(spacing: 4) {
+                Image(systemName: "headphones")
+                    .font(.system(size: 9, weight: .bold, design: .rounded))
+                Text("Cyrano Live Included")
+                    .font(.system(size: 10, weight: .bold, design: .rounded))
+            }
+            .foregroundColor(Self.proPlusNavy)
+            .padding(.horizontal, 10)
+            .padding(.vertical, 4)
+            .background(Self.goldGradient)
+            .clipShape(Capsule())
+            .offset(x: -16, y: 12)
+        }
+        .shadow(color: Self.proPlusNavy.opacity(0.18), radius: 14, x: 0, y: 4)
+    }
+
+    private func proPlusFeatureRow(_ text: String) -> some View {
+        HStack(alignment: .firstTextBaseline, spacing: 8) {
+            Image(systemName: "checkmark.circle.fill")
+                .font(.system(size: 13, design: .rounded))
+                .foregroundStyle(Self.goldGradient)
+                .frame(width: 14)
+            Text(text)
+                .font(RWF.body(14))
+                .foregroundColor(.white)
+                .fixedSize(horizontal: false, vertical: true)
+        }
+    }
+
+    // MARK: - Section 5 — Trust row
+
+    private var trustRow: some View {
+        HStack(spacing: 0) {
+            trustItem(icon: "lock.fill", text: "Secure payment")
+            Rectangle().fill(Color.rwBorder).frame(width: 1, height: 36)
+            trustItem(icon: "arrow.uturn.left", text: "Cancel anytime")
+            Rectangle().fill(Color.rwBorder).frame(width: 1, height: 36)
+            trustItem(icon: "star.fill", text: "7 days free")
+        }
+        .padding(.vertical, 14)
+        .padding(.horizontal, SP.md)
+        .background(Color.rwSurface)
+        .clipShape(RoundedRectangle(cornerRadius: RR.lg))
+    }
+
+    private func trustItem(icon: String, text: String) -> some View {
+        VStack(spacing: 6) {
+            Image(systemName: icon)
+                .font(.system(size: 15, weight: .medium, design: .rounded))
+                .foregroundColor(.rwTextSecondary)
+            Text(text)
+                .font(RWF.cap(11))
+                .foregroundColor(.rwTextSecondary)
+        }
+        .frame(maxWidth: .infinity)
+    }
+
+    // MARK: - Section 6 — CTA buttons
+
+    private var ctaButtons: some View {
+        VStack(spacing: 12) {
+            // Pro CTA — gradient.
+            Button {
+                guard let product = proProduct else { return }
+                purchasingProPlus = false
+                Task { await beginPurchase(product) }
+            } label: {
+                Text(isPurchasing && !purchasingProPlus ? "Processing..." : "Start 7-Day Free Trial")
+                    .font(RWF.head(15))
+                    .foregroundColor(.white)
+                    .frame(maxWidth: .infinity)
+                    .padding(.vertical, 16)
+                    .background(LinearGradient.accent)
+                    .clipShape(Capsule())
+            }
+            .buttonStyle(SBS())
+            .disabled(isPurchasing || proProduct == nil)
+            .shadow(color: Color.rwAccent.opacity(0.32), radius: 18, x: 0, y: 8)
+
+            // Pro+ CTA — navy + gold text.
+            Button {
+                guard let product = proPlusProduct else { return }
+                purchasingProPlus = true
+                Task { await beginPurchase(product) }
+            } label: {
+                Text(isPurchasing && purchasingProPlus ? "Processing..." : "Get Cyrano Live")
+                    .font(RWF.head(15))
+                    .foregroundStyle(Self.goldGradient)
+                    .frame(maxWidth: .infinity)
+                    .padding(.vertical, 16)
+                    .background(Self.proPlusNavy)
+                    .clipShape(Capsule())
+            }
+            .buttonStyle(SBS())
+            .disabled(isPurchasing || proPlusProduct == nil)
+
+            if !store.purchaseError.isEmpty {
+                Text(store.purchaseError)
+                    .font(RWF.cap())
+                    .foregroundColor(.rwDanger)
+            }
+
+            Button("Restore Purchases") {
+                Task { await store.restore() }
+            }
+            .font(.system(size: 12, design: .rounded))
+            .foregroundColor(.rwTextMuted)
+            .padding(.top, 4)
+        }
+    }
+
+    private func beginPurchase(_ product: Product) async {
+        await MainActor.run { isPurchasing = true }
+        let success = await store.purchase(product)
+        await MainActor.run {
+            isPurchasing = false
+            if success { withAnimation { showSuccess = true } }
+        }
+    }
+
+    // MARK: - Legal footer
+
+    private var legalFooter: some View {
+        VStack(spacing: 6) {
+            Text("7-day free trial, then auto-renews. Cancel anytime in your Apple ID settings. No charges during trial.")
+                .font(.system(size: 11, design: .rounded))
+                .foregroundColor(.rwTextMuted)
+                .multilineTextAlignment(.center)
+
+            HStack(spacing: 14) {
+                Button("Terms of Service") { showTerms = true }
+                    .font(.system(size: 11, design: .rounded))
+                    .foregroundColor(.rwTextMuted)
+                Text("·")
+                    .font(.system(size: 11, design: .rounded))
+                    .foregroundColor(.rwTextMuted)
+                Button("Privacy Policy") { showTerms = true }
+                    .font(.system(size: 11, design: .rounded))
+                    .foregroundColor(.rwTextMuted)
+            }
+        }
+    }
+
+    // MARK: - Success / pricing fallback helpers
 
     var successView: some View {
         VStack(spacing: SP.xl) {
@@ -789,51 +1128,6 @@ struct PaywallView: View {
             Spacer()
             RWButton("Let's Go", icon: "arrow.right") { dismiss() }
                 .padding(.horizontal, SP.xl).padding(.bottom, 60)
-        }
-    }
-
-    func perMonth(_ product: Product) -> String {
-        let price = product.price / 12
-        return "\(product.priceFormatStyle.format(price))/mo"
-    }
-
-    // MARK: - Pricing section state machine
-
-    @ViewBuilder
-    private var pricingSection: some View {
-        if !store.products.isEmpty {
-            VStack(spacing: 12) {
-                billingToggle
-                tierCardStack
-            }
-        } else {
-            // No live products yet — pick the right fallback for the state.
-            switch store.loadState {
-            case .failed(let message):
-                loadErrorCard(message: message)
-            case .loading, .idle:
-                let cached = store.cachedProducts()
-                if cached.isEmpty {
-                    VStack(spacing: 10) {
-                        SkeletonPricingCard()
-                        SkeletonPricingCard()
-                        SkeletonPricingCard()
-                    }
-                } else {
-                    VStack(spacing: 10) {
-                        ForEach(cached, id: \.id) { info in
-                            CachedPricingCard(info: info)
-                        }
-                        Text("Refreshing pricing from the App Store…")
-                            .font(RWF.cap(11)).foregroundColor(.rwTextMuted)
-                            .frame(maxWidth: .infinity)
-                    }
-                }
-            case .loaded:
-                // Loaded but the store returned nothing — most often a config
-                // mismatch (product IDs not yet approved in App Store Connect).
-                loadErrorCard(message: "No subscriptions are currently available. If you've previously subscribed, try Restore Purchases.")
-            }
         }
     }
 
@@ -865,169 +1159,6 @@ struct PaywallView: View {
         .background(Color.rwCard)
         .clipShape(RoundedRectangle(cornerRadius: RR.xl))
         .overlay(RoundedRectangle(cornerRadius: RR.xl).stroke(Color.rwBorder, lineWidth: 1))
-    }
-
-    // MARK: - Three-tier pricing UI
-
-    /// Top-of-section monthly/annual toggle. Annual is selected by default;
-    /// the active option is filled with the accent gradient.
-    private var billingToggle: some View {
-        HStack(spacing: 0) {
-            billingPill(label: "Monthly", cycle: .monthly)
-            billingPill(label: "Annual", cycle: .annual, badge: store.annualSavingsPercent().map { "Save \($0)%" })
-        }
-        .padding(4)
-        .background(Color.rwSurface)
-        .clipShape(Capsule())
-        .overlay(Capsule().stroke(Color.rwBorder, lineWidth: 1))
-    }
-
-    private func billingPill(label: String, cycle: PaywallBilling, badge: String? = nil) -> some View {
-        let isSelected = billingCycle == cycle
-        return Button {
-            withAnimation(.spring(response: 0.3)) {
-                billingCycle = cycle
-                // Move the selection over to the new cycle so the CTA buys
-                // the right SKU. Default the tier to whatever was already
-                // selected — Pro by default if nothing chosen yet.
-                if isProPlusSelected, let p = selectedProPlusByCycle {
-                    selectedProduct = p
-                } else if let p = selectedProByCycle {
-                    selectedProduct = p
-                }
-            }
-        } label: {
-            HStack(spacing: 6) {
-                Text(label).font(RWF.med(13))
-                if let badge = badge {
-                    Text(badge)
-                        .font(.system(size: 10, weight: .bold, design: .rounded))
-                        .padding(.horizontal, 6).padding(.vertical, 2)
-                        .background(isSelected
-                                    ? Color.white.opacity(0.22)
-                                    : Color.rwAccent.opacity(0.15))
-                        .foregroundColor(isSelected ? .white : .rwAccent)
-                        .clipShape(Capsule())
-                }
-            }
-            .foregroundColor(isSelected ? .white : .rwTextSecondary)
-            .padding(.horizontal, 14).padding(.vertical, 8)
-            .frame(maxWidth: .infinity)
-            .background(
-                Group {
-                    if isSelected {
-                        LinearGradient.accent
-                    } else {
-                        Color.clear
-                    }
-                }
-            )
-            .clipShape(Capsule())
-        }
-        .buttonStyle(SBS())
-    }
-
-    /// Three stacked tier cards: Free / Pro (recommended) / Pro+.
-    private var tierCardStack: some View {
-        VStack(spacing: 10) {
-            freeTierCard
-            proTierCard
-            proPlusTierCard
-        }
-    }
-
-    /// Whether the user has selected the Pro+ row (used by the toggle to
-    /// choose which product to flip to when the cycle changes).
-    private var isProPlusSelected: Bool {
-        guard let id = selectedProduct?.id else { return false }
-        return id == RowanProduct.monthlyProPlus.rawValue || id == RowanProduct.annualProPlus.rawValue
-    }
-
-    private var freeTierCard: some View {
-        TierCard(
-            title: "Free",
-            price: "$0",
-            perPeriod: "forever",
-            badge: store.isPro ? nil : "Current Plan",
-            badgeTint: .rwTextMuted,
-            features: [
-                "10 Cyrano replies/day",
-                "2 Sim sessions/week",
-                "5 Archive connections",
-                "Basic RI Score view"
-            ],
-            isSelected: false,
-            isCurrent: !store.isPro,
-            accent: .rwTextMuted,
-            ctaLabel: nil,
-            disabled: true,
-            onTap: {}
-        )
-    }
-
-    private var proTierCard: some View {
-        let product = selectedProByCycle
-        let priceText = product?.displayPrice ?? "—"
-        let perPeriod = billingCycle == .annual ? "per year" : "per month"
-        let monthlyEquivText: String? = billingCycle == .annual && product != nil
-            ? perMonth(product!) : nil
-
-        return TierCard(
-            title: "Pro",
-            price: priceText,
-            perPeriod: perPeriod,
-            badge: "Most Popular",
-            badgeTint: .rwAccent,
-            features: [
-                "Unlimited Cyrano coaching",
-                "All 6 avatars · all environments",
-                "Full RI Score with history",
-                "Relationship Mode",
-                "iMessage extension full access"
-            ],
-            extraNote: monthlyEquivText,
-            isSelected: !isProPlusSelected && selectedProduct?.id == product?.id,
-            isCurrent: store.isPro && !store.isProPlus,
-            accent: .rwAccent,
-            ctaLabel: nil,
-            disabled: product == nil,
-            recommended: true,
-            onTap: {
-                if let product = product { selectedProduct = product }
-            }
-        )
-    }
-
-    private var proPlusTierCard: some View {
-        let product = selectedProPlusByCycle
-        let priceText = product?.displayPrice ?? "—"
-        let perPeriod = billingCycle == .annual ? "per year" : "per month"
-        let monthlyEquivText: String? = billingCycle == .annual && product != nil
-            ? perMonth(product!) : nil
-
-        return TierCard(
-            title: "Pro+",
-            price: priceText,
-            perPeriod: perPeriod,
-            badge: "Includes Cyrano Live",
-            badgeTint: .rwAccent,
-            badgeIcon: "headphones",
-            features: [
-                "Everything in Pro",
-                "Cyrano Live — real-time AI in your earpiece",
-                "Priority Cyrano response speed",
-                "Early access to new features"
-            ],
-            extraNote: monthlyEquivText,
-            isSelected: isProPlusSelected && selectedProduct?.id == product?.id,
-            isCurrent: store.isProPlus,
-            accent: Color(hex: "C0A020"),
-            ctaLabel: nil,
-            disabled: product == nil,
-            onTap: {
-                if let product = product { selectedProduct = product }
-            }
-        )
     }
 }
 
