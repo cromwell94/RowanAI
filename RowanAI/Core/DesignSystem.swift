@@ -35,7 +35,7 @@ extension Color {
     static let rwShadow        = Color(hex: "0D0D0D").opacity(0.05)
     static let rwShadowDeep    = Color(hex: "E8356D").opacity(0.18) // gradient-button glow
 
-    // Cinematic palette — for Face to Face Sim and any "stage" view
+    // Cinematic palette — for The Sim and any "stage" view
     static let rwInk           = Color(hex: "0A0612")  // near-black with violet undertone
     static let rwInkSurface    = Color(hex: "1A1422")
     static let rwInkBorder     = Color.white.opacity(0.08)
@@ -77,7 +77,7 @@ extension LinearGradient {
         colors: [Color(hex: "E0B844"), Color(hex: "A88416")],
         startPoint: .topLeading, endPoint: .bottomTrailing)
 
-    // Cinematic radial — Face to Face Sim avatar stage backdrop.
+    // Cinematic radial — The Sim avatar stage backdrop.
     static let cinematic = LinearGradient(
         colors: [Color(hex: "1A1422"), Color(hex: "0A0612")],
         startPoint: .top, endPoint: .bottom)
@@ -142,7 +142,7 @@ struct SBS: ButtonStyle {
 // Full-width pill. Primary = signature pink→teal gradient with a colored glow.
 // Secondary = neutral surface, used as the "cancel/return" sibling to a primary.
 // Ghost = inline text-button with accent color. Dark = inverted neutral.
-// Cinematic = white-on-translucent for dark stage views (Face to Face Sim).
+// Cinematic = white-on-translucent for dark stage views (The Sim).
 
 struct RWButton: View {
     let title: String

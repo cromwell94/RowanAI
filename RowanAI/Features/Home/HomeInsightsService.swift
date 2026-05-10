@@ -192,7 +192,7 @@ final class HomeInsightsService {
         case .presence:
             return "Try the Voice Trainer's Presence Check today — three minutes."
         case .attunement:
-            return "Run a Face to Face Sim with a Distracted personality — practice earning attention."
+            return "Run a The Sim with a Distracted personality — practice earning attention."
         case .repairScore:
             return "Open the Communication Lab's Repair Attempts lesson tonight."
         case .vulnerability:

@@ -10,7 +10,7 @@ struct SimDebriefView: View {
     let messages: [SimTurn]
     let finalScore: Int
     let endReason: SimSessionView.EndReason
-    // Closures from FaceToFaceSimView. "Done" calls returnToPicker which
+    // Closures from SimView. "Done" calls returnToPicker which
     // collapses the entire fullScreenCover stack; "Try Again" calls
     // restartSession which relaunches the flow with the same picker settings.
     var returnToPicker: () -> Void = {}
@@ -237,7 +237,7 @@ struct SimDebriefView: View {
         }()
 
         let role = """
-        YOUR ROLE NOW: Post-session coach for Face to Face Sim.
+        YOUR ROLE NOW: Post-session coach for The Sim.
         The user just practiced (\(mode.headerLabel)) with a \(personality.rawValue) personality at "\(environment.displayTitle(for: mode))".
         Final engagement score: \(finalScore)/100. Outcome: \(endReason).
         \(modeLens)

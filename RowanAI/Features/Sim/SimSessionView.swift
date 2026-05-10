@@ -9,7 +9,7 @@ struct SimSessionView: View {
     let personality: SimPersonality
     let mode: SimMode
 
-    // Closures threaded down from FaceToFaceSimView so the X button can collapse
+    // Closures threaded down from SimView so the X button can collapse
     // the entire fullScreenCover chain (brief → coach → session → debrief) back
     // to the picker, and so debrief's "Try Again" can relaunch a fresh session
     // with the picker's current settings.
@@ -401,7 +401,7 @@ struct SimSessionView: View {
             }
             Text("Microphone access needed")
                 .font(RWF.head(15)).foregroundColor(.rwInkText)
-            Text("Face to Face Sim uses your microphone and speech recognition. Enable both in Settings to start a session.")
+            Text("The Sim uses your microphone and speech recognition. Enable both in Settings to start a session.")
                 .font(RWF.body(13)).foregroundColor(.rwInkTextMuted)
                 .multilineTextAlignment(.center)
                 .padding(.horizontal, SP.lg)
@@ -640,7 +640,7 @@ struct SimSessionView: View {
 
     private func speakAvatar(_ text: String) async {
         // ElevenLabs first; Apple TTS only on failure or when the user is
-        // not Pro. Either way Face to Face Sim talks — never silent.
+        // not Pro. Either way The Sim talks — never silent.
         //
         // ElevenLabsService.speak() awaits playback completion, so the
         // surrounding `await` keeps `isThinking = true` for the full duration

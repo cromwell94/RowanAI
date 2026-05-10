@@ -44,21 +44,21 @@ struct CyranoExerciseSuggestion: Equatable, Identifiable {
         var defaultTarget: Target {
             switch self {
             case .anxiousSpiral:
-                return .faceToFaceSim(personality: .overthinker, mode: .single)
+                return .sim(personality: .overthinker, mode: .single)
             case .avoidance:
-                return .faceToFaceSim(personality: .guarded, mode: .single)
+                return .sim(personality: .guarded, mode: .single)
             case .conflictAvoidance:
                 return .relationshipCommLab
             case .overPursuit:
-                return .faceToFaceSim(personality: .distracted, mode: .single)
+                return .sim(personality: .distracted, mode: .single)
             case .vulnerabilityBlock:
                 return .voiceTrainer
             case .communicationBreakdown:
                 return .relationshipCommLab
             case .situationshipConfusion:
-                return .faceToFaceSim(personality: .confrontational, mode: .complicated, environment: .firstDate)
+                return .sim(personality: .confrontational, mode: .complicated, environment: .firstDate)
             case .endingAvoidance:
-                return .faceToFaceSim(personality: .overthinker, mode: .complicated, environment: .collegeCampus)
+                return .sim(personality: .overthinker, mode: .complicated, environment: .collegeCampus)
             case .firstImpressionNerves:
                 return .firstImpressionLab
             case .rejectionProcessing:
@@ -69,16 +69,16 @@ struct CyranoExerciseSuggestion: Equatable, Identifiable {
         var defaultExercise: (title: String, blurb: String) {
             switch self {
             case .anxiousSpiral:
-                return ("Face to Face Sim · Overthinker",
+                return ("The Sim · Overthinker",
                         "Practice staying present with someone who mirrors your anxiety back at you.")
             case .avoidance:
-                return ("Face to Face Sim · Guarded",
+                return ("The Sim · Guarded",
                         "Practice staying in a conversation that feels uncomfortable.")
             case .conflictAvoidance:
                 return ("Communication Lab · How to Fight Fair",
                         "Learn Gottman's repair attempts before your next hard conversation.")
             case .overPursuit:
-                return ("Face to Face Sim · Distracted",
+                return ("The Sim · Distracted",
                         "Practice holding your ground when someone isn't giving you full attention.")
             case .vulnerabilityBlock:
                 return ("Voice Trainer · Warmth Calibration",
@@ -87,10 +87,10 @@ struct CyranoExerciseSuggestion: Equatable, Identifiable {
                 return ("Communication Lab · Repair Attempts",
                         "A short lesson on how to reopen a closed conversation.")
             case .situationshipConfusion:
-                return ("Face to Face Sim · The DTR Talk",
+                return ("The Sim · The DTR Talk",
                         "Practice the define-the-relationship conversation in a safe space first.")
             case .endingAvoidance:
-                return ("Face to Face Sim · The Last Conversation",
+                return ("The Sim · The Last Conversation",
                         "Practice saying what you need to say before you say it for real.")
             case .firstImpressionNerves:
                 return ("First Impression Lab",
@@ -103,7 +103,7 @@ struct CyranoExerciseSuggestion: Equatable, Identifiable {
     }
 
     enum Target: Equatable {
-        case faceToFaceSim(personality: SimPersonality?, mode: SimMode, environment: SimEnvironment? = nil)
+        case sim(personality: SimPersonality?, mode: SimMode, environment: SimEnvironment? = nil)
         case communicationLab
         case relationshipCommLab
         case voiceTrainer
@@ -116,7 +116,7 @@ struct CyranoExerciseSuggestion: Equatable, Identifiable {
     //   [json array of replies]
     //   ---
     //   PATTERN: anxious_spiral
-    //   EXERCISE: Face to Face Sim · Overthinker
+    //   EXERCISE: The Sim · Overthinker
     //   BLURB: Practice staying present...
     // The "---" block is optional. Returns the JSON portion plus an optional
     // suggestion. A trailing "---" with no recognizable pattern is dropped.
@@ -287,12 +287,12 @@ struct CyranoExerciseHost: View {
     @Environment(\.dismiss) private var dismiss
 
     var body: some View {
-        // Each branch returns a presentable view. FaceToFaceSimView's mode +
+        // Each branch returns a presentable view. SimView's mode +
         // personality preselection isn't a deep-link param yet (left as a
         // follow-up); the host opens the picker and the user confirms.
         switch suggestion.target {
-        case .faceToFaceSim:
-            FaceToFaceSimView()
+        case .sim:
+            SimView()
         case .communicationLab:
             NavigationView { CommunicationLabView() }
         case .relationshipCommLab:

@@ -81,7 +81,7 @@ final class TutorialManager {
 enum TutorialID: String, Codable, CaseIterable {
     case home
     case cyrano
-    case faceToFaceSim
+    case sim
     case firstImpressionLab
     case archive
     case datePlanner

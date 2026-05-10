@@ -98,7 +98,7 @@ enum FTUEContent {
         FTUESlide(
             icon: "bubble.left.and.bubble.right.fill",
             accent: pink,
-            headline: "Face to Face Sim",
+            headline: "The Sim",
             body: "Practice real conversations with AI avatars before they happen. 6 personalities, 5 environments, 3 modes. The engagement meter tracks how interested the avatar is in real time. Cyrano debriefs you after every session.",
             pills: ["6 Avatars", "Engagement Meter", "Full Debrief", "Single · Relationship · Complicated"]
         ),

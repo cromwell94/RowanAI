@@ -1,9 +1,9 @@
 import SwiftUI
 import Combine
 
-// MARK: - Face to Face Sim — Entry / Picker (Build 1 Step 5)
+// MARK: - The Sim — Entry / Picker (Build 1 Step 5)
 
-struct FaceToFaceSimView: View {
+struct SimView: View {
     @State private var selectedAvatar: SimAvatar = SimAvatars.all[0]
     @State private var selectedEnvironment: SimEnvironment = .coffeeShop
     @State private var selectedPersonality: SimPersonality = .guarded
@@ -67,7 +67,7 @@ struct FaceToFaceSimView: View {
                 .padding(.horizontal, SP.lg).padding(.top, 12)
             }
             .rwBG()
-            .navigationTitle("Face to Face Sim")
+            .navigationTitle("The Sim")
             .navigationBarTitleDisplayMode(.large)
             .fullScreenCover(isPresented: $showBrief) {
                 SimPreSessionView(
@@ -91,7 +91,7 @@ struct FaceToFaceSimView: View {
                 .id(briefSession)
             }
             .sheet(isPresented: $showPaywall) { PaywallView(reason: paywallReason) }
-            .tutorial(.faceToFaceSim, forceShow: $replayTutorial)
+            .tutorial(.sim, forceShow: $replayTutorial)
         }
     }
 
@@ -113,7 +113,7 @@ struct FaceToFaceSimView: View {
                     .fixedSize(horizontal: false, vertical: true)
             }
             Spacer()
-            TutorialReplayButton(id: .faceToFaceSim, forceShow: $replayTutorial)
+            TutorialReplayButton(id: .sim, forceShow: $replayTutorial)
                 .padding(.top, 4)
         }
         .frame(maxWidth: .infinity, alignment: .leading)
@@ -421,7 +421,7 @@ struct SimPreSessionView: View {
     let environment: SimEnvironment
     let personality: SimPersonality
     let mode: SimMode
-    // Closures from FaceToFaceSimView. returnToPicker collapses the entire
+    // Closures from SimView. returnToPicker collapses the entire
     // fullScreenCover stack; restartSession relaunches the flow with the
     // picker's same settings (used by debrief's "Try Again").
     var returnToPicker: () -> Void = {}
@@ -568,7 +568,7 @@ struct SimPreSessionView: View {
             }
         }()
         let role = """
-        YOUR ROLE NOW: Pre-session coach for Face to Face Sim.
+        YOUR ROLE NOW: Pre-session coach for The Sim.
         The user is about to practice with a \(personality.rawValue) personality in a \(environment.displayTitle(for: mode)) setting.
         \(modeBrief)
         Personality summary: \(personality.coachingBrief)

@@ -33,7 +33,7 @@ enum TutorialContent {
         switch id {
         case .home:               return home
         case .cyrano:             return cyrano
-        case .faceToFaceSim:      return faceToFaceSim
+        case .sim:      return sim
         case .firstImpressionLab: return firstImpressionLab
         case .archive:            return archive
         case .datePlanner:        return datePlanner
@@ -91,8 +91,8 @@ enum TutorialContent {
         ]
     )
 
-    static let faceToFaceSim = Tutorial(
-        id: .faceToFaceSim, title: "Practice Real Conversations", estimatedTime: "1 minute",
+    static let sim = Tutorial(
+        id: .sim, title: "Practice Real Conversations", estimatedTime: "1 minute",
         steps: [
             TutorialStep(icon: "person.2.wave.2.fill",
                          headline: "Pick your challenge",
@@ -111,7 +111,7 @@ enum TutorialContent {
                          body: "After every session Cyrano breaks down what happened, what worked, what to try differently, and how it connects to your attachment style.",
                          tip: "Start with the Social Butterfly or the Overthinker — they're the most forgiving. Save the Confrontational for when you're ready."),
             // Mode appendix — surfaced in the same overlay so users see all
-            // three modes during their first F2F walkthrough.
+            // three modes during their first The Sim walkthrough.
             TutorialStep(icon: "person.fill",
                          headline: "Single mode",
                          body: "You're meeting a stranger for the first time. Your job: make them want to keep talking to you. Don't perform — be genuinely curious. Silence is okay; rushing to fill it signals insecurity."),
@@ -281,7 +281,7 @@ enum TutorialContent {
                          body: "Presence, Attunement, Repair, Vulnerability, Curiosity, Consistency. Each scored 0-200, tracked over time."),
             TutorialStep(icon: "arrow.up.right",
                          headline: "Built by what you do",
-                         body: "Face to Face sessions raise Curiosity and Attunement. Daily rituals raise Consistency. Voice Trainer raises Presence. The score follows your practice."),
+                         body: "The Sim sessions raise Curiosity and Attunement. Daily rituals raise Consistency. Voice Trainer raises Presence. The score follows your practice."),
             TutorialStep(icon: "lightbulb.fill",
                          headline: "Where you're weakest is where you grow fastest",
                          body: "Your home insight card already tells you which dimension to focus on this week.",

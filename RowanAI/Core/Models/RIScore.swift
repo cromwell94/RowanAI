@@ -8,11 +8,11 @@ import SwiftUI
 // dashboard's activity feed and 30-day chart reflect real movement.
 
 struct RIScore: Codable, Equatable {
-    var presence: Int       // Voice Confidence Trainer + Face to Face Sim engagement
+    var presence: Int       // Voice Confidence Trainer + The Sim engagement
     var attunement: Int     // Reading personality types in sim, lessons, post-date reflection
     var repairScore: Int    // Relationship-mode-only; recovery after conflict
     var vulnerability: Int  // Connection cards, evening debrief depth
-    var curiosity: Int      // Question ratio in Face to Face Sim sessions
+    var curiosity: Int      // Question ratio in The Sim sessions
     var consistency: Int    // Streak, ritual completion, weekly cadence
 
     var total: Int {
@@ -104,7 +104,7 @@ enum RIDimension: String, Codable, CaseIterable, Identifiable {
     var feeders: [String] {
         switch self {
         case .presence:
-            return ["Face to Face Sim sessions", "Voice Confidence Trainer", "First Impression Lab"]
+            return ["The Sim sessions", "Voice Confidence Trainer", "First Impression Lab"]
         case .attunement:
             return ["Reading personalities in Sim", "Sim win conditions", "Post-date reflections", "Body Language reading"]
         case .repair:
@@ -123,15 +123,15 @@ enum RIDimension: String, Codable, CaseIterable, Identifiable {
     var improvementTip: String {
         switch self {
         case .presence:
-            return "Run a Face to Face Sim session. Holding presence under social pressure is the fastest way to build this."
+            return "Run a The Sim session. Holding presence under social pressure is the fastest way to build this."
         case .attunement:
-            return "Try Assessment Mode in Face to Face Sim with any personality and focus on reading the body language signals."
+            return "Try Assessment Mode in The Sim with any personality and focus on reading the body language signals."
         case .repair:
             return "Complete a couples Health Check or run the Hard Conversation Simulator — both feed Repair fast."
         case .vulnerability:
             return "Answer tonight's evening debrief with more than a sentence. Depth feeds this dimension directly."
         case .curiosity:
-            return "Pick the Overthinker in Face to Face Sim and focus on asking follow-up questions tied to what they actually said."
+            return "Pick the Overthinker in The Sim and focus on asking follow-up questions tied to what they actually said."
         case .consistency:
             return "Show up tomorrow. Even a single check-in maintains your streak — the points compound."
         }

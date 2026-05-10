@@ -246,7 +246,7 @@ class Claude {
         Suggestion block format (after the JSON, on its own lines):
         ---
         PATTERN: [the snake_case pattern key from the list above]
-        EXERCISE: [exercise name in feature, e.g. "Face to Face Sim · Overthinker"]
+        EXERCISE: [exercise name in feature, e.g. "The Sim · Overthinker"]
         BLURB: [one sentence — warm, specific, never pushy]
         """
 

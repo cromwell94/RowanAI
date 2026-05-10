@@ -7,7 +7,7 @@ import SwiftUI
 
 enum ArcDestination: Hashable {
     // Primary
-    case home, archive, cyrano, faceToFaceSim, relationship
+    case home, archive, cyrano, sim, relationship
     // Secondary
     case datePlanner, communicationLab, debrief, profile
 
@@ -16,7 +16,7 @@ enum ArcDestination: Hashable {
         case .home:             return "house.fill"
         case .archive:          return "person.2.fill"
         case .cyrano:           return "sparkles"
-        case .faceToFaceSim:    return "bubble.left.and.bubble.right.fill"
+        case .sim:    return "bubble.left.and.bubble.right.fill"
         case .relationship:     return "heart.fill"
         case .datePlanner:      return "map.fill"
         case .communicationLab: return "book.fill"
@@ -30,7 +30,7 @@ enum ArcDestination: Hashable {
         case .home:             return "Home"
         case .archive:          return "Archive"
         case .cyrano:           return "Cyrano"
-        case .faceToFaceSim:    return "Face to Face"
+        case .sim:    return "The Sim"
         case .relationship:     return "Relationship"
         case .datePlanner:      return "Planner"
         case .communicationLab: return "Coach"
@@ -55,7 +55,7 @@ struct ArcMainView: View {
         let isRel = auth.currentUser?.relationshipStatus == .relationship
         let archiveSlot: ArcDestination? = isRel ? nil : .archive
         let relSlot: ArcDestination? = isRel ? .relationship : nil
-        return [archiveSlot, .cyrano, .home, .faceToFaceSim, relSlot]
+        return [archiveSlot, .cyrano, .home, .sim, relSlot]
     }
 
     private var secondarySlots: [ArcDestination] {
@@ -123,7 +123,7 @@ struct ArcMainView: View {
         case .home:             ArcHomeView(arcGoTo: { setDestination($0) })
         case .archive:          ArchiveView()
         case .cyrano:           CyranoView()
-        case .faceToFaceSim:    FaceToFaceSimView()
+        case .sim:    SimView()
         case .relationship:     RelationshipView()
         case .datePlanner:      DatePlannerView()
         case .communicationLab: NavigationView { CommunicationLabView() }
@@ -507,9 +507,9 @@ struct ArcHomeView: View {
                             subtitle: "Craft a reply that lands",
                             tint: .rwAccent) { arcGoTo(.cyrano) }
                 RWQuickTile(icon: "person.2.wave.2.fill",
-                            title: "Face to Face",
+                            title: "The Sim",
                             subtitle: "Practice a real conversation",
-                            tint: Color(hex: "9B59B6")) { arcGoTo(.faceToFaceSim) }
+                            tint: Color(hex: "9B59B6")) { arcGoTo(.sim) }
                 if isInRelationship {
                     RWQuickTile(icon: "heart.fill",
                                 title: "Relationship",

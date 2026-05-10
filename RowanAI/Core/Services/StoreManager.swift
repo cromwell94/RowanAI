@@ -554,7 +554,7 @@ struct PaywallView: View {
             case .repliesLimit:  return "You've used your \(StoreManager.freeRepliesPerDay) free replies today."
             case .debriefLimit:  return "You've used your \(StoreManager.freeDebriefsPerMonth) free debriefs this month."
             case .archiveLimit:  return "You've reached the \(StoreManager.freeArchiveLimit)-connection free limit."
-            case .simLimit:      return "You've used your \(StoreManager.freeSimSessionsPerWeek) free Face to Face sessions this week."
+            case .simLimit:      return "You've used your \(StoreManager.freeSimSessionsPerWeek) free The Sim sessions this week."
             case .practiceLimit: return "Practice Mode is a Pro feature."
             case .fillMeInLimit: return "You've used your \(StoreManager.freeFillMeInsPerWeek) free Fill Me In analyses this week."
             case .profilePhotoLimit:  return "You've used your \(StoreManager.freeProfilePhotosPerWeek) free photo analyses this week."
@@ -570,7 +570,7 @@ struct PaywallView: View {
             case .repliesLimit:  return "Go Pro for unlimited Cyrano coaching — every day."
             case .debriefLimit:  return "Pro gives you unlimited Date Debriefs every month."
             case .archiveLimit:  return "Pro lets you track unlimited connections."
-            case .simLimit:      return "Pro unlocks unlimited Face to Face Sim sessions, every avatar, and every environment."
+            case .simLimit:      return "Pro unlocks unlimited The Sim sessions, every avatar, and every environment."
             case .practiceLimit: return "Practice real scenarios with Cyrano as your partner."
             case .fillMeInLimit: return "Pro unlocks unlimited Fill Me In coaching, every week."
             case .profilePhotoLimit, .profilePromptLimit, .profileBioLimit, .profileOpenerLimit:
