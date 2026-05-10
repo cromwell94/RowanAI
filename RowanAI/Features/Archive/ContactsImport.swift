@@ -23,7 +23,13 @@ final class ContactsImportService {
 
     /// The keys we read for each contact. Kept tight so the fetch stays fast
     /// even on devices with thousands of contacts.
-    private static let keysToFetch: [CNKeyDescriptor] = [
+    ///
+    /// `nonisolated(unsafe)` because the surrounding class is @MainActor but
+    /// this constant is read from `Task.detached` blocks below — and Apple's
+    /// CNKeyDescriptor type isn't formally Sendable, so plain `nonisolated`
+    /// trips Swift 6 strict checks. The data is an immutable static let, so
+    /// the unsafe escape is safe in practice.
+    nonisolated(unsafe) private static let keysToFetch: [CNKeyDescriptor] = [
         CNContactIdentifierKey,
         CNContactGivenNameKey,
         CNContactFamilyNameKey,

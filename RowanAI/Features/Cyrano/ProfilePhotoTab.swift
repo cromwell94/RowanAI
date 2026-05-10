@@ -82,7 +82,11 @@ struct ProfilePhotoTab: View {
     }
 
     private var pickerButton: some View {
-        PhotosPicker(
+        // Capture the label text in the @MainActor view body so the
+        // PhotosPicker label closure (which Swift treats as nonisolated)
+        // doesn't have to reach back into store.uploadedPhotos directly.
+        let labelText = store.uploadedPhotos.isEmpty ? "Add photos" : "Replace photos"
+        return PhotosPicker(
             selection: $picks,
             maxSelectionCount: 6,
             matching: .images,
@@ -91,7 +95,7 @@ struct ProfilePhotoTab: View {
             HStack(spacing: 8) {
                 Image(systemName: "photo.badge.plus.fill")
                     .font(.system(size: 14, weight: .semibold, design: .rounded))
-                Text(store.uploadedPhotos.isEmpty ? "Add photos" : "Replace photos")
+                Text(labelText)
                     .font(RWF.med(15))
             }
             .foregroundColor(.white)

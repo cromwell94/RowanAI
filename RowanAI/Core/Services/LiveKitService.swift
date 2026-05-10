@@ -109,7 +109,7 @@ final class LiveKitService: NSObject {
 
     func setMicrophoneEnabled(_ enabled: Bool) async {
         isLocalAudioEnabled = enabled
-        try? await room?.localParticipant.setMicrophone(enabled: enabled)
+        _ = try? await room?.localParticipant.setMicrophone(enabled: enabled)
     }
 
     static func simRoomName(avatarID: String, userID: String) -> String {

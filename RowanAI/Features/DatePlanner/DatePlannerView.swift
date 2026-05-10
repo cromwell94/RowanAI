@@ -454,21 +454,26 @@ struct DatePlannerView: View {
 // Stable id derived from coordinate + name so SwiftUI ForEach keeps identity
 // across re-renders (lets us track pin selection reliably).
 
+// The whole struct opts out of the project's default MainActor isolation
+// because instances are constructed inside withTaskGroup-spawned tasks
+// (`resolveAll` further down) that run on the cooperative pool. Stored
+// properties are immutable and only touch `MKMapItem` placemark data, which
+// is safe to read off-main.
 struct IdentifiableMapItem: Identifiable, Hashable {
-    let id: String
-    let item: MKMapItem
+    nonisolated let id: String
+    nonisolated(unsafe) let item: MKMapItem
 
-    init(_ item: MKMapItem) {
+    nonisolated init(_ item: MKMapItem) {
         let lat = item.placemark.coordinate.latitude
         let lng = item.placemark.coordinate.longitude
         self.id  = "\(lat),\(lng)|\(item.name ?? "")"
         self.item = item
     }
 
-    var coordinate: CLLocationCoordinate2D { item.placemark.coordinate }
+    nonisolated var coordinate: CLLocationCoordinate2D { item.placemark.coordinate }
 
-    static func == (lhs: IdentifiableMapItem, rhs: IdentifiableMapItem) -> Bool { lhs.id == rhs.id }
-    func hash(into hasher: inout Hasher) { hasher.combine(id) }
+    nonisolated static func == (lhs: IdentifiableMapItem, rhs: IdentifiableMapItem) -> Bool { lhs.id == rhs.id }
+    nonisolated func hash(into hasher: inout Hasher) { hasher.combine(id) }
 }
 
 // MARK: - Explore Map
