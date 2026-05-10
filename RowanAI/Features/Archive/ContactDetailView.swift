@@ -1869,7 +1869,12 @@ struct IntelPhotoFullscreen: View {
             Color.black.ignoresSafeArea()
             TabView(selection: $index) {
                 ForEach(Array(urls.enumerated()), id: \.element) { i, url in
-                    FullscreenPhoto(url: url).tag(i)
+                    // Only the current page and its two neighbours decode.
+                    // Without this, TabView's eager page materialisation hits
+                    // disk for every photo on open — guaranteed beachball with
+                    // 30+ images in a single contact's intel gallery.
+                    FullscreenPhoto(url: url, shouldLoad: abs(i - index) <= 1)
+                        .tag(i)
                 }
             }
             .tabViewStyle(.page(indexDisplayMode: .automatic))
@@ -1896,6 +1901,7 @@ struct IntelPhotoFullscreen: View {
 
 private struct FullscreenPhoto: View {
     let url: URL
+    let shouldLoad: Bool
     @State private var image: UIImage? = nil
 
     var body: some View {
@@ -1905,7 +1911,7 @@ private struct FullscreenPhoto: View {
                 Image(uiImage: image)
                     .resizable()
                     .scaledToFit()
-            } else {
+            } else if shouldLoad {
                 ProgressView().tint(.white)
             }
             // Caption overlay if one exists.
@@ -1921,7 +1927,10 @@ private struct FullscreenPhoto: View {
                     .fixedSize(horizontal: false, vertical: true)
             }
         }
-        .task(id: url) {
+        // Re-fires whenever shouldLoad flips true — handles the case where a
+        // far-away page becomes adjacent as the user swipes.
+        .task(id: "\(url.path)-\(shouldLoad)") {
+            guard shouldLoad, image == nil else { return }
             let loaded = await Task.detached(priority: .userInitiated) {
                 guard let data = try? Data(contentsOf: url) else { return UIImage?.none }
                 return UIImage(data: data)

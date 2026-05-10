@@ -51,12 +51,17 @@ final class LiveKitService: NSObject {
             throw LiveKitServiceError.tokenFetchFailed
         }
 
-        guard let json = try JSONSerialization.jsonObject(with: data) as? [String: Any],
-              let token = json["token"] as? String,
-              let livekitURL = json["url"] as? String else {
+        do {
+            let parsed = try JSONDecoder().decode(TokenResponse.self, from: data)
+            return (parsed.token, parsed.url)
+        } catch {
             throw LiveKitServiceError.invalidResponse
         }
-        return (token, livekitURL)
+    }
+
+    private struct TokenResponse: Codable {
+        let token: String
+        let url: String
     }
 
     func connect(roomName: String, displayName: String) async {

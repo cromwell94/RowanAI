@@ -95,6 +95,30 @@ final class RelationshipAnalysisService {
         case underlying(Error)
     }
 
+    /// Coalesces in-flight auto-triggers per contactID. Without this, five
+    /// rapid message adds can fire five concurrent Claude calls for the same
+    /// contact (the cooldown check passes for all of them since no analysis
+    /// has been recorded yet). The actor serialises cancel-then-replace so
+    /// only the latest request survives.
+    private actor TaskTracker {
+        private var inFlight: [String: Task<Void, Never>] = [:]
+
+        func scheduleCoalesced(contactID: String,
+                               work: @escaping @Sendable () async -> Void) {
+            inFlight[contactID]?.cancel()
+            let task = Task<Void, Never> { [weak self] in
+                await work()
+                await self?.clear(contactID: contactID)
+            }
+            inFlight[contactID] = task
+        }
+
+        private func clear(contactID: String) {
+            inFlight.removeValue(forKey: contactID)
+        }
+    }
+    private let tracker = TaskTracker()
+
     /// Whether enough data exists for a meaningful analysis. The Overview card
     /// uses this to decide between the empty-state copy and a real analysis.
     static func hasEnoughData(for contact: Person) -> Bool {
@@ -113,11 +137,19 @@ final class RelationshipAnalysisService {
     // MARK: - Triggers
 
     /// Auto-trigger called by ChatThreadStore mutations, date logging, etc.
-    /// Honors the cooldown; safe to spam from many call sites.
+    /// Honors the cooldown; safe to spam from many call sites — the tracker
+    /// cancels any in-flight request for the same contact before starting a
+    /// new one.
     func generateIfNeeded(for contact: Person) {
         guard !isOnCooldown(contactID: contact.id) else { return }
         guard Self.hasEnoughData(for: contact) else { return }
-        Task { _ = try? await generate(for: contact, force: false) }
+        let id = contact.id
+        Task { [tracker] in
+            await tracker.scheduleCoalesced(contactID: id) { [weak self] in
+                guard let self else { return }
+                _ = try? await self.generate(for: contact, force: false)
+            }
+        }
     }
 
     /// Manual refresh — always runs regardless of cooldown. Used by the

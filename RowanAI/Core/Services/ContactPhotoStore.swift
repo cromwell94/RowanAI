@@ -12,6 +12,12 @@ struct ContactPhotoStore {
     static let shared = ContactPhotoStore()
     private init() {}
 
+    // In-memory caches. NSCache is thread-safe and self-evicts under memory
+    // pressure — exactly what we want for avatar thumbnails and per-contact
+    // intel photo counts that ArchiveView reads on every scroll.
+    private static let imageCache = NSCache<NSString, UIImage>()
+    private static let countCache = NSCache<NSString, NSNumber>()
+
     private var documentsDirectory: URL {
         FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]
     }
@@ -22,10 +28,38 @@ struct ContactPhotoStore {
         documentsDirectory.appendingPathComponent("contact_photo_\(contactID).jpg")
     }
 
+    /// Synchronous load — only used internally and by callers that already
+    /// know they're off the main thread. View code should use the async
+    /// variant below to avoid blocking the main actor on JPEG decode.
     func loadProfilePhoto(contactID: String) -> UIImage? {
+        let key = contactID as NSString
+        if let cached = Self.imageCache.object(forKey: key) {
+            return cached
+        }
         let url = profilePhotoURL(contactID: contactID)
-        guard let data = try? Data(contentsOf: url) else { return nil }
-        return UIImage(data: data)
+        guard let data = try? Data(contentsOf: url),
+              let image = UIImage(data: data) else { return nil }
+        Self.imageCache.setObject(image, forKey: key)
+        return image
+    }
+
+    /// Async variant — checks the in-memory cache on the calling actor, falls
+    /// back to a detached background task for the disk read + JPEG decode.
+    /// Use this from any SwiftUI `.task` running on the MainActor.
+    func loadProfilePhotoAsync(contactID: String) async -> UIImage? {
+        let key = contactID as NSString
+        if let cached = Self.imageCache.object(forKey: key) {
+            return cached
+        }
+        let url = profilePhotoURL(contactID: contactID)
+        let image = await Task.detached(priority: .userInitiated) { () -> UIImage? in
+            guard let data = try? Data(contentsOf: url) else { return nil }
+            return UIImage(data: data)
+        }.value
+        if let image {
+            Self.imageCache.setObject(image, forKey: key)
+        }
+        return image
     }
 
     @discardableResult
@@ -34,6 +68,8 @@ struct ContactPhotoStore {
         let url = profilePhotoURL(contactID: contactID)
         do {
             try data.write(to: url, options: [.atomic, .completeFileProtection])
+            // Update cache immediately so the next read sees the new photo.
+            Self.imageCache.setObject(image, forKey: contactID as NSString)
             return true
         } catch {
             return false
@@ -42,6 +78,7 @@ struct ContactPhotoStore {
 
     func deleteProfilePhoto(contactID: String) {
         try? FileManager.default.removeItem(at: profilePhotoURL(contactID: contactID))
+        Self.imageCache.removeObject(forKey: contactID as NSString)
     }
 
     // MARK: Intel gallery
@@ -70,6 +107,7 @@ struct ContactPhotoStore {
         do {
             try data.write(to: url, options: [.atomic, .completeFileProtection])
             recordNewPhoto(url: url, contactID: contactID)
+            Self.countCache.removeObject(forKey: contactID as NSString)
             return url
         } catch {
             return nil
@@ -83,13 +121,24 @@ struct ContactPhotoStore {
             var meta = loadMeta(contactID: contactID)
             meta.captions.removeValue(forKey: url.lastPathComponent)
             saveMeta(meta, contactID: contactID)
+            Self.countCache.removeObject(forKey: contactID as NSString)
         }
     }
 
     // MARK: Counts
 
+    /// Cached count — backed by an in-memory NSCache so that ArchiveView's
+    /// per-row `RowCard.photoCount` doesn't enumerate the documents directory
+    /// on every scroll. Invalidated by saveIntelPhoto / deleteIntelPhoto /
+    /// deleteAllPhotos.
     func intelPhotoCount(contactID: String) -> Int {
-        intelPhotoURLs(contactID: contactID).count
+        let key = contactID as NSString
+        if let cached = Self.countCache.object(forKey: key) {
+            return cached.intValue
+        }
+        let count = intelPhotoURLs(contactID: contactID).count
+        Self.countCache.setObject(NSNumber(value: count), forKey: key)
+        return count
     }
 
     func hasAnyPhotos(contactID: String) -> Bool {
@@ -107,6 +156,7 @@ struct ContactPhotoStore {
         // Remove sidecar caption metadata.
         let metaURL = metaFileURL(contactID: contactID)
         try? FileManager.default.removeItem(at: metaURL)
+        Self.countCache.removeObject(forKey: contactID as NSString)
     }
 
     // MARK: - Caption metadata

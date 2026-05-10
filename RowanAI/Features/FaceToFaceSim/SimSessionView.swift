@@ -285,7 +285,7 @@ struct SimSessionView: View {
     private var transcript: some View {
         ScrollViewReader { proxy in
             ScrollView(showsIndicators: false) {
-                VStack(spacing: 10) {
+                LazyVStack(spacing: 10) {
                     ForEach(messages) { msg in
                         bubble(msg)
                             .id(msg.id)
@@ -728,6 +728,7 @@ private struct InterruptionBanner: View {
 private struct TypingIndicator: View {
     let color: Color
     @State private var phase = 0
+    @State private var cancellable: AnyCancellable?
     var body: some View {
         HStack(spacing: 5) {
             ForEach(0..<3) { i in
@@ -740,9 +741,15 @@ private struct TypingIndicator: View {
         .clipShape(Capsule())
         .overlay(Capsule().stroke(Color.white.opacity(0.12), lineWidth: 1))
         .onAppear {
-            Timer.scheduledTimer(withTimeInterval: 0.35, repeats: true) { _ in
-                phase = (phase + 1) % 3
-            }
+            cancellable = Timer.publish(every: 0.35, on: .main, in: .common)
+                .autoconnect()
+                .sink { _ in
+                    phase = (phase + 1) % 3
+                }
+        }
+        .onDisappear {
+            cancellable?.cancel()
+            cancellable = nil
         }
     }
 }
@@ -756,6 +763,7 @@ struct AvatarWaveform: View {
     let active: Bool
     let color: Color
     @State private var phase = 0
+    @State private var cancellable: AnyCancellable?
     private let bars = 5
     // Pseudo-random heights per bar, 0..1. Same seeds → same rhythm each tick.
     private let amplitudes: [[CGFloat]] = [
@@ -779,9 +787,15 @@ struct AvatarWaveform: View {
         .animation(.easeInOut(duration: 0.18), value: phase)
         .animation(.easeOut(duration: 0.25), value: active)
         .onAppear {
-            Timer.scheduledTimer(withTimeInterval: 0.16, repeats: true) { _ in
-                Task { @MainActor in phase = (phase + 1) % amplitudes.count }
-            }
+            cancellable = Timer.publish(every: 0.16, on: .main, in: .common)
+                .autoconnect()
+                .sink { _ in
+                    phase = (phase + 1) % amplitudes.count
+                }
+        }
+        .onDisappear {
+            cancellable?.cancel()
+            cancellable = nil
         }
     }
 

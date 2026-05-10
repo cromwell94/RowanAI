@@ -43,7 +43,7 @@ struct ContactAvatar: View {
         }
         .frame(width: size, height: size)
         .task(id: "\(person.id)-\(version)") {
-            image = ContactPhotoStore.shared.loadProfilePhoto(contactID: person.id)
+            image = await ContactPhotoStore.shared.loadProfilePhotoAsync(contactID: person.id)
         }
     }
 }

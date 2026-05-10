@@ -232,9 +232,11 @@ struct ConversationsTabContent: View {
                     .background(Color.rwSurface)
                     .clipShape(RoundedRectangle(cornerRadius: RR.lg))
             } else {
-                ForEach(thread.messages) { message in
-                    MessageBubble(message: message,
-                                  showPlatformBadge: false)
+                LazyVStack(spacing: 8) {
+                    ForEach(thread.messages) { message in
+                        MessageBubble(message: message,
+                                      showPlatformBadge: false)
+                    }
                 }
             }
 

@@ -352,18 +352,29 @@ class AuthService {
 
     init() { load() }
 
-    func save(_ user: RWUser) {
+    /// Persists the user profile to Keychain. Returns true on success.
+    /// Callers (Onboarding finish, profile edit) should observe the result
+    /// and surface an alert if false — silent save failures are the worst
+    /// kind of bug.
+    @discardableResult
+    func save(_ user: RWUser) -> Bool {
         currentUser = user
-        if let data = try? JSONEncoder().encode(user) {
-            Keychain.setData(data, key: userKey)
-            UserDefaults.standard.removeObject(forKey: "user") // Remove legacy plaintext copy
+        guard let data = try? JSONEncoder().encode(user) else {
+            #if DEBUG
+            print("⚠️ AuthService.save: JSON encode failed")
+            #endif
+            return false
         }
+        let ok = Keychain.setData(data, key: userKey)
+        UserDefaults.standard.removeObject(forKey: "user") // Remove legacy plaintext copy
+        return ok
     }
 
-    func update(_ block: (inout RWUser) -> Void) {
-        guard var u = currentUser else { return }
+    @discardableResult
+    func update(_ block: (inout RWUser) -> Void) -> Bool {
+        guard var u = currentUser else { return false }
         block(&u)
-        save(u)
+        return save(u)
     }
 
     private func load() {
@@ -658,21 +669,41 @@ class ArchiveStore {
             .appendingPathComponent("archive_v1.json")
     }
 
-    init() { load() }
+    // Decode happens off the main thread on first launch. The app renders
+    // immediately with `people = []`; the populated array lands on the main
+    // actor a beat later, and SwiftUI re-renders via @Observable.
+    init() {
+        Task { await load() }
+    }
 
-    func load() {
-        // One-time migration: move UserDefaults data to encrypted file storage
-        if !FileManager.default.fileExists(atPath: fileURL.path),
-           let data = UserDefaults.standard.data(forKey: key),
-           let stored = try? JSONDecoder().decode([Person].self, from: data) {
-            people = stored
-            save()
-            UserDefaults.standard.removeObject(forKey: key)
-            return
+    func load() async {
+        let url = fileURL
+        let migrationKey = key
+
+        struct LoadResult {
+            let people: [Person]
+            let migratedFromUserDefaults: Bool
         }
-        guard let data = try? Data(contentsOf: fileURL),
-              let stored = try? JSONDecoder().decode([Person].self, from: data) else { return }
-        people = stored
+
+        let result = await Task.detached(priority: .userInitiated) { () -> LoadResult in
+            if !FileManager.default.fileExists(atPath: url.path),
+               let data = UserDefaults.standard.data(forKey: migrationKey),
+               let stored = try? JSONDecoder().decode([Person].self, from: data) {
+                return LoadResult(people: stored, migratedFromUserDefaults: true)
+            }
+            guard let data = try? Data(contentsOf: url),
+                  let stored = try? JSONDecoder().decode([Person].self, from: data)
+            else {
+                return LoadResult(people: [], migratedFromUserDefaults: false)
+            }
+            return LoadResult(people: stored, migratedFromUserDefaults: false)
+        }.value
+
+        await MainActor.run { self.people = result.people }
+        if result.migratedFromUserDefaults {
+            save()
+            UserDefaults.standard.removeObject(forKey: migrationKey)
+        }
     }
 
     func save() {
@@ -788,21 +819,39 @@ class DebriefStore {
             .appendingPathComponent("debriefs_v1.json")
     }
 
-    init() { load() }
+    // Decode runs off the main thread; SwiftUI re-renders when data lands.
+    init() {
+        Task { await load() }
+    }
 
-    func load() {
-        // One-time migration: move UserDefaults data to encrypted file storage
-        if !FileManager.default.fileExists(atPath: fileURL.path),
-           let data = UserDefaults.standard.data(forKey: key),
-           let stored = try? JSONDecoder().decode([DateDebrief].self, from: data) {
-            debriefs = stored
-            save()
-            UserDefaults.standard.removeObject(forKey: key)
-            return
+    func load() async {
+        let url = fileURL
+        let migrationKey = key
+
+        struct LoadResult {
+            let debriefs: [DateDebrief]
+            let migratedFromUserDefaults: Bool
         }
-        guard let data = try? Data(contentsOf: fileURL),
-              let stored = try? JSONDecoder().decode([DateDebrief].self, from: data) else { return }
-        debriefs = stored
+
+        let result = await Task.detached(priority: .userInitiated) { () -> LoadResult in
+            if !FileManager.default.fileExists(atPath: url.path),
+               let data = UserDefaults.standard.data(forKey: migrationKey),
+               let stored = try? JSONDecoder().decode([DateDebrief].self, from: data) {
+                return LoadResult(debriefs: stored, migratedFromUserDefaults: true)
+            }
+            guard let data = try? Data(contentsOf: url),
+                  let stored = try? JSONDecoder().decode([DateDebrief].self, from: data)
+            else {
+                return LoadResult(debriefs: [], migratedFromUserDefaults: false)
+            }
+            return LoadResult(debriefs: stored, migratedFromUserDefaults: false)
+        }.value
+
+        await MainActor.run { self.debriefs = result.debriefs }
+        if result.migratedFromUserDefaults {
+            save()
+            UserDefaults.standard.removeObject(forKey: migrationKey)
+        }
     }
 
     func save() {
@@ -820,7 +869,8 @@ struct Keychain {
 
     // MARK: String helpers
 
-    static func set(_ value: String, key: String) {
+    @discardableResult
+    static func set(_ value: String, key: String) -> Bool {
         setData(Data(value.utf8), key: key)
     }
 
@@ -831,7 +881,12 @@ struct Keychain {
 
     // MARK: Data helpers (for Codable structs)
 
-    static func setData(_ value: Data, key: String) {
+    /// Returns true on successful add. Callers should surface a UI failure
+    /// (toast/alert) when this returns false — the most common cause is a
+    /// post-restore `errSecAuthFailed`, where the user thinks they saved a
+    /// profile change that never persisted.
+    @discardableResult
+    static func setData(_ value: Data, key: String) -> Bool {
         let query: [String: Any] = [
             kSecClass as String:          kSecClassGenericPassword,
             kSecAttrService as String:    service,
@@ -841,7 +896,14 @@ struct Keychain {
             kSecAttrAccessible as String: kSecAttrAccessibleWhenUnlockedThisDeviceOnly
         ]
         SecItemDelete(query as CFDictionary)
-        SecItemAdd(query as CFDictionary, nil)
+        let status = SecItemAdd(query as CFDictionary, nil)
+        if status != errSecSuccess {
+            #if DEBUG
+            print("⚠️ Keychain.setData failed for key=\(key) — OSStatus \(status)")
+            #endif
+            return false
+        }
+        return true
     }
 
     static func getData(_ key: String) -> Data? {

@@ -642,21 +642,32 @@ struct CrisisQuickAccess: View {
 struct CrisisRow: View {
     let icon: String; let title: String; let sub: String; let url: String; let color: Color
     var body: some View {
-        Link(destination: URL(string: url)!) {
-            HStack(spacing: 12) {
-                Image(systemName: icon).font(.system(size: 13, weight: .semibold, design: .rounded))
-                    .foregroundColor(color).frame(width: 32, height: 32)
-                    .background(color.opacity(0.1)).clipShape(Circle())
-                VStack(alignment: .leading, spacing: 1) {
-                    Text(title).font(RWF.med(13)).foregroundColor(.rwTextPrimary)
-                    Text(sub).font(RWF.cap(11)).foregroundColor(.rwTextSecondary)
-                }
-                Spacer()
-                Image(systemName: "arrow.up.right").font(.system(size: 11, design: .rounded)).foregroundColor(.rwTextMuted)
+        // Crisis surface — never force-unwrap. If the URL is malformed for any
+        // reason we render a non-tappable row so the user still sees the number
+        // they can dial manually.
+        Group {
+            if let dest = URL(string: url) {
+                Link(destination: dest) { rowContent }
+                    .buttonStyle(SBS())
+            } else {
+                rowContent
             }
-            .padding(SP.sm).background(Color.rwCard)
-            .clipShape(RoundedRectangle(cornerRadius: RR.lg))
         }
-        .buttonStyle(SBS())
+    }
+
+    private var rowContent: some View {
+        HStack(spacing: 12) {
+            Image(systemName: icon).font(.system(size: 13, weight: .semibold, design: .rounded))
+                .foregroundColor(color).frame(width: 32, height: 32)
+                .background(color.opacity(0.1)).clipShape(Circle())
+            VStack(alignment: .leading, spacing: 1) {
+                Text(title).font(RWF.med(13)).foregroundColor(.rwTextPrimary)
+                Text(sub).font(RWF.cap(11)).foregroundColor(.rwTextSecondary)
+            }
+            Spacer()
+            Image(systemName: "arrow.up.right").font(.system(size: 11, design: .rounded)).foregroundColor(.rwTextMuted)
+        }
+        .padding(SP.sm).background(Color.rwCard)
+        .clipShape(RoundedRectangle(cornerRadius: RR.lg))
     }
 }
