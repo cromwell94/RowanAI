@@ -80,7 +80,9 @@ struct DebriefRow: View {
                     .padding(.horizontal, 9).padding(.vertical, 4)
                     .background(a.recommendation.color.opacity(0.12)).clipShape(Capsule())
             }
-            Image(systemName: "chevron.right").font(.system(size: 12, weight: .semibold, design: .rounded)).foregroundColor(.rwTextMuted)
+            Image(systemName: "chevron.right")
+                                .font(.system(size: 13, weight: .semibold, design: .rounded))
+                                .foregroundColor(.rwTextMuted).font(.system(size: 12, weight: .semibold, design: .rounded)).foregroundColor(.rwTextMuted)
         }
         .padding(SP.md).background(Color.rwCard)
         .clipShape(RoundedRectangle(cornerRadius: RR.xl))

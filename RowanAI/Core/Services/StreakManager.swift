@@ -241,6 +241,7 @@ struct StreakCard: View {
                     Image(systemName: streak.isStreakActive() ? "flame.fill" : "moon.zzz.fill")
                         .font(.system(size: 28, design: .rounded))
                         .foregroundColor(streak.isStreakActive() ? Color(hex: "F59E0B") : .rwTextMuted)
+                        .symbolEffect(.bounce, options: .nonRepeating, value: streak.currentStreak)
                     Text("\(streak.currentStreak)")
                         .font(RWF.display(18))
                         .foregroundColor(streak.isStreakActive() ? Color(hex: "F59E0B") : .rwTextMuted)
@@ -280,7 +281,9 @@ struct StreakCard: View {
                 }
 
                 Spacer()
-                Image(systemName: "chevron.right").foregroundColor(.rwTextMuted).font(.system(size: 12, design: .rounded))
+                Image(systemName: "chevron.right")
+                                .font(.system(size: 13, weight: .semibold, design: .rounded))
+                                .foregroundColor(.rwTextMuted)
             }
             .padding(SP.md).background(Color.rwCard)
             .clipShape(RoundedRectangle(cornerRadius: RR.xl))
@@ -350,6 +353,7 @@ struct WeeklyInsightsView: View {
                             Image(systemName: streak.isStreakActive() ? "flame.fill" : "moon.zzz.fill")
                                 .font(.system(size: 36, design: .rounded))
                                 .foregroundColor(streak.isStreakActive() ? Color(hex: "F59E0B") : .rwTextMuted)
+                                .symbolEffect(.bounce, options: .nonRepeating, value: streak.currentStreak)
                             Text("\(streak.currentStreak)").font(RWF.display(28)).foregroundColor(.rwTextPrimary)
                             Text("Day Streak").font(RWF.cap()).foregroundColor(.rwTextSecondary)
                         }
@@ -358,6 +362,7 @@ struct WeeklyInsightsView: View {
                             Image(systemName: "trophy.fill")
                                 .font(.system(size: 36, design: .rounded))
                                 .foregroundColor(Color(hex: "F59E0B"))
+                                .symbolEffect(.bounce, options: .nonRepeating, value: streak.longestStreak)
                             Text("\(streak.longestStreak)").font(RWF.display(28)).foregroundColor(.rwTextPrimary)
                             Text("Best Streak").font(RWF.cap()).foregroundColor(.rwTextSecondary)
                         }
@@ -459,7 +464,9 @@ struct ProNudge: View {
                     Text("Unlimited coaching, all scenarios, weekly insights.").font(RWF.body(13)).foregroundColor(.rwTextSecondary)
                 }
                 Spacer()
-                Image(systemName: "chevron.right").foregroundColor(.rwTextMuted)
+                Image(systemName: "chevron.right")
+                                .font(.system(size: 13, weight: .semibold, design: .rounded))
+                                .foregroundColor(.rwTextMuted)
             }
             .padding(SP.md).background(Color.rwSurface)
             .clipShape(RoundedRectangle(cornerRadius: RR.xl))

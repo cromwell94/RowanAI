@@ -22,13 +22,10 @@ struct CommunicationLabView: View {
             VStack(spacing: SP.lg) {
 
                 // Header
-                VStack(alignment: .leading, spacing: 8) {
-                    Text("Communication\nLab").font(RWF.display(30)).foregroundColor(.rwTextPrimary)
-                    Text("Learn what actually makes conversations connect — then practice it safely before it counts.")
-                        .font(RWF.body()).foregroundColor(.rwTextSecondary)
-                }
-                .frame(maxWidth: .infinity, alignment: .leading)
-                .staggerAppear(0, appeared: on)
+                RWPageHeader("Communication Lab",
+                             subtitle: "Learn what actually makes conversations connect — then practice it safely before it counts.",
+                             topPadding: 0)
+                    .staggerAppear(0, appeared: on)
 
                 // Free taste banner
                 if !store.isPro {
@@ -133,7 +130,9 @@ struct LabFeatureCard: View {
                         .fixedSize(horizontal: false, vertical: true)
                 }
                 Spacer(minLength: 0)
-                Image(systemName: "chevron.right").foregroundColor(.rwTextMuted).padding(.top, 16)
+                Image(systemName: "chevron.right")
+                                .font(.system(size: 13, weight: .semibold, design: .rounded))
+                                .foregroundColor(.rwTextMuted).padding(.top, 16)
             }
             .padding(SP.lg).background(Color.rwCard)
             .clipShape(RoundedRectangle(cornerRadius: RR.xl))
@@ -483,12 +482,20 @@ struct LabLessonsView: View {
                             }
                             VStack(spacing: 8) {
                                 ForEach(mod.lessons) { lesson in
-                                    if lesson.isFree || store.isPro {
-                                        Button { selected = lesson } label: { LessonRow(lesson: lesson, locked: false) }
-                                            .buttonStyle(SBS())
-                                    } else {
-                                        Button { showPaywall = true } label: { LessonRow(lesson: lesson, locked: true) }
-                                            .buttonStyle(SBS())
+                                    Group {
+                                        if lesson.isFree || store.isPro {
+                                            Button { selected = lesson } label: { LessonRow(lesson: lesson, locked: false) }
+                                                .buttonStyle(SBS())
+                                        } else {
+                                            Button { showPaywall = true } label: { LessonRow(lesson: lesson, locked: true) }
+                                                .buttonStyle(SBS())
+                                        }
+                                    }
+                                    .scrollTransition { content, phase in
+                                        content
+                                            .opacity(phase.isIdentity ? 1 : 0)
+                                            .scaleEffect(phase.isIdentity ? 1 : 0.95)
+                                            .offset(y: phase.isIdentity ? 0 : 8)
                                     }
                                 }
                             }
@@ -648,7 +655,9 @@ struct LessonDetailView2: View {
                                     Image(systemName: "eye.fill").font(.system(size: 13, design: .rounded))
                                     Text("Tap to reveal answer").font(RWF.med(14))
                                     Spacer()
-                                    Image(systemName: "chevron.right").font(.system(size: 12, design: .rounded))
+                                    Image(systemName: "chevron.right")
+                                .font(.system(size: 13, weight: .semibold, design: .rounded))
+                                .foregroundColor(.rwTextMuted)
                                 }
                                 .foregroundColor(.rwAccent)
                                 .padding(SP.md)
@@ -941,7 +950,9 @@ struct LabSimulatorView: View {
                         Image(systemName: "lock.fill").foregroundStyle(LinearGradient.accent)
                         Text("Go Pro to keep practicing").font(RWF.med()).foregroundColor(.rwTextPrimary)
                         Spacer()
-                        Image(systemName: "chevron.right").foregroundColor(.rwTextMuted)
+                        Image(systemName: "chevron.right")
+                                .font(.system(size: 13, weight: .semibold, design: .rounded))
+                                .foregroundColor(.rwTextMuted)
                     }
                     .padding(.horizontal, SP.lg).padding(.vertical, 16)
                 }
@@ -992,7 +1003,9 @@ struct LabSimulatorView: View {
                                         Image(systemName: "lock.fill").foregroundStyle(LinearGradient.accent)
                                         Text("Go Pro for the full debrief").font(RWF.med(14)).foregroundColor(.rwTextPrimary)
                                         Spacer()
-                                        Image(systemName: "chevron.right").foregroundColor(.rwTextMuted)
+                                        Image(systemName: "chevron.right")
+                                .font(.system(size: 13, weight: .semibold, design: .rounded))
+                                .foregroundColor(.rwTextMuted)
                                     }
                                 }
                                 .buttonStyle(SBS())

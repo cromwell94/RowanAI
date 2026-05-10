@@ -37,13 +37,9 @@ struct RelCommunicationLab: View {
     }
 
     private var hero: some View {
-        VStack(alignment: .leading, spacing: 4) {
-            Text("Communication Lab").font(RWF.title()).foregroundColor(.rwTextPrimary)
-            Text("Frameworks, scripts, and practice for the conversations that matter.")
-                .font(RWF.body()).foregroundColor(.rwTextSecondary)
-                .fixedSize(horizontal: false, vertical: true)
-        }
-        .frame(maxWidth: .infinity, alignment: .leading)
+        RWPageHeader("Communication Lab",
+                     subtitle: "Frameworks, scripts, and practice for the conversations that matter.",
+                     topPadding: 0)
     }
 
     private var simulatorCard: some View {
@@ -65,7 +61,9 @@ struct RelCommunicationLab: View {
                         .fixedSize(horizontal: false, vertical: true)
                 }
                 Spacer()
-                Image(systemName: "chevron.right").foregroundColor(.rwTextMuted)
+                Image(systemName: "chevron.right")
+                                .font(.system(size: 13, weight: .semibold, design: .rounded))
+                                .foregroundColor(.rwTextMuted)
             }
             .padding(SP.lg).background(Color.rwCard)
             .clipShape(RoundedRectangle(cornerRadius: RR.xl))
@@ -99,7 +97,9 @@ struct RelCommunicationLab: View {
                         .fixedSize(horizontal: false, vertical: true)
                 }
                 Spacer()
-                Image(systemName: "chevron.right").foregroundColor(.rwTextMuted)
+                Image(systemName: "chevron.right")
+                                .font(.system(size: 13, weight: .semibold, design: .rounded))
+                                .foregroundColor(.rwTextMuted)
             }
             .padding(SP.lg).background(Color.rwCard)
             .clipShape(RoundedRectangle(cornerRadius: RR.xl))
@@ -229,7 +229,9 @@ private struct RelLessonRow: View {
                 if locked {
                     Image(systemName: "lock.fill").foregroundColor(.rwTextMuted)
                 } else {
-                    Image(systemName: "chevron.right").foregroundColor(.rwTextMuted)
+                    Image(systemName: "chevron.right")
+                                .font(.system(size: 13, weight: .semibold, design: .rounded))
+                                .foregroundColor(.rwTextMuted)
                 }
             }
             .padding(SP.md).background(Color.rwCard)

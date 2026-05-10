@@ -638,19 +638,9 @@ struct PaywallView: View {
 
     var mainView: some View {
         VStack(spacing: 0) {
-            // Close button
-            HStack {
-                Spacer()
-                Button { dismiss() } label: {
-                    Image(systemName: "xmark")
-                        .font(.system(size: 14, weight: .semibold, design: .rounded))
-                        .foregroundColor(.rwTextSecondary)
-                        .frame(width: 32, height: 32)
-                        .background(Color.rwSurface)
-                        .clipShape(Circle())
-                }
-            }
-            .padding(.horizontal, SP.lg).padding(.top, 16)
+            // Modal close — use the shared RWHeaderBar so every sheet in
+            // the app dismisses with the same affordance + position.
+            RWHeaderBar(onClose: { dismiss() })
 
             ScrollView(showsIndicators: false) {
                 VStack(spacing: 28) {
@@ -1490,7 +1480,9 @@ struct ProGate<Content: View>: View {
                     Text("Unlock with Pro")
                         .font(RWF.med()).foregroundColor(.rwTextPrimary)
                     Spacer()
-                    Image(systemName: "chevron.right").foregroundColor(.rwTextMuted)
+                    Image(systemName: "chevron.right")
+                                .font(.system(size: 13, weight: .semibold, design: .rounded))
+                                .foregroundColor(.rwTextMuted)
                 }
                 .padding(SP.md).background(Color.rwSurface)
                 .clipShape(RoundedRectangle(cornerRadius: RR.xl))

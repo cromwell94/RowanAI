@@ -46,13 +46,9 @@ struct RelGrowthView: View {
     }
 
     private var hero: some View {
-        VStack(alignment: .leading, spacing: 4) {
-            Text("Growth Together").font(RWF.title()).foregroundColor(.rwTextPrimary)
-            Text("Tools for the relationship you're becoming, not just the one you have today.")
-                .font(RWF.body()).foregroundColor(.rwTextSecondary)
-                .fixedSize(horizontal: false, vertical: true)
-        }
-        .frame(maxWidth: .infinity, alignment: .leading)
+        RWPageHeader("Growth Together",
+                     subtitle: "Tools for the relationship you're becoming, not just the one you have today.",
+                     topPadding: 0)
     }
 
     private func tile(icon: String, title: String, sub: String, tint: Color, action: @escaping () -> Void) -> some View {
@@ -70,7 +66,9 @@ struct RelGrowthView: View {
                         .fixedSize(horizontal: false, vertical: true)
                 }
                 Spacer()
-                Image(systemName: "chevron.right").foregroundColor(.rwTextMuted)
+                Image(systemName: "chevron.right")
+                                .font(.system(size: 13, weight: .semibold, design: .rounded))
+                                .foregroundColor(.rwTextMuted)
             }
             .padding(SP.md).background(Color.rwCard)
             .clipShape(RoundedRectangle(cornerRadius: RR.lg))
@@ -102,7 +100,9 @@ struct RelGrowthView: View {
                         .fixedSize(horizontal: false, vertical: true)
                 }
                 Spacer()
-                Image(systemName: "chevron.right").foregroundColor(.rwTextMuted)
+                Image(systemName: "chevron.right")
+                                .font(.system(size: 13, weight: .semibold, design: .rounded))
+                                .foregroundColor(.rwTextMuted)
             }
             .padding(SP.md).background(Color.rwCard)
             .clipShape(RoundedRectangle(cornerRadius: RR.lg))

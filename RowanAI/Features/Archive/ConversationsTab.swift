@@ -236,6 +236,12 @@ struct ConversationsTabContent: View {
                     ForEach(thread.messages) { message in
                         MessageBubble(message: message,
                                       showPlatformBadge: false)
+                            .scrollTransition { content, phase in
+                                content
+                                    .opacity(phase.isIdentity ? 1 : 0)
+                                    .scaleEffect(phase.isIdentity ? 1 : 0.95)
+                                    .offset(y: phase.isIdentity ? 0 : 8)
+                            }
                     }
                 }
             }

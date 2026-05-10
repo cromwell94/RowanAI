@@ -149,6 +149,12 @@ struct RIScoreView: View {
                         expandedDimension = (expandedDimension == dim) ? nil : dim
                     }
                 }
+                .scrollTransition { content, phase in
+                    content
+                        .opacity(phase.isIdentity ? 1 : 0)
+                        .scaleEffect(phase.isIdentity ? 1 : 0.95)
+                        .offset(y: phase.isIdentity ? 0 : 8)
+                }
             }
         }
     }

@@ -39,13 +39,18 @@ struct MainTabView: View {
                 UIImpactFeedbackGenerator(style: .medium).impactOccurred()
             } label: {
                 ZStack {
-                    Circle().fill(Color.rwAccent.opacity(0.2)).frame(width: 64, height: 64)
-                    Circle().fill(LinearGradient.accent).frame(width: 56, height: 56)
-                        .shadow(color: Color.rwAccent.opacity(0.4), radius: 12, x: 0, y: 4)
+                    Circle()
+                        .fill(.ultraThinMaterial)
+                        .frame(width: 60, height: 60)
+                        .overlay(Circle().stroke(Color.white.opacity(0.15), lineWidth: 0.5))
+                        .shadow(color: Color.rwAccent.opacity(0.20), radius: 14, x: 0, y: 4)
                     VStack(spacing: 2) {
                         Image(systemName: "bubble.left.and.bubble.right.fill")
-                            .font(.system(size: 18, weight: .semibold, design: .rounded)).foregroundColor(.white)
-                        Text("Guide").font(.system(size: 9, weight: .bold, design: .rounded)).foregroundColor(.white.opacity(0.9))
+                            .font(.system(size: 18, weight: .semibold, design: .rounded))
+                            .foregroundStyle(LinearGradient.accent)
+                        Text("Guide")
+                            .font(.system(size: 9, weight: .bold, design: .rounded))
+                            .foregroundColor(.rwAccent)
                     }
                 }
             }
@@ -89,12 +94,10 @@ struct HomeView: View {
         NavigationView {
             ScrollView(showsIndicators: false) {
                 VStack(spacing: SP.lg) {
-                    VStack(alignment: .leading, spacing: 6) {
-                        Text(greeting).font(RWF.display(26)).foregroundColor(.rwTextPrimary)
-                        Text("Here's what needs your attention today.").font(RWF.body()).foregroundColor(.rwTextSecondary)
-                    }
-                    .frame(maxWidth: .infinity, alignment: .leading)
-                    .staggerAppear(0, appeared: on)
+                    RWPageHeader(greeting,
+                                 subtitle: "Here's what needs your attention today.",
+                                 topPadding: 0)
+                        .staggerAppear(0, appeared: on)
 
                     // Streak & skill card
                     StreakCard()
@@ -306,8 +309,8 @@ struct ProfileView: View {
                                 Text("Reset all tutorials").font(RWF.body()).foregroundColor(.rwTextPrimary)
                                 Spacer()
                                 Image(systemName: "chevron.right")
-                                    .font(.system(size: 12, weight: .semibold, design: .rounded))
-                                    .foregroundColor(.rwTextMuted)
+                                .font(.system(size: 13, weight: .semibold, design: .rounded))
+                                .foregroundColor(.rwTextMuted)
                             }
                             .padding(.horizontal, SP.lg).padding(.vertical, 14)
                         }
@@ -356,7 +359,9 @@ struct PRow: View {
                     .foregroundColor(.rwAccent).frame(width: 30)
                 Text(title).font(RWF.body()).foregroundColor(.rwTextPrimary)
                 Spacer()
-                Image(systemName: "chevron.right").font(.system(size: 12, weight: .semibold, design: .rounded)).foregroundColor(.rwTextMuted)
+                Image(systemName: "chevron.right")
+                                .font(.system(size: 13, weight: .semibold, design: .rounded))
+                                .foregroundColor(.rwTextMuted).font(.system(size: 12, weight: .semibold, design: .rounded)).foregroundColor(.rwTextMuted)
             }
             .padding(.horizontal, SP.lg).padding(.vertical, 14)
         }

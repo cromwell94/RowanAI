@@ -898,7 +898,8 @@ struct ExploreMapView: View {
                     Text("View")
                         .font(RWF.cap(12))
                     Image(systemName: "chevron.right")
-                        .font(.system(size: 9, weight: .bold, design: .rounded))
+                                .font(.system(size: 13, weight: .semibold, design: .rounded))
+                                .foregroundColor(.rwTextMuted)
                 }
                 .foregroundColor(.white)
                 .padding(.horizontal, 12).padding(.vertical, 6)
@@ -1798,6 +1799,12 @@ struct AIPicksView: View {
                         onTap: { tap(pick) }
                     )
                     .padding(.horizontal, SP.lg)
+                    .scrollTransition { content, phase in
+                        content
+                            .opacity(phase.isIdentity ? 1 : 0)
+                            .scaleEffect(phase.isIdentity ? 1 : 0.95)
+                            .offset(y: phase.isIdentity ? 0 : 8)
+                    }
                 }
             }
         }
@@ -2125,8 +2132,8 @@ struct AIPickCard: View {
                         }
                         Spacer()
                         Image(systemName: "chevron.right")
-                            .font(.system(size: 12, weight: .medium, design: .rounded))
-                            .foregroundColor(.rwTextMuted)
+                                .font(.system(size: 13, weight: .semibold, design: .rounded))
+                                .foregroundColor(.rwTextMuted)
                     }
                     .padding(SP.sm)
                     .background(Color.rwSurface)
@@ -2306,8 +2313,8 @@ struct MidpointPickerView: View {
                 Spacer()
                 if enabled {
                     Image(systemName: "chevron.right")
-                        .font(.system(size: 12, weight: .medium, design: .rounded))
-                        .foregroundColor(.rwTextMuted)
+                                .font(.system(size: 13, weight: .semibold, design: .rounded))
+                                .foregroundColor(.rwTextMuted)
                 } else {
                     Text("Add location")
                         .font(RWF.cap(11))

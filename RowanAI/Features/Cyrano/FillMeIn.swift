@@ -733,8 +733,8 @@ struct SavedConversationRow: View {
                             .foregroundStyle(LinearGradient.accent)
                     }
                     Image(systemName: "chevron.right")
-                        .font(.system(size: 11, weight: .medium, design: .rounded))
-                        .foregroundColor(.rwTextMuted)
+                                .font(.system(size: 13, weight: .semibold, design: .rounded))
+                                .foregroundColor(.rwTextMuted)
                 }
                 .padding(SP.md)
                 .background(isOpen ? Color.rwAccent.opacity(0.06) : Color.rwCard)

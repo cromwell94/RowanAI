@@ -93,7 +93,9 @@ struct RelFeatureCard: View {
                         .fixedSize(horizontal: false, vertical: true)
                 }
                 Spacer(minLength: 0)
-                Image(systemName: "chevron.right").foregroundColor(.rwTextMuted).padding(.top, 16)
+                Image(systemName: "chevron.right")
+                                .font(.system(size: 13, weight: .semibold, design: .rounded))
+                                .foregroundColor(.rwTextMuted).padding(.top, 16)
             }
             .padding(SP.lg).background(Color.rwCard)
             .clipShape(RoundedRectangle(cornerRadius: RR.xl))
@@ -361,7 +363,9 @@ struct IsThisNormalView: View {
                                         Text(p).font(RWF.body(14)).foregroundColor(.rwTextPrimary)
                                             .fixedSize(horizontal: false, vertical: true)
                                         Spacer()
-                                        Image(systemName: "chevron.right").foregroundColor(.rwTextMuted).font(.system(size: 12, design: .rounded))
+                                        Image(systemName: "chevron.right")
+                                .font(.system(size: 13, weight: .semibold, design: .rounded))
+                                .foregroundColor(.rwTextMuted)
                                     }
                                     .padding(SP.md).background(Color.rwCard)
                                     .clipShape(RoundedRectangle(cornerRadius: RR.lg))
@@ -507,7 +511,9 @@ struct CommunicateView: View {
                                     HStack {
                                         Text(s).font(RWF.body(14)).foregroundColor(.rwTextPrimary)
                                         Spacer()
-                                        Image(systemName: "chevron.right").foregroundColor(.rwTextMuted).font(.system(size: 12, design: .rounded))
+                                        Image(systemName: "chevron.right")
+                                .font(.system(size: 13, weight: .semibold, design: .rounded))
+                                .foregroundColor(.rwTextMuted)
                                     }
                                     .padding(SP.md).background(Color.rwCard)
                                     .clipShape(RoundedRectangle(cornerRadius: RR.lg))

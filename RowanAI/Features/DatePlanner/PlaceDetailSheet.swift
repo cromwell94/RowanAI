@@ -433,8 +433,8 @@ struct PlaceDetailSheet: View {
                 }
                 Spacer()
                 Image(systemName: "chevron.right")
-                    .font(.system(size: 11, weight: .medium, design: .rounded))
-                    .foregroundColor(.rwTextMuted)
+                                .font(.system(size: 13, weight: .semibold, design: .rounded))
+                                .foregroundColor(.rwTextMuted)
             }
             .padding(SP.sm)
             .background(Color.rwCard)

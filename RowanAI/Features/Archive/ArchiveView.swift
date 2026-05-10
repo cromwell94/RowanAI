@@ -82,6 +82,12 @@ struct ArchiveView: View {
                                     NavigationLink(destination: ContactDetailView(p: p)) { RowCard(p: p) }
                                         .padding(.horizontal, SP.lg)
                                         .staggerAppear(index, appeared: appeared)
+                                        .scrollTransition { content, phase in
+                                            content
+                                                .opacity(phase.isIdentity ? 1 : 0)
+                                                .scaleEffect(phase.isIdentity ? 1 : 0.95)
+                                                .offset(y: phase.isIdentity ? 0 : 8)
+                                        }
                                 }
                             }
                             .padding(.top, 12).padding(.bottom, 100)
@@ -170,8 +176,8 @@ struct RowCard: View {
             }
             Spacer()
             Image(systemName: "chevron.right")
-                .font(.system(size: 12, weight: .medium, design: .rounded))
-                .foregroundColor(.rwTextMuted)
+                                .font(.system(size: 13, weight: .semibold, design: .rounded))
+                                .foregroundColor(.rwTextMuted)
         }
         .padding(SP.md)
         .background(Color.rwCard)

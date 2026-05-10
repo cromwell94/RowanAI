@@ -281,12 +281,8 @@ Esther Perel's insight: desire needs space. You can't want what you already have
         } else {
             ScrollView(showsIndicators: false) {
                 VStack(spacing: SP.lg) {
-                    VStack(alignment: .leading, spacing: 6) {
-                        Text("Learn").font(RWF.display(28)).foregroundColor(.rwTextPrimary)
-                        Text("Honest, clear information about relationships — the healthy and the harmful.")
-                            .font(RWF.body()).foregroundColor(.rwTextSecondary)
-                    }
-                    .frame(maxWidth: .infinity, alignment: .leading).padding(.top, 8)
+                    RWPageHeader("Learn",
+                                 subtitle: "Honest, clear information about relationships — the healthy and the harmful.")
 
                     ForEach(sections) { section in
                         Button { withAnimation { selected = section } } label: {
@@ -305,7 +301,9 @@ Esther Perel's insight: desire needs space. You can't want what you already have
                                     Text("\(section.articles.count) articles").font(RWF.cap()).foregroundColor(.rwTextSecondary)
                                 }
                                 Spacer()
-                                Image(systemName: "chevron.right").foregroundColor(.rwTextMuted)
+                                Image(systemName: "chevron.right")
+                                .font(.system(size: 13, weight: .semibold, design: .rounded))
+                                .foregroundColor(.rwTextMuted)
                             }
                             .padding(SP.md).background(Color.rwCard)
                             .clipShape(RoundedRectangle(cornerRadius: RR.xl))
@@ -369,7 +367,9 @@ struct ArticleListView: View {
                                     Text(article.title).font(RWF.head(15)).foregroundColor(.rwTextPrimary)
                                         .fixedSize(horizontal: false, vertical: true)
                                     Spacer()
-                                    Image(systemName: "chevron.right").foregroundColor(.rwTextMuted)
+                                    Image(systemName: "chevron.right")
+                                .font(.system(size: 13, weight: .semibold, design: .rounded))
+                                .foregroundColor(.rwTextMuted)
                                 }
                                 .padding(SP.md).background(Color.rwCard)
                                 .clipShape(RoundedRectangle(cornerRadius: RR.xl))

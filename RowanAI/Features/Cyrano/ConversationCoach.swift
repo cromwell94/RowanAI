@@ -22,13 +22,10 @@ struct ConversationCoachView: View {
             VStack(spacing: SP.lg) {
 
                 // Header
-                VStack(alignment: .leading, spacing: 6) {
-                    Text("Conversation\nCoach").font(RWF.display(30)).foregroundColor(.rwTextPrimary)
-                    Text("Learn to talk. Practice it. Make it yours.")
-                        .font(RWF.body()).foregroundColor(.rwTextSecondary)
-                }
-                .frame(maxWidth: .infinity, alignment: .leading)
-                .opacity(on ? 1 : 0).offset(y: on ? 0 : 10)
+                RWPageHeader("Conversation Coach",
+                             subtitle: "Learn to talk. Practice it. Make it yours.",
+                             topPadding: 0)
+                    .opacity(on ? 1 : 0).offset(y: on ? 0 : 10)
 
                 // Mode cards
                 VStack(spacing: 14) {
@@ -115,8 +112,8 @@ struct CoachModeCard: View {
                 }
                 Spacer(minLength: 0)
                 Image(systemName: "chevron.right")
-                    .font(.system(size: 13, weight: .semibold, design: .rounded))
-                    .foregroundColor(.rwTextMuted).padding(.top, 16)
+                                .font(.system(size: 13, weight: .semibold, design: .rounded))
+                                .foregroundColor(.rwTextMuted).padding(.top, 16)
             }
             .padding(SP.lg).background(Color.rwCard)
             .clipShape(RoundedRectangle(cornerRadius: RR.xl))
@@ -217,7 +214,9 @@ struct PracticeView: View {
                                             .fixedSize(horizontal: false, vertical: true)
                                     }
                                     Spacer(minLength: 0)
-                                    Image(systemName: "chevron.right").foregroundColor(.rwTextMuted)
+                                    Image(systemName: "chevron.right")
+                                .font(.system(size: 13, weight: .semibold, design: .rounded))
+                                .foregroundColor(.rwTextMuted)
                                 }
                                 .padding(SP.md).background(Color.rwCard)
                                 .clipShape(RoundedRectangle(cornerRadius: RR.xl))
@@ -464,7 +463,9 @@ struct LessonsView: View {
                                         Text("\(cat.lessons.count) lessons").font(RWF.cap()).foregroundColor(.rwTextSecondary)
                                     }
                                     Spacer()
-                                    Image(systemName: "chevron.right").foregroundColor(.rwTextMuted)
+                                    Image(systemName: "chevron.right")
+                                .font(.system(size: 13, weight: .semibold, design: .rounded))
+                                .foregroundColor(.rwTextMuted)
                                 }
                                 .padding(SP.md).background(Color.rwCard)
                                 .clipShape(RoundedRectangle(cornerRadius: RR.xl))
@@ -728,7 +729,9 @@ struct GameView: View {
                                     }
                                     Spacer()
                                     Image(systemName: "bolt.fill").foregroundColor(.rwGold)
-                                    Image(systemName: "chevron.right").foregroundColor(.rwTextMuted)
+                                    Image(systemName: "chevron.right")
+                                .font(.system(size: 13, weight: .semibold, design: .rounded))
+                                .foregroundColor(.rwTextMuted)
                                 }
                                 .padding(SP.md).background(Color.rwCard)
                                 .clipShape(RoundedRectangle(cornerRadius: RR.xl))

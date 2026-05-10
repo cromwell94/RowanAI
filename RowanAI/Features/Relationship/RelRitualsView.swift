@@ -40,13 +40,9 @@ struct RelRitualsView: View {
     }
 
     private var hero: some View {
-        VStack(alignment: .leading, spacing: 4) {
-            Text("Rituals").font(RWF.title()).foregroundColor(.rwTextPrimary)
-            Text("Small, repeatable acts that build connection on autopilot.")
-                .font(RWF.body()).foregroundColor(.rwTextSecondary)
-                .fixedSize(horizontal: false, vertical: true)
-        }
-        .frame(maxWidth: .infinity, alignment: .leading)
+        RWPageHeader("Rituals",
+                     subtitle: "Small, repeatable acts that build connection on autopilot.",
+                     topPadding: 0)
     }
 
     @ViewBuilder
@@ -129,7 +125,9 @@ private struct RitualCard: View {
                         .lineLimit(2)
                 }
                 Spacer(minLength: 0)
-                Image(systemName: "chevron.right").foregroundColor(.rwTextMuted)
+                Image(systemName: "chevron.right")
+                                .font(.system(size: 13, weight: .semibold, design: .rounded))
+                                .foregroundColor(.rwTextMuted)
             }
             .padding(SP.md).background(Color.rwCard)
             .clipShape(RoundedRectangle(cornerRadius: RR.lg))

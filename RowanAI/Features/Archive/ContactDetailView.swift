@@ -375,7 +375,9 @@ struct ContactDetailView: View {
                             Text("Get personalised date ideas for \(p.name)")
                                 .font(RWF.body(14)).foregroundColor(.rwTextPrimary)
                             Spacer()
-                            Image(systemName: "chevron.right").foregroundColor(.rwTextMuted)
+                            Image(systemName: "chevron.right")
+                                .font(.system(size: 13, weight: .semibold, design: .rounded))
+                                .foregroundColor(.rwTextMuted)
                         }
                         .padding(SP.md).background(Color.rwSurface)
                         .clipShape(RoundedRectangle(cornerRadius: RR.lg))
@@ -443,8 +445,8 @@ struct ContactDetailView: View {
                 }
                 Spacer(minLength: 0)
                 Image(systemName: "chevron.right")
-                    .font(.system(size: 12, weight: .medium, design: .rounded))
-                    .foregroundColor(.rwTextMuted)
+                                .font(.system(size: 13, weight: .semibold, design: .rounded))
+                                .foregroundColor(.rwTextMuted)
             }
             .padding(SP.md)
             .background(Color.rwCard)
@@ -1759,6 +1761,7 @@ struct MoveToRelationshipView: View {
     let p: Person
     @State private var relStore = RelationshipStore.shared
     @State private var startDate = Date()
+    @State private var heartBounceTrigger = 0
     @Environment(\.dismiss) var dismiss
 
     var body: some View {
@@ -1772,7 +1775,9 @@ struct MoveToRelationshipView: View {
                         Image(systemName: "heart.fill")
                             .font(.system(size: 52, design: .rounded))
                             .foregroundStyle(LinearGradient.accent)
+                            .symbolEffect(.bounce, options: .nonRepeating, value: heartBounceTrigger)
                             .padding(.top, 20)
+                            .onAppear { heartBounceTrigger += 1 }
                         Text("Things are getting serious with \(p.name).")
                             .font(RWF.title(22)).foregroundColor(.rwTextPrimary).multilineTextAlignment(.center)
                         Text("Want to move them to your Relationship space? You'll get access to relationship tools, date planning for couples, and Cyrano's relationship coaching.")

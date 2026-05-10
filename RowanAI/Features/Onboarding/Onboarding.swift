@@ -645,7 +645,9 @@ struct AttachQuizView: View {
         } else {
             updated.append(value)
         }
-        answers = updated
+        withAnimation(.spring(response: 0.5)) {
+            answers = updated
+        }
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.18) {
             if index < ecrItems.count - 1 {
                 withAnimation { index += 1 }
@@ -852,7 +854,9 @@ struct LoveLanguageView: View {
                             Text("5 quick questions — 60 seconds").font(RWF.body(13)).foregroundColor(.rwTextSecondary)
                         }
                         Spacer()
-                        Image(systemName: "chevron.right").foregroundColor(.rwTextMuted)
+                        Image(systemName: "chevron.right")
+                                .font(.system(size: 13, weight: .semibold, design: .rounded))
+                                .foregroundColor(.rwTextMuted)
                     }
                     .padding(SP.lg).background(Color.rwCard)
                     .clipShape(RoundedRectangle(cornerRadius: RR.xl))
@@ -876,7 +880,9 @@ struct LoveLanguageView: View {
                             Text("Pick one or multiple").font(RWF.body(13)).foregroundColor(.rwTextSecondary)
                         }
                         Spacer()
-                        Image(systemName: "chevron.right").foregroundColor(.rwTextMuted)
+                        Image(systemName: "chevron.right")
+                                .font(.system(size: 13, weight: .semibold, design: .rounded))
+                                .foregroundColor(.rwTextMuted)
                     }
                     .padding(SP.lg).background(Color.rwCard)
                     .clipShape(RoundedRectangle(cornerRadius: RR.xl))
@@ -925,7 +931,9 @@ struct LoveLanguageView: View {
                                 } else {
                                     newAnswers.append(i)
                                 }
-                                quizAnswers = newAnswers
+                                withAnimation(.spring(response: 0.5)) {
+                                    quizAnswers = newAnswers
+                                }
                                 UIImpactFeedbackGenerator(style: .light).impactOccurred()
                                 DispatchQueue.main.asyncAfter(deadline: .now() + 0.25) {
                                     if quizIndex < questions.count - 1 {
@@ -1562,7 +1570,9 @@ struct PartnerInviteView: View {
                     .fixedSize(horizontal: false, vertical: true)
             }
             Spacer()
-            Image(systemName: "chevron.right").foregroundColor(.rwTextMuted)
+            Image(systemName: "chevron.right")
+                                .font(.system(size: 13, weight: .semibold, design: .rounded))
+                                .foregroundColor(.rwTextMuted)
         }
         .padding(SP.lg).background(Color.rwCard)
         .clipShape(RoundedRectangle(cornerRadius: RR.xl))

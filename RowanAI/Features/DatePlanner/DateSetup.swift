@@ -831,8 +831,8 @@ private struct LocationStep: View {
                 }
                 Spacer()
                 Image(systemName: "chevron.right")
-                    .font(.system(size: 11, weight: .medium, design: .rounded))
-                    .foregroundColor(.rwTextMuted)
+                                .font(.system(size: 13, weight: .semibold, design: .rounded))
+                                .foregroundColor(.rwTextMuted)
             }
             .padding(SP.md)
             .background(Color.rwCard)

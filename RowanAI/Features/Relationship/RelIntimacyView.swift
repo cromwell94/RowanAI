@@ -37,13 +37,9 @@ struct RelIntimacyView: View {
     }
 
     private var hero: some View {
-        VStack(alignment: .leading, spacing: 4) {
-            Text("Intimacy Builder").font(RWF.title()).foregroundColor(.rwTextPrimary)
-            Text("Closeness across emotional, physical, and intellectual dimensions.")
-                .font(RWF.body()).foregroundColor(.rwTextSecondary)
-                .fixedSize(horizontal: false, vertical: true)
-        }
-        .frame(maxWidth: .infinity, alignment: .leading)
+        RWPageHeader("Intimacy Builder",
+                     subtitle: "Closeness across emotional, physical, and intellectual dimensions.",
+                     topPadding: 0)
     }
 
     private var deckPicker: some View {
@@ -108,7 +104,9 @@ struct RelIntimacyView: View {
                     .fixedSize(horizontal: false, vertical: true)
             }
             Spacer()
-            Image(systemName: "chevron.right").foregroundColor(.rwTextMuted)
+            Image(systemName: "chevron.right")
+                                .font(.system(size: 13, weight: .semibold, design: .rounded))
+                                .foregroundColor(.rwTextMuted)
         }
         .padding(SP.md).background(Color.rwCard)
         .clipShape(RoundedRectangle(cornerRadius: RR.lg))

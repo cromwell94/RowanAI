@@ -262,6 +262,7 @@ struct CyranoView: View {
                             Image(systemName: "sparkle")
                                 .font(.system(size: 11, weight: .medium, design: .rounded))
                                 .foregroundStyle(LinearGradient.accent)
+                                .symbolEffect(.bounce, options: .nonRepeating, value: store.repliesRemainingToday())
                             Text("\(store.repliesRemainingToday()) free \(store.repliesRemainingToday() == 1 ? "reply" : "replies") left today")
                                 .font(RWF.cap(12))
                                 .foregroundColor(.rwTextSecondary)

@@ -297,15 +297,13 @@ private struct CenterButton: View {
         Button(action: onTap) {
             ZStack {
                 Circle()
-                    .fill(LinearGradient(
-                        colors: [Color(hex: "E8356D"), Color(hex: "00BFB3")],
-                        startPoint: .topLeading,
-                        endPoint: .bottomTrailing))
+                    .fill(.ultraThinMaterial)
                     .frame(width: 64, height: 64)
-                    .shadow(color: Color.rwAccent.opacity(0.45), radius: 18, x: 0, y: 8)
+                    .overlay(Circle().stroke(Color.white.opacity(0.15), lineWidth: 0.5))
+                    .shadow(color: Color.rwAccent.opacity(0.30), radius: 18, x: 0, y: 8)
                 Image(systemName: icon)
                     .font(.system(size: 22, weight: .medium, design: .rounded))
-                    .foregroundColor(.white)
+                    .foregroundStyle(LinearGradient.accent)
                     .rotationEffect(.degrees(arcOpen ? 90 : 0))
                     .animation(.spring(response: 0.32, dampingFraction: 0.7), value: arcOpen)
             }
@@ -557,8 +555,8 @@ struct ArcHomeView: View {
                 }
                 Spacer()
                 Image(systemName: "chevron.right")
-                    .font(.system(size: 13, weight: .medium, design: .rounded))
-                    .foregroundColor(.rwTextMuted)
+                                .font(.system(size: 13, weight: .semibold, design: .rounded))
+                                .foregroundColor(.rwTextMuted)
             }
             .padding(SP.lg)
             .background(Color.rwCard)
@@ -590,8 +588,8 @@ struct ArcHomeView: View {
             }
             Spacer()
             Image(systemName: "chevron.right")
-                .font(.system(size: 12, weight: .medium, design: .rounded))
-                .foregroundColor(.rwTextMuted)
+                                .font(.system(size: 13, weight: .semibold, design: .rounded))
+                                .foregroundColor(.rwTextMuted)
         }
         .padding(SP.md)
         .background(Color.rwAmberSoft)

@@ -398,7 +398,9 @@ struct PrivacySettingsView: View {
                                     .foregroundColor(.rwTextPrimary).frame(width: 32)
                                 Text("Export My Data").font(RWF.body()).foregroundColor(.rwTextPrimary)
                                 Spacer()
-                                Image(systemName: "chevron.right").foregroundColor(.rwTextMuted)
+                                Image(systemName: "chevron.right")
+                                .font(.system(size: 13, weight: .semibold, design: .rounded))
+                                .foregroundColor(.rwTextMuted)
                             }
                             .padding(SP.md).background(Color.rwCard)
                             .clipShape(RoundedRectangle(cornerRadius: RR.xl))
@@ -417,7 +419,9 @@ struct PrivacySettingsView: View {
                                     .foregroundColor(Color(hex: "E8356D")).frame(width: 32)
                                 Text("Delete All My Data").font(RWF.body()).foregroundColor(Color(hex: "E8356D"))
                                 Spacer()
-                                Image(systemName: "chevron.right").foregroundColor(.rwTextMuted)
+                                Image(systemName: "chevron.right")
+                                .font(.system(size: 13, weight: .semibold, design: .rounded))
+                                .foregroundColor(.rwTextMuted)
                             }
                             .padding(SP.md).background(Color.rwCard)
                             .clipShape(RoundedRectangle(cornerRadius: RR.xl))

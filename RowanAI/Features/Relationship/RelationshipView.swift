@@ -202,7 +202,9 @@ struct RelHomeView: View {
                                 .font(RWF.cap(12)).foregroundColor(.rwTextSecondary)
                         }
                         Spacer()
-                        Image(systemName: "chevron.right").foregroundColor(.rwTextMuted).font(.system(size: 12, design: .rounded))
+                        Image(systemName: "chevron.right")
+                                .font(.system(size: 13, weight: .semibold, design: .rounded))
+                                .foregroundColor(.rwTextMuted)
                     }
                     .padding(SP.md).background(Color.rwCard)
                     .clipShape(RoundedRectangle(cornerRadius: RR.xl))

@@ -244,8 +244,8 @@ struct AddContactChoiceSheet: View {
             Spacer()
 
             Image(systemName: "chevron.right")
-                .font(.system(size: 13, weight: .semibold, design: .rounded))
-                .foregroundColor(.rwTextMuted)
+                                .font(.system(size: 13, weight: .semibold, design: .rounded))
+                                .foregroundColor(.rwTextMuted)
         }
         .padding(SP.md)
         .frame(maxWidth: .infinity)
@@ -473,8 +473,8 @@ struct ContactImportPickerView: View {
                         .foregroundColor(selected.contains(c.identifier) ? .rwAccent : .rwTextMuted)
                 } else {
                     Image(systemName: "chevron.right")
-                        .font(.system(size: 12, weight: .semibold, design: .rounded))
-                        .foregroundColor(.rwTextMuted)
+                                .font(.system(size: 13, weight: .semibold, design: .rounded))
+                                .foregroundColor(.rwTextMuted)
                 }
             }
             .padding(SP.md)

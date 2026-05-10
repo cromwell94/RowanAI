@@ -21,12 +21,8 @@ struct RelHealthView: View {
     var historyView: some View {
         ScrollView(showsIndicators: false) {
             VStack(spacing: SP.lg) {
-                VStack(alignment: .leading, spacing: 6) {
-                    Text("Relationship\nHealth Check").font(RWF.display(28)).foregroundColor(.rwTextPrimary)
-                    Text("A quick weekly pulse on how things are feeling. Honest, private, trackable.")
-                        .font(RWF.body()).foregroundColor(.rwTextSecondary)
-                }
-                .frame(maxWidth: .infinity, alignment: .leading).padding(.top, 8)
+                RWPageHeader("Relationship Health Check",
+                             subtitle: "A quick weekly pulse on how things are feeling. Honest, private, trackable.")
 
                 if store.needsHealthCheck {
                     RWButton("Start This Week's Check-In", icon: "heart.fill") {
