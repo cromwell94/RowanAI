@@ -268,9 +268,11 @@
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_CFBundleDisplayName = RowanAI;
+				INFOPLIST_KEY_ITSAppUsesNonExemptEncryption = NO;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.healthcare-fitness";
 				INFOPLIST_KEY_NSCameraUsageDescription = "Rowan uses your camera so you can capture a photo of someone you've met directly into the Archive.";
 				INFOPLIST_KEY_NSContactsUsageDescription = "Rowan imports contacts so you don't have to type their information manually. We never upload your contacts anywhere.";
+				INFOPLIST_KEY_NSFaceIDUsageDescription = "Rowan uses Face ID to lock the app so your conversations and Archive stay private if your phone is unattended.";
 				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "Rowan uses your location to find great date spots near you.";
 				INFOPLIST_KEY_NSMicrophoneUsageDescription = "Cyrano uses your microphone for real-time conversation coaching and Face to Face Sim practice sessions.";
 				INFOPLIST_KEY_UIBackgroundModes = audio;
@@ -315,9 +317,11 @@
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_CFBundleDisplayName = RowanAI;
+				INFOPLIST_KEY_ITSAppUsesNonExemptEncryption = NO;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.healthcare-fitness";
 				INFOPLIST_KEY_NSCameraUsageDescription = "Rowan uses your camera so you can capture a photo of someone you've met directly into the Archive.";
 				INFOPLIST_KEY_NSContactsUsageDescription = "Rowan imports contacts so you don't have to type their information manually. We never upload your contacts anywhere.";
+				INFOPLIST_KEY_NSFaceIDUsageDescription = "Rowan uses Face ID to lock the app so your conversations and Archive stay private if your phone is unattended.";
 				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "Rowan uses your location to find great date spots near you.";
 				INFOPLIST_KEY_NSMicrophoneUsageDescription = "Cyrano uses your microphone for real-time conversation coaching and Face to Face Sim practice sessions.";
 				INFOPLIST_KEY_UIBackgroundModes = audio;
