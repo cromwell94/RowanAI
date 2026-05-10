@@ -15,26 +15,30 @@ final class LiveKitService: NSObject {
     private var room: Room?
 
     private let supabaseURL = "https://rvdzakkvggqxqrrvtfiq.supabase.co"
-    private let supabaseAnonKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJ2ZHpha2t2Z2dxeHFycnZ0ZmlxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzc4MTk2NzYsImV4cCI6MjA5MzM5NTY3Nn0.eZlJis8p-o4LtD9i7-GGjuV9AE86ZzWseGmjWaOCZlY"
 
-    static var deviceIdentity: String {
-        if let id = UIDevice.current.identifierForVendor?.uuidString { return id }
-        return "anon-\(UUID().uuidString)"
+    /// Returns the Supabase user id for use in roomName helpers and
+    /// participant naming. Performs anonymous sign-in on first call.
+    static func userID() async throws -> String {
+        try await SupabaseAuth.shared.ensureUserID()
     }
 
-    func fetchToken(roomName: String, identity: String, name: String) async throws -> (token: String, url: String) {
+    func fetchToken(roomName: String, name: String) async throws -> (token: String, url: String) {
         guard let url = URL(string: "\(supabaseURL)/functions/v1/livekit-token") else {
             throw LiveKitServiceError.invalidURL
         }
 
+        let userJWT = try await SupabaseAuth.shared.currentAccessToken()
+
         var request = URLRequest(url: url)
         request.httpMethod = "POST"
-        request.setValue("Bearer \(supabaseAnonKey)", forHTTPHeaderField: "Authorization")
+        request.setValue("Bearer \(userJWT)", forHTTPHeaderField: "Authorization")
         request.setValue("application/json", forHTTPHeaderField: "Content-Type")
 
+        // Identity is derived server-side from the JWT — we no longer trust
+        // the client to specify it. Server also validates roomName matches
+        // the authenticated user.
         let body: [String: Any] = [
             "roomName": roomName,
-            "participantIdentity": identity,
             "participantName": name,
             "canPublish": true,
             "canSubscribe": true,
@@ -55,13 +59,13 @@ final class LiveKitService: NSObject {
         return (token, livekitURL)
     }
 
-    func connect(roomName: String, identity: String, displayName: String) async {
+    func connect(roomName: String, displayName: String) async {
         guard !isConnected, !isConnecting else { return }
         isConnecting = true
         connectionError = nil
 
         do {
-            let (token, url) = try await fetchToken(roomName: roomName, identity: identity, name: displayName)
+            let (token, url) = try await fetchToken(roomName: roomName, name: displayName)
 
             let connectOptions = ConnectOptions(autoSubscribe: true)
             let roomOptions = RoomOptions(

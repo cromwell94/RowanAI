@@ -1,0 +1,18 @@
+# Supabase project config — only fields we care about today are listed.
+# Generated/added during the security audit hardening pass.
+
+project_id = "rvdzakkvggqxqrrvtfiq"
+
+[auth]
+# Anonymous sign-in is required for the iOS app's per-user identity model.
+# Without this, livekit-token rejects every request (no authenticated JWT).
+enable_anonymous_sign_ins = true
+
+[functions.livekit-token]
+verify_jwt = true
+
+[functions.cyrano]
+verify_jwt = true
+
+[functions.eleven]
+verify_jwt = true

@@ -1,0 +1,23 @@
+# Environment / secrets
+.env
+.env.*
+!.env.example
+
+# Python
+.venv*/
+__pycache__/
+livekit-agent/.venv*/
+
+# macOS
+.DS_Store
+
+# Xcode
+*.xcuserstate
+xcuserdata/
+build/
+DerivedData/
+*.ipa
+*.dSYM
+
+# Supabase CLI
+supabase/.temp/

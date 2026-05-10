@@ -162,7 +162,7 @@ final class ElevenLabsService {
         let tempURL = FileManager.default.temporaryDirectory
             .appendingPathComponent("eleven-\(UUID().uuidString).mp3")
         do {
-            try data.write(to: tempURL, options: .atomic)
+            try data.write(to: tempURL, options: [.atomic, .completeFileProtection])
         } catch {
             Self.log("write temp file FAILED — \(error.localizedDescription)")
             throw error

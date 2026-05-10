@@ -102,11 +102,14 @@ struct SimSessionView: View {
             await primeOpening()
         }
         .task {
-            let identity = LiveKitService.deviceIdentity
-            let roomName = LiveKitService.simRoomName(avatarID: avatar.id, userID: identity)
-            await LiveKitService.shared.connect(roomName: roomName,
-                                                identity: identity,
-                                                displayName: avatar.name)
+            do {
+                let userID = try await LiveKitService.userID()
+                let roomName = LiveKitService.simRoomName(avatarID: avatar.id, userID: userID)
+                await LiveKitService.shared.connect(roomName: roomName,
+                                                    displayName: avatar.name)
+            } catch {
+                // Auth failed; voice session won't connect. UI stays in non-connected state.
+            }
         }
         .onDisappear {
             timerCancellable?.cancel()

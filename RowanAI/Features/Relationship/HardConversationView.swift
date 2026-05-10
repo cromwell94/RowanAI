@@ -318,8 +318,10 @@ struct HardConversationView: View {
 
                     if partnerStore.isConnected {
                         Button {
-                            // Share with partner (store locally - they'll see it in their app)
-                            UserDefaults.standard.set(fullStatement, forKey: "partner_message_\(Date().timeIntervalSince1970)")
+                            // Partner-sync transport not implemented yet; previously this
+                            // dropped the statement into plain UserDefaults (no encryption,
+                            // never read, accumulated forever). Removed during the security
+                            // audit pass — wire up real delivery before re-enabling.
                             UINotificationFeedbackGenerator().notificationOccurred(.success)
                             withAnimation { shared = true }
                         } label: {

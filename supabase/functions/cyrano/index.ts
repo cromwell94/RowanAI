@@ -31,23 +31,23 @@ const MAX_TOKENS_CAP = 2000;
 // upstream vision API receives them verbatim.
 const MAX_BODY_BYTES = 2_500_000;
 
-const corsHeaders = {
-  "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Headers":
-    "authorization, x-client-info, apikey, content-type",
-  "Access-Control-Allow-Methods": "POST, OPTIONS",
+// App-only endpoint: no CORS allowance. Browsers will fail; native iOS
+// (URLSession) ignores CORS, so the app is unaffected.
+const securityHeaders = {
+  "Content-Type": "application/json",
+  "X-Content-Type-Options": "nosniff",
 };
 
 function jsonError(status: number, message: string): Response {
   return new Response(JSON.stringify({ error: message }), {
     status,
-    headers: { "Content-Type": "application/json", ...corsHeaders },
+    headers: securityHeaders,
   });
 }
 
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") {
-    return new Response("ok", { headers: corsHeaders });
+    return new Response(null, { status: 204 });
   }
   if (req.method !== "POST") {
     return jsonError(405, "Method not allowed");

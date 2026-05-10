@@ -10,14 +10,17 @@ final class CyranoLiveService {
     private init() {}
 
     func startLiveKitSession() async {
-        let identity = LiveKitService.deviceIdentity
-        let roomName = LiveKitService.cyranoLiveRoomName(userID: identity)
-        await LiveKitService.shared.connect(
-            roomName: roomName,
-            identity: identity,
-            displayName: "User"
-        )
-        isActive = LiveKitService.shared.isConnected
+        do {
+            let userID = try await LiveKitService.userID()
+            let roomName = LiveKitService.cyranoLiveRoomName(userID: userID)
+            await LiveKitService.shared.connect(
+                roomName: roomName,
+                displayName: "User"
+            )
+            isActive = LiveKitService.shared.isConnected
+        } catch {
+            isActive = false
+        }
     }
 
     func endLiveKitSession() async {
