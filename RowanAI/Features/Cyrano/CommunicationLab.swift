@@ -56,10 +56,10 @@ struct CommunicationLabView: View {
                 VStack(spacing: 14) {
                     LabFeatureCard(
                         icon: "book.fill",
-                        title: "The 10 Lessons",
+                        title: "The 20 Lessons",
                         description: "Real communication patterns — what kills connection and what builds it. Short, honest, practical.",
                         color: Color(hex: "5B8DEF"),
-                        tag: store.isPro ? "All 10 Unlocked" : "3 Free · 7 Pro",
+                        tag: store.isPro ? "All 20 Unlocked" : "3 Free · 17 Pro",
                         tagColor: store.isPro ? Color(hex: "00BFB3") : Color(hex: "E8356D")
                     ) { withAnimation { mode = .lessons } }
 
@@ -152,298 +152,291 @@ struct LabLessonsView: View {
     @State private var selected: LabLesson? = nil
     @State private var showPaywall = false
 
+    struct ModuleGroup {
+        let number: Int
+        let name: String
+        let lessons: [LabLesson]
+    }
+
     let lessons: [LabLesson] = [
+        // MARK: Module 1 — Presence (1-3 free, 4 Pro)
         LabLesson(
             number: 1, isFree: true,
+            module: 1, moduleName: "Presence",
             title: "The Interview Pattern",
             subtitle: "Why asking questions without sharing yourself kills connection",
             icon: "questionmark.bubble.fill",
             color: Color(hex: "5B8DEF"),
-            scenario: """
-Alex matched with someone they really liked. The conversation started strong:
-
-Alex: "What do you do for fun?"
-Match: "I love hiking and I'm obsessed with cooking. You?"
-Alex: "Nice! Where do you like to hike?"
-Match: "Mostly local trails. Do you hike?"
-Alex: "Sometimes. What kind of food do you cook?"
-Match: "Italian mostly. Do you cook?"
-Alex: "Not really lol. What's your favourite restaurant?"
-
-Three messages later — left on read.
-""",
-            whatWentWrong: "Every message was a question. Alex shared nothing. By message four, the match was doing all the work — answering, asking back, getting nothing in return. It felt like a job interview, not a conversation between two people.",
-            thePrinciple: "Conversation is reciprocal. Every time you ask something, share something back. Not an essay — a sentence. 'I love hiking too — I did my first solo trail last month and nearly got lost, which was terrifying and kind of great.' Now there's something to respond to.",
-            theFix: "After asking a question, add something about yourself. It doesn't have to be long. It just has to be real. You're not interrogating them — you're in a conversation together.",
-            tryThis: "In your next conversation, after every question you ask — add one sentence about yourself related to the topic. Just one. Watch how differently it lands."
+            fullContent: "Most people treat early conversations like job interviews — question after question with nothing shared in return. This feels safe but kills connection. The other person ends up feeling interrogated, not seen. The fix is simple: match every question with a brief disclosure. \"Where are you from?\" becomes \"Where are you from? I grew up in Jersey so I'm always curious about other people's hometowns.\" You're not dominating the conversation — you're making it a two-way street. Research by Arthur Aron shows that mutual self-disclosure is the single strongest predictor of connection speed. The question isn't the connection. The sharing is.",
+            keyInsight: "For every question you ask, share something about yourself first or after.",
+            research: "Arthur Aron's fast friendship study, 1997.",
+            quizQuestion: "You just asked where someone grew up. What should you do next?",
+            quizAnswer: "Share where you grew up."
         ),
         LabLesson(
             number: 2, isFree: true,
+            module: 1, moduleName: "Presence",
             title: "Solving vs Listening",
             subtitle: "The difference that changes everything",
             icon: "ear.fill",
             color: Color(hex: "E8356D"),
-            scenario: """
-Jordan's match sent: "Ugh I had the worst day. My boss basically blamed me for a project that wasn't even my responsibility and I had to sit there and take it."
-
-Jordan replied: "That's so unfair. You should document everything and talk to HR. Also make sure you CC your manager on emails going forward so there's a paper trail."
-
-Match: "...yeah maybe"
-
-And then nothing.
-""",
-            whatWentWrong: "Jordan immediately went into fix-it mode. The match didn't ask for advice — they wanted to feel heard. Jordan's response, however well-intentioned, communicated: 'I hear a problem. Here's the solution. Moving on.' It skipped the human part entirely.",
-            thePrinciple: "When someone shares something hard, they almost always want acknowledgement before advice — and often instead of advice. The instinct to fix is well-meaning but it short-circuits connection. Feeling understood is what creates closeness. Solutions can come later, if they're asked for.",
-            theFix: "Before offering any advice, reflect back what you heard. 'That sounds genuinely awful — being blamed for something that wasn't yours and having to just sit with it. That's a really frustrating position to be in.' Then wait. Let them respond. If they want advice, they'll ask.",
-            tryThis: "Next time someone shares something difficult, respond only with acknowledgement. No advice unless they ask. Notice how the conversation changes."
+            fullContent: "When someone shares a problem, the male-coded brain jumps to solutions. The female-coded brain often jumps to empathy. Neither is wrong — but the timing matters enormously. John Gottman's research found that 69% of relationship conflicts are perpetual — they never get solved. What people actually want in those moments isn't a solution. They want to feel understood. The next time someone shares something difficult, try this: reflect before you fix. \"That sounds really frustrating\" before \"Have you tried...\" changes the entire dynamic. Solutions feel dismissive when delivered too early. The same solution delivered after genuine acknowledgment lands completely differently.",
+            keyInsight: "Reflect first. Fix second. Most of the time reflecting is enough.",
+            research: "John Gottman, The Seven Principles for Making Marriage Work.",
+            quizQuestion: "Your date says work has been really stressful lately. What's the best first response?",
+            quizAnswer: "Acknowledge the feeling before offering advice."
         ),
         LabLesson(
             number: 3, isFree: true,
+            module: 1, moduleName: "Presence",
             title: "Specificity Over Flattery",
             subtitle: "Why 'you're so interesting' lands worse than you think",
             icon: "star.fill",
             color: Color(hex: "F59E0B"),
-            scenario: "A generic opener vs a specific one — and why one gets replies and one doesn't.",
-            whatWentWrong: "Generic compliments signal you didn't pay attention.",
-            thePrinciple: "Specificity shows you actually looked. It's the difference between 'you seem cool' and 'the fact that you learned to surf at 30 — that takes real nerve. What made you decide to start?'",
-            theFix: "Reference something specific from their profile or what they said. Make it clear you were actually paying attention.",
-            tryThis: "Write your next opener using only something specific from their profile. No compliments about appearance. No 'hey.' Something that could only be sent to them."
+            fullContent: "\"You're so interesting\" is the conversational equivalent of a participation trophy. It signals that you're paying attention but doesn't prove it. Specific observations do both. \"The way you talked about your sister — I can tell that relationship really shaped you\" lands in a completely different place than generic compliments. Specificity requires actual listening. It can't be faked. And because it can't be faked, it builds trust faster than any compliment. Matthew Hussey calls this \"earned appreciation\" — appreciation that demonstrates you were actually present, not just performing interest.",
+            keyInsight: "Replace generic compliments with specific observations that prove you were listening.",
+            research: "Matthew Hussey, Get the Guy. Cialdini's research on genuine vs performative interest.",
+            quizQuestion: "Your date just finished telling you about their passion project. What's the better response?",
+            quizAnswer: "Reference a specific detail they mentioned rather than saying 'that's so cool.'"
         ),
         LabLesson(
             number: 4, isFree: false,
+            module: 1, moduleName: "Presence",
             title: "Energy Matching",
-            subtitle: "Reading the room in text form",
+            subtitle: "Reading the room — and your own nervous system",
             icon: "waveform",
             color: Color(hex: "9B59B6"),
-            scenario: "Someone sends three enthusiastic paragraphs. You reply with 'haha yeah cool.' What just happened.",
-            whatWentWrong: "A massive mismatch in investment. They opened up — you didn't meet them there.",
-            thePrinciple: "Match the energy someone brings. Not word-for-word — but in spirit. If they're enthusiastic and engaged, bring that back. If they're brief, be brief. Energy matching signals mutual investment.",
-            theFix: "Before you reply, notice the length and tone of what they sent. Match it approximately. Not exactly — but don't send two words to three paragraphs.",
-            tryThis: "For one week, consciously match the energy of every message you receive. Notice whether responses change."
+            fullContent: "Emotional energy is contagious in both directions. Walk into a conversation nervous and scattered and you'll make the other person feel unsettled. Walk in grounded and genuinely curious and you'll regulate their nervous system without trying. This is co-regulation — a concept from attachment neuroscience. Your calm literally transfers. The practical application: before any date or important conversation, spend 60 seconds breathing slowly and thinking of something you're genuinely curious about regarding this person. Not what you want them to think of you. What you actually want to know about them. That shift in internal state changes your entire external presence.",
+            keyInsight: "Your nervous system regulates theirs. Get calm first.",
+            research: "Stephen Porges, Polyvagal Theory. Sue Johnson, Hold Me Tight.",
+            quizQuestion: "You're nervous before a first date. What's the most effective thing to do in the 60 seconds before you walk in?",
+            quizAnswer: "Focus on something you're genuinely curious about them, not on how you want to come across."
         ),
+
+        // MARK: Module 2 — Curiosity (Pro)
         LabLesson(
             number: 5, isFree: false,
-            title: "The Art of the Callback",
-            subtitle: "The most underrated conversation move",
-            icon: "arrow.counterclockwise",
-            color: Color(hex: "00BFB3"),
-            scenario: "Three days into a conversation, bringing back something small they mentioned on day one — and watching what happens.",
-            whatWentWrong: "Most people never do this. Every message exists in isolation.",
-            thePrinciple: "Referencing something someone said earlier — even casually — signals that you were actually listening and that they stayed with you. It creates a sense of shared history even early in a connection.",
-            theFix: "When someone mentions something — their dog's name, a trip they're planning, a bad day at work — file it away. Bring it back naturally later. 'How did that presentation go by the way?'",
-            tryThis: "In your next conversation, reference something they mentioned in a previous message. Watch their reaction."
+            module: 2, moduleName: "Curiosity",
+            title: "The Follow-Up Question",
+            subtitle: "Stay one exchange longer than feels natural",
+            icon: "arrow.turn.down.right",
+            color: Color(hex: "5B8DEF"),
+            fullContent: "Most people ask a question, get an answer, and move to the next topic. This is conversational channel surfing. The follow-up question — asking about what was just said instead of moving on — signals that you actually heard the answer. \"You mentioned you used to paint. Do you still?\" is more connecting than any new question you could introduce. Esther Perel calls this \"sustained curiosity\" — the willingness to stay with a subject long enough to actually learn something. One follow-up question per topic is the minimum standard for genuine connection.",
+            keyInsight: "Stay with a topic one exchange longer than feels natural before moving on.",
+            research: "Esther Perel, Mating in Captivity.",
+            quizQuestion: "Your date mentions they used to paint. What's the most connecting next move?",
+            quizAnswer: "Ask a follow-up about painting before introducing a new topic."
         ),
         LabLesson(
             number: 6, isFree: false,
-            title: "Vulnerability Without Oversharing",
-            subtitle: "How to let someone in without flooding them",
-            icon: "lock.open.fill",
-            color: Color(hex: "E8356D"),
-            scenario: "The difference between 'I'm an open book' and actually being open — and why one creates connection and one creates distance.",
-            whatWentWrong: "Sharing too much too fast creates discomfort. Sharing nothing creates distance. The calibration matters.",
-            thePrinciple: "Vulnerability is earned gradually. Share something real — a genuine opinion, a small failure, something that matters to you — but let it be proportional to the trust you've built. A sentence, not a monologue.",
-            theFix: "Match your depth of sharing to where you actually are in the connection. Early on: opinions, preferences, small stories. Later: real fears, real history.",
-            tryThis: "Share one genuine opinion in your next conversation. Not a fact — an actual view you hold on something."
+            module: 2, moduleName: "Curiosity",
+            title: "The Assumption Flip",
+            subtitle: "Replace some questions with playful guesses",
+            icon: "arrow.triangle.2.circlepath",
+            color: Color(hex: "9B59B6"),
+            fullContent: "Instead of asking a question, make a playful assumption and let them correct you. \"You seem like someone who has strong opinions about coffee\" opens a conversation differently than \"Do you like coffee?\" Assumptions invite pushback, reveal personality, and create micro-moments of tension that feel interesting rather than clinical. Logan Ury's behavioral research found that people remember conversations where they felt slightly challenged far longer than conversations where they felt completely comfortable.",
+            keyInsight: "Replace some questions with curious assumptions. Let them correct you.",
+            research: "Logan Ury, How to Not Die Alone.",
+            quizQuestion: "Instead of asking 'do you like traveling?' what's the assumption version?",
+            quizAnswer: "\"You seem like someone who has a trip already planned.\""
         ),
         LabLesson(
             number: 7, isFree: false,
-            title: "Reading Disengagement",
-            subtitle: "When to give space vs when to reach out",
-            icon: "thermometer.snowflake",
-            color: Color(hex: "5B8DEF"),
-            scenario: "Responses went from paragraphs to one word. You send another message. Then another. Then 'you okay?'",
-            whatWentWrong: "Doubling down on disengagement usually accelerates it. The instinct to fix the silence often makes it worse.",
-            thePrinciple: "Disengagement signals need space, not more input. One message, then wait. If they want to re-engage, they will. If they don't, more messages won't change that — they'll just confirm you don't read the room.",
-            theFix: "When energy drops: send one light message — not a check-in, not 'you okay', just something easy and low-pressure. Then stop. Let it breathe.",
-            tryThis: "The next time a conversation goes quiet, send one message and leave it. Don't follow up until they respond."
+            module: 2, moduleName: "Curiosity",
+            title: "What They Don't Say",
+            subtitle: "Track what's avoided as carefully as what's said",
+            icon: "eye.slash.fill",
+            color: Color(hex: "E8356D"),
+            fullContent: "The most revealing information in any conversation is often what's avoided. If someone talks extensively about work but never mentions family, that gap is data. If someone laughs off a question about past relationships, the laugh is data. Active listening means tracking not just what's said but what's consistently absent or deflected. This isn't about prying — it's about noticing patterns and following up gently when the moment is right. \"You light up talking about your work — is that the biggest thing in your life right now?\" opens a door without forcing it.",
+            keyInsight: "Track what's consistently avoided or deflected. That's where the real story often lives.",
+            research: "Paul Ekman, Emotions Revealed.",
+            quizQuestion: "Someone keeps changing the subject when family comes up. What's the right move?",
+            quizAnswer: "Note it and gently revisit once, then respect the boundary."
         ),
         LabLesson(
             number: 8, isFree: false,
-            title: "Knowing When to Move",
-            subtitle: "The window — how to see it and how to step through it",
-            icon: "calendar.badge.plus",
-            color: Color(hex: "00BFB3"),
-            scenario: "Great conversation. Two weeks in. Still no date. The momentum is starting to die.",
-            whatWentWrong: "Waiting too long is just as damaging as moving too fast. Connections have a natural window. Miss it and you end up as pen pals.",
-            thePrinciple: "The window opens when conversation is warm, consistent, and mutual. Usually within 5-7 days of good back-and-forth. Specific is better than vague — 'free Thursday?' converts better than 'we should hang sometime.'",
-            theFix: "When conversation feels good, that's the moment. Name a specific day and a specific idea. Confidence and specificity signal that you're worth meeting.",
-            tryThis: "Identify one conversation where you've been talking for more than a week. If it's warm — suggest something specific this week."
+            module: 2, moduleName: "Curiosity",
+            title: "Curiosity vs Interest Performance",
+            subtitle: "The shift that makes you actually compelling",
+            icon: "sparkles",
+            color: Color(hex: "F59E0B"),
+            fullContent: "There's a difference between being curious and performing interest. Performed interest looks like nodding, saying wow and that's so cool on a loop, and asking questions from a checklist. Genuine curiosity has a different quality — it surprises even you. You didn't plan to ask that question; it came from actually listening. The shift from performance to genuine curiosity requires one thing: caring less about how you're coming across and more about actually understanding this person. Paradoxically the less you try to seem interested the more interesting you become.",
+            keyInsight: "Genuine curiosity cannot be performed. It comes from actually caring about the answer.",
+            research: "Brené Brown, Daring Greatly.",
+            quizQuestion: "What's the sign you've shifted from genuine curiosity to performing interest?",
+            quizAnswer: "You're thinking of your next question while they're still talking."
         ),
+
+        // MARK: Module 3 — Vulnerability (Pro)
         LabLesson(
             number: 9, isFree: false,
-            title: "Intensity Before Trust",
-            subtitle: "Why coming on strong early usually backfires",
-            icon: "flame.fill",
-            color: Color(hex: "F59E0B"),
-            scenario: "Day two of talking. 'I feel like I've known you forever. You're different from everyone else.'",
-            whatWentWrong: "Intense feelings expressed before any real trust exists feel destabilising, not romantic. It signals a lack of self-awareness and puts pressure on the other person to either match an intensity they haven't built or back away.",
-            thePrinciple: "Attraction builds through calibrated revelation over time. Mystery matters early. Let connection develop at its own pace — forcing it communicates insecurity, not depth.",
-            theFix: "Match your emotional investment to where you actually are in the connection. Early on: warm but not overwhelming. Let them come toward you.",
-            tryThis: "Notice if you have a habit of expressing strong feelings early. In your next connection, let it develop one step at a time."
+            module: 3, moduleName: "Vulnerability",
+            title: "The Disclosure Ladder",
+            subtitle: "Match their depth and lead by a half-step",
+            icon: "chart.line.uptrend.xyaxis",
+            color: Color(hex: "5B8DEF"),
+            fullContent: "Vulnerability has levels. Sharing that you love hiking is level 1. Sharing that you started hiking after a really dark period and it saved you is level 7. Healthy connection moves gradually up the ladder — not starting at 1 and never moving, and not skipping to 10 on a first date. The disclosure ladder means calibrating your depth to match where the conversation is and gently moving it forward. Research by Brené Brown found that people who share at slightly deeper levels than the conversation calls for are perceived as more trustworthy and interesting — not oversharing, just leading by a half-step.",
+            keyInsight: "Share at slightly deeper levels than the conversation requires. Lead by a half-step.",
+            research: "Brené Brown, The Gifts of Imperfection.",
+            quizQuestion: "Your date shares something moderately personal. What's the ideal response?",
+            quizAnswer: "Match their depth and add one slightly deeper detail of your own."
         ),
         LabLesson(
             number: 10, isFree: false,
-            title: "The Reassurance Trap",
-            subtitle: "What double-texting and 'you okay?' actually communicates",
-            icon: "exclamationmark.bubble.fill",
-            color: Color(hex: "E8356D"),
-            scenario: "They took six hours to reply. You sent a follow-up after two. Then 'did I say something wrong?' after four.",
-            whatWentWrong: "Each follow-up communicated anxiety and a need for reassurance. Which is understandable — but it puts the other person in the position of managing your feelings instead of simply enjoying the connection.",
-            thePrinciple: "Self-regulation is attractive. Being able to sit with uncertainty — to not need constant confirmation that things are okay — signals security. Security is one of the most attractive qualities a person can have.",
-            theFix: "Send one message. If they don't respond — they're busy, or they need space, or they're not interested. None of those outcomes are changed by a follow-up. Wait for a response before sending another.",
-            tryThis: "For two weeks: one message at a time. No follow-ups until you get a reply. Notice how it changes your anxiety levels and the responses you get."
+            module: 3, moduleName: "Vulnerability",
+            title: "Owning Your Story",
+            subtitle: "Talk about your past with accountability, not victimhood",
+            icon: "book.closed.fill",
+            color: Color(hex: "9B59B6"),
+            fullContent: "How you talk about your past relationship history reveals everything about your self-awareness. \"She was crazy\" is a red flag to a perceptive person. \"That relationship taught me I wasn't great at communicating what I needed\" is the same story told with accountability. You don't have to air all your dirty laundry on a first date — but when the topic comes up, the language you use matters. Ownership without self-flagellation. \"I've learned\" rather than \"I was a victim of\" or \"I was terrible.\" Logan Ury calls this narrative maturity — the ability to integrate your past without being defined or destroyed by it.",
+            keyInsight: "Own your story without performing victimhood or self-punishment.",
+            research: "Logan Ury, How to Not Die Alone.",
+            quizQuestion: "Your date asks about your last relationship. What's the best framing?",
+            quizAnswer: "One honest sentence about what you learned, nothing more."
         ),
         LabLesson(
             number: 11, isFree: false,
-            title: "Flirting Without Being Creepy",
-            subtitle: "The line between charming and uncomfortable",
-            icon: "sparkles",
-            color: Color(hex: "E8356D"),
-            scenario: """
-Sam sent: "You look incredible in every photo. I keep coming back to look at them. You're honestly the most attractive person I've matched with in months."
-
-No reply.
-""",
-            whatWentWrong: "This reads as intensity without connection. Focusing entirely on appearance — especially with 'I keep coming back to look at them' — feels more like fixation than genuine interest. It puts all the weight on looks and none on who she actually is.",
-            thePrinciple: "Flirting works when it's light, specific, and mutual. It's a tone, not a statement. The best flirting feels playful and slightly surprising — it makes someone smile, not feel studied. It works alongside genuine curiosity about them as a person.",
-            theFix: "Flirt with wit, not intensity. Reference something specific about them beyond appearance. Keep it light — one playful line lands better than three earnest compliments. Leave room for them to play back.",
-            tryThis: "Write a message that makes someone smile without mentioning how they look. Use something from their profile or something they said. Playful and specific beats sincere and generic every time."
+            module: 3, moduleName: "Vulnerability",
+            title: "Strategic Imperfection",
+            subtitle: "Small admissions create more connection than perfect confidence",
+            icon: "sparkle",
+            color: Color(hex: "F59E0B"),
+            fullContent: "People don't fall for your highlight reel. They fall for the moment you admit you don't have it all figured out. This doesn't mean dumping your anxieties on someone on a first date. It means allowing small genuine imperfections to surface naturally. \"I'm actually a little nervous — I don't usually admit that\" said with a smile creates more connection than a perfect performance of confidence. Matthew Hussey calls this charming vulnerability — the ability to be genuinely imperfect in a way that invites others in rather than making them feel responsible for fixing you.",
+            keyInsight: "Small genuine admissions of imperfection create more connection than perfect confidence.",
+            research: "Matthew Hussey, Get the Guy. Robert Cialdini, Influence.",
+            quizQuestion: "You fumble over your words telling a story. What's the best response?",
+            quizAnswer: "Laugh at yourself lightly and keep going — don't over-apologize."
         ),
         LabLesson(
             number: 12, isFree: false,
-            title: "Handling Rejection Gracefully",
-            subtitle: "What you do after no is more revealing than anything else",
-            icon: "hand.raised.fill",
-            color: Color(hex: "5B8DEF"),
-            scenario: """
-Alex asked someone out. They replied: "Thanks so much, you seem genuinely lovely — I just don't feel a romantic connection. I hope you find someone great."
-
-Alex replied: "Wow okay. Didn't realise I was that bad. Good luck I guess."
-""",
-            whatWentWrong: "Alex made the rejection about ego instead of grace. The response communicated bitterness and put the other person in the position of feeling bad for being honest. It also revealed that the warmth Alex showed before was conditional on getting what he wanted.",
-            thePrinciple: "How you handle a no says everything about your character. Someone who rejects you kindly deserves a kind response. Grace under rejection is rare — and people notice it. It also protects your own dignity far better than any sharp comeback.",
-            theFix: "A simple, warm response closes the loop cleanly. 'Thanks for being honest — I appreciate that. Take care.' That's it. Nothing to defend, nothing to attack. You leave as the person who handled it well.",
-            tryThis: "Think about the last time you faced rejection. How did you respond? What would the graceful version have looked like? Write it out — not to send, just to practice the mindset."
+            module: 3, moduleName: "Vulnerability",
+            title: "Venting vs Sharing",
+            subtitle: "One offloads, one connects",
+            icon: "bubble.left.and.bubble.right.fill",
+            color: Color(hex: "00BFB3"),
+            fullContent: "Venting is processing your emotions out loud with no regard for the other person's experience. Sharing is offering something true about yourself in a way that invites connection. The difference is intention. Venting seeks relief. Sharing seeks understanding. In early connection especially the distinction matters enormously. One session of real sharing builds more trust than a year of surface conversation. One extended venting session can make someone feel like an emotional dumping ground. The test: are you sharing to connect, or are you offloading to feel better?",
+            keyInsight: "Share to connect, not to offload. Ask yourself which one you're doing before you start.",
+            research: "Esther Perel on the difference between intimacy and emotional dependency.",
+            quizQuestion: "You had a terrible day and want to talk about it on a second date. What's the right approach?",
+            quizAnswer: "Share one true thing about how you're feeling, then genuinely ask about them."
         ),
+
+        // MARK: Module 4 — Repair (Pro)
         LabLesson(
             number: 13, isFree: false,
-            title: "Texting Cadence",
-            subtitle: "Timing matters more than most people think",
-            icon: "clock.fill",
-            color: Color(hex: "F59E0B"),
-            scenario: """
-Jordan matched with someone on Sunday. By Tuesday they had texted 47 times — asking questions, sharing stories, sending memes. The match replied less and less. By Thursday: silence.
-""",
-            whatWentWrong: "47 texts in two days creates a pressure no early connection can hold. It signals that the person has made this match the centre of their attention — before any real relationship exists to justify that intensity. It removes all mystery and makes the relationship feel like work before it's begun.",
-            thePrinciple: "Early on, less is more. Conversations should have natural rhythms — not a constant stream. Allowing gaps creates anticipation. You want them to look forward to hearing from you, not feel like they're behind on a task.",
-            theFix: "Match their cadence and leave space. If they reply every few hours, do the same. If a conversation has a natural ending, let it end. The next one will be better for it.",
-            tryThis: "For your next match, allow at least one natural conversation ending before starting a new thread. Notice whether the next conversation feels more energised."
+            module: 4, moduleName: "Repair",
+            title: "The 5:1 Ratio",
+            subtitle: "Five positive moments for every difficult one",
+            icon: "chart.bar.fill",
+            color: Color(hex: "5B8DEF"),
+            fullContent: "John Gottman's most famous finding: stable relationships have a 5:1 ratio of positive to negative interactions. Five moments of warmth, humor, connection, or affirmation for every one moment of criticism, tension, or withdrawal. This doesn't mean avoiding hard conversations — it means the emotional bank account needs enough deposits to survive the withdrawals. In early dating this translates simply: don't let the first challenging moment define the connection. One awkward silence, one fumbled joke, one slightly weird comment — none of these are fatal if the ratio of good moments is high enough.",
+            keyInsight: "Five positive moments to one negative. Keep the ratio, not the score.",
+            research: "John Gottman, Why Marriages Succeed or Fail.",
+            quizQuestion: "There was one awkward moment in an otherwise great date. How should you weigh it?",
+            quizAnswer: "One negative against many positive is exactly the 5:1 ratio working as intended. Don't overweight it."
         ),
         LabLesson(
             number: 14, isFree: false,
-            title: "The Art of the Pause",
-            subtitle: "Letting silence do the work",
-            icon: "pause.circle.fill",
-            color: Color(hex: "9B59B6"),
-            scenario: """
-Every time there was a lull in the conversation, Morgan immediately sent something new — a question, a meme, a random observation. The conversation never had a moment to breathe.
-""",
-            whatWentWrong: "Filling every silence communicates anxiety. It signals that you need the conversation to keep going — which puts pressure on the other person and removes any sense of mystery or ease. Real connection has rhythm, not a constant stream.",
-            thePrinciple: "Silence in a conversation is not a problem to solve. Sometimes a conversation has a natural ending and that is fine. Some of the best interactions end before they run out of steam — leaving both people wanting more.",
-            theFix: "When a conversation naturally winds down, let it. Don't manufacture a reason to keep it going. Start a new thread later with something fresh and specific. Absence creates interest.",
-            tryThis: "Let a conversation end naturally this week. Don't send the follow-up message. Notice how different the next conversation feels."
+            module: 4, moduleName: "Repair",
+            title: "Repair Attempts",
+            subtitle: "The skill that predicts connection health",
+            icon: "wrench.and.screwdriver.fill",
+            color: Color(hex: "E8356D"),
+            fullContent: "A repair attempt is any gesture — verbal or physical — that tries to de-escalate tension. \"Can we start over?\" \"I didn't mean it like that.\" A well-timed laugh. A touch on the arm. Gottman found that the success of repair attempts is the single best predictor of relationship health — not the absence of conflict but the ability to recover from it. The skill is twofold: making repair attempts AND being open to receiving them. Many people are so defended when hurt that they block repairs without noticing. Learning to recognize and accept a repair is as important as making one.",
+            keyInsight: "The ability to repair matters more than the absence of conflict.",
+            research: "John Gottman, The Seven Principles for Making Marriage Work.",
+            quizQuestion: "Your date makes a joke to lighten tension after a slightly awkward exchange. What is that?",
+            quizAnswer: "A repair attempt. Receive it."
         ),
         LabLesson(
             number: 15, isFree: false,
-            title: "Cultural Awareness in Dating",
-            subtitle: "Connection across different backgrounds",
-            icon: "globe",
-            color: Color(hex: "00BFB3"),
-            scenario: """
-Chris matched with someone from a different cultural background. He made jokes about their culture early on — harmless in his mind. She didn't reply again.
-""",
-            whatWentWrong: "Joking about someone's culture early signals that you see their background as a novelty rather than an integral part of who they are. Even well-intentioned humour can land as reductive when trust hasn't been established.",
-            thePrinciple: "Cultural curiosity is attractive. Cultural assumptions are not. There's a significant difference between 'I'd love to understand more about your background' and making assumptions or jokes based on stereotypes. Genuine curiosity — asking open questions and actually listening — builds real connection across differences.",
-            theFix: "Lead with curiosity, not assumptions. Ask genuine questions about their experience and actually listen. Share your own background openly. Find the human common ground before exploring the differences.",
-            tryThis: "In your next cross-cultural conversation, ask one genuine question about their experience — not about their culture as a category, but about their personal relationship to it."
+            module: 4, moduleName: "Repair",
+            title: "The Non-Defensive Response",
+            subtitle: "Acknowledge before you defend",
+            icon: "shield.lefthalf.filled",
+            color: Color(hex: "9B59B6"),
+            fullContent: "When someone criticizes you or raises a concern the automatic response is defensiveness. Defensiveness is a wall. It communicates I care more about being right than about your experience. The non-defensive response is not agreement — it's acknowledgment. \"I can see why that landed wrong\" is not the same as \"you're right, I'm terrible.\" It's receiving the other person's experience without immediately trying to correct it. This is one of the hardest communication skills to develop because it requires tolerating the discomfort of feeling criticized without reacting immediately.",
+            keyInsight: "Acknowledge before you defend. You can clarify your intentions after you've heard them out.",
+            research: "John Gottman, The Four Horsemen — criticism, contempt, defensiveness, stonewalling.",
+            quizQuestion: "Someone says your joke earlier made them uncomfortable. First response?",
+            quizAnswer: "\"I'm sorry — that wasn't my intention. Can you tell me more about how it landed?\""
         ),
         LabLesson(
             number: 16, isFree: false,
-            title: "Humour as a Tool",
-            subtitle: "Why some jokes connect and some disconnect",
-            icon: "face.smiling.fill",
-            color: Color(hex: "F59E0B"),
-            scenario: """
-"I'm not like other guys on here 😂" — sent as an opener by someone who thought self-deprecating humour would make them stand out.
-
-They got a polite non-reply.
-""",
-            whatWentWrong: "Self-deprecation as an opener puts the other person in a strange position — do they agree? Disagree? Reassure? It also signals low confidence while trying to appear aware. And the 'not like other guys/girls' framing is so common it's become its own cliché.",
-            thePrinciple: "Humour works best when it's specific, observational, and doesn't require the other person to manage your feelings. The best dating humour is light and creates a shared moment — not a performance for approval. Wit beats self-deprecation almost every time.",
-            theFix: "Make the joke about something external — something you both observe. Or make it playful and specific to something in their profile. Avoid humour that requires them to reassure you or that makes your insecurity the subject.",
-            tryThis: "Write a message that uses humour without any self-deprecation. Notice how it lands differently."
+            module: 4, moduleName: "Repair",
+            title: "Rupture and Repair as Bonding",
+            subtitle: "Successful repair builds more trust than no tension at all",
+            icon: "heart.fill",
+            color: Color(hex: "00BFB3"),
+            fullContent: "Paradoxically, successfully navigating a moment of tension can create more closeness than smooth sailing. When two people have a small conflict and repair it well they learn something essential: this relationship can handle difficulty. That knowledge creates safety. Esther Perel describes the energy that returns after tension is resolved as a kind of rekindling. In early connection this means not avoiding all conflict but handling the inevitable bumps with enough grace that they become proof of connection rather than evidence against it.",
+            keyInsight: "Successful repair after tension creates more trust than no tension at all.",
+            research: "Esther Perel, The State of Affairs.",
+            quizQuestion: "You and your date have a minor disagreement and resolve it well. What did that just do?",
+            quizAnswer: "Built more trust than if the disagreement had never happened."
         ),
+
+        // MARK: Module 5 — Consistency (Pro)
         LabLesson(
             number: 17, isFree: false,
-            title: "When Things Get Heavy",
-            subtitle: "How to handle deep topics early in a connection",
-            icon: "cloud.heavyrain.fill",
+            module: 5, moduleName: "Consistency",
+            title: "Showing Up the Same Way Twice",
+            subtitle: "Reliability beats peak moments",
+            icon: "repeat",
             color: Color(hex: "5B8DEF"),
-            scenario: """
-Three days in, Jamie shared that they'd been through a difficult divorce and were struggling with it. Their match, not knowing what to say, replied: "Oh wow. Yeah breakups are tough. Anyway what did you do this weekend?"
-""",
-            whatWentWrong: "Pivoting immediately after someone shares something heavy communicates that you don't have the capacity to sit with difficult things. It's not malicious — but it leaves the person feeling unseen at a vulnerable moment.",
-            thePrinciple: "You don't need to have the perfect response to heavy things. You just need to stay present. Acknowledging what someone shared — even briefly — before moving on shows that you can handle emotional depth. That is genuinely rare and genuinely attractive.",
-            theFix: "Pause on the heavy thing before moving forward. 'That sounds like it's been a really hard time — I appreciate you sharing that with me' is enough. Then you can ask where they're at with it, or let them guide where the conversation goes.",
-            tryThis: "Next time someone shares something difficult, respond only to that before asking anything else. Let them feel heard before moving forward."
+            fullContent: "Consistency is underrated as an attraction quality. Most people focus on being impressive. Fewer focus on being reliable. But the nervous system of a potential partner is tracking patterns: do you show up the same way twice? Is your warmth consistent or contingent? Do you follow through on small things? These micro-patterns communicate safety faster than any grand gesture. Logan Ury's research on long-term relationship satisfaction found that perceived reliability in the first month of dating is one of the strongest predictors of relationship quality at year two.",
+            keyInsight: "Small consistent actions build more trust than occasional grand gestures.",
+            research: "Logan Ury, How to Not Die Alone.",
+            quizQuestion: "You were warm and engaged on date one. How important is it to show up the same way on date two?",
+            quizAnswer: "Critical. Consistency is what the nervous system is tracking, not peak moments."
         ),
         LabLesson(
             number: 18, isFree: false,
-            title: "Moving From Text to Real Life",
-            subtitle: "The art of the transition",
-            icon: "figure.2.arms.open",
-            color: Color(hex: "E8356D"),
-            scenario: """
-"We should hang out sometime" — sent after two weeks of great conversation.
-
-They said "yeah definitely!" and then... nothing happened.
-""",
-            whatWentWrong: "Vague suggestions create vague momentum — which is no momentum at all. 'We should hang out' is not an invitation, it's an idea. Without specificity, it stays an idea forever.",
-            thePrinciple: "The transition from text to real life requires specificity and confidence. A specific suggestion signals genuine interest and takes the decision-making burden off the other person. It also creates a moment — a real thing to either say yes or no to — rather than a hypothetical.",
-            theFix: "Name a day, a general idea, and ask if it works. 'I know a good coffee place in [area] — free Saturday afternoon?' is a real invitation. It gives them something to respond to and signals that you actually want this to happen.",
-            tryThis: "If there's a conversation that's been going well for more than a week — ask this week. Be specific. Day, rough idea, question. That's all it takes."
+            module: 5, moduleName: "Consistency",
+            title: "The Follow-Through Gap",
+            subtitle: "The space between what you say and what you do",
+            icon: "checkmark.circle.fill",
+            color: Color(hex: "00BFB3"),
+            fullContent: "\"We should do that sometime\" said and never followed up on is one of the most common connection killers in early dating. The follow-through gap — the distance between what you say and what you do — is noticed even when people don't consciously track it. The fix is simple: only say things you intend to do. \"I'll send you that article\" followed by actually sending it is more connecting than ten compliments. \"I'd love to try that restaurant you mentioned\" followed by a specific suggestion builds more trust than a month of good conversation.",
+            keyInsight: "Follow through on small things. They are not small.",
+            research: "Robert Cialdini, Influence — commitment and consistency principle.",
+            quizQuestion: "You told someone you'd send them a podcast recommendation. Three days pass. What do you do?",
+            quizAnswer: "Send it with a one-line note. Late follow-through beats no follow-through."
         ),
         LabLesson(
             number: 19, isFree: false,
-            title: "After the First Date",
-            subtitle: "What happens next matters",
-            icon: "calendar.badge.checkmark",
-            color: Color(hex: "00BFB3"),
-            scenario: """
-The first date went well. Really well. Jordan waited three days to follow up because they'd read that waiting makes you seem less desperate. By then, the other person had mentally moved on.
-""",
-            whatWentWrong: "The 'waiting game' is a relic from an era when seeming unbothered was the goal. What it actually communicates is either disinterest or anxiety about appearing interested — neither of which builds connection.",
-            thePrinciple: "If you had a good time, say so — within 24 hours. A genuine, warm follow-up message after a good date is one of the simplest and most effective things you can do. It closes the loop on the date and opens the door to the next one.",
-            theFix: "Send a short, genuine message within 24 hours. Reference one specific moment from the date. Say you'd like to do it again if you would. That's it. No games. No strategy. Just honesty.",
-            tryThis: "After your next date — good or bad — send a follow-up within 24 hours. If it was good: reference a specific moment and say you'd like to do it again. If it wasn't: a kind close is better than silence."
+            module: 5, moduleName: "Consistency",
+            title: "Presence Over Frequency",
+            subtitle: "Quality of attention beats volume of contact",
+            icon: "eye.fill",
+            color: Color(hex: "F59E0B"),
+            fullContent: "Texting someone fifteen times a day while being mentally absent during actual time together is the modern paradox of connection. Frequency is not presence. Presence is the quality of attention you bring when you're actually together. One hour of full attention — phone face down, genuinely listening, making eye contact — builds more connection than a week of constant but distracted contact. This is increasingly rare which makes it increasingly valuable. Being the person who is actually present when present is a significant differentiator.",
+            keyInsight: "Quality of attention matters more than frequency of contact.",
+            research: "Sherry Turkle, Reclaiming Conversation.",
+            quizQuestion: "You text someone constantly but check your phone during dinner with them. What signal are you sending?",
+            quizAnswer: "That the phone is more important than they are, regardless of how much you text."
         ),
         LabLesson(
             number: 20, isFree: false,
-            title: "Becoming Someone Worth Knowing",
-            subtitle: "The conversation skill that comes before all the others",
-            icon: "person.fill.checkmark",
-            color: Color(hex: "E8356D"),
-            scenario: """
-Two people matched. One spent their evening crafting the perfect opener using formulas they'd read online. The other spent their evening doing something they loved, and opened with a genuine observation about something that happened that day.
-
-Guess which conversation went further.
-""",
-            whatWentWrong: "The formula approach treats conversation as a performance to be optimised. But people can feel when they're being run through a technique — even if they can't articulate why. It creates a subtle disconnection.",
-            thePrinciple: "The most attractive thing you can do for your dating life is have a rich inner one. People who are genuinely interested in things, who have opinions, who are building something, who laugh easily — these people are naturally compelling to talk to. Technique helps. Character is the foundation.",
-            theFix: "Invest in yourself as much as you invest in your dating strategy. Read things. Do things. Form opinions. Be someone who has something to bring to the conversation — not because it's attractive, but because it's a good life.",
-            tryThis: "This week: do one thing for no reason other than that it interests you. Talk about it openly with someone. Notice how differently you show up when you're engaged with your own life."
+            module: 5, moduleName: "Consistency",
+            title: "The Long Game",
+            subtitle: "Give attraction time to compound",
+            icon: "hourglass",
+            color: Color(hex: "9B59B6"),
+            fullContent: "Real attraction compounds. The first date is not the whole story. Many of the most significant relationships start with a 6 or a 7, not a 10. The nervous system's initial read is based on threat assessment and pattern matching from the past — not necessarily on who this person actually is. Giving connection time to develop rather than making a final verdict after one meeting is one of the most underrated relationship skills. Logan Ury calls this slow love — the willingness to let attraction deepen over time rather than demanding it be fully formed at first sight.",
+            keyInsight: "Give attraction time. A 7 who becomes a 10 over three dates beats a 10 who stays a 10.",
+            research: "Logan Ury, How to Not Die Alone. Helen Fisher on attraction timelines.",
+            quizQuestion: "You had a fine but not fireworks first date. Should you go on a second?",
+            quizAnswer: "Almost always yes. Attraction compounds. First dates are the worst data point."
         ),
     ]
+
+    private var moduleGroups: [ModuleGroup] {
+        let grouped = Dictionary(grouping: lessons, by: \.module)
+        return grouped.keys.sorted().map { num in
+            let inModule = (grouped[num] ?? []).sorted { $0.number < $1.number }
+            return ModuleGroup(number: num, name: inModule.first?.moduleName ?? "", lessons: inModule)
+        }
+    }
 
     var body: some View {
         VStack(spacing: 0) {
@@ -454,7 +447,7 @@ Guess which conversation went further.
                         .background(Color.rwSurface).clipShape(Circle())
                 }
                 Spacer()
-                Text("The 10 Lessons").font(RWF.head()).foregroundColor(.rwTextPrimary)
+                Text("The 20 Lessons").font(RWF.head()).foregroundColor(.rwTextPrimary)
                 Spacer()
                 Spacer().frame(width: 36)
             }
@@ -462,11 +455,11 @@ Guess which conversation went further.
             RWLine()
 
             ScrollView(showsIndicators: false) {
-                VStack(spacing: 10) {
+                VStack(spacing: 22) {
                     if !store.isPro {
                         HStack(spacing: 8) {
                             Image(systemName: "lock.fill").font(.system(size: 11))
-                            Text("Lessons 4-10 require Pro. Lessons 1-3 are free.")
+                            Text("Lessons 4–20 require Pro. Lessons 1–3 are free.")
                                 .font(RWF.cap(12))
                         }
                         .foregroundColor(.rwTextMuted)
@@ -474,13 +467,31 @@ Guess which conversation went further.
                         .padding(.top, 4)
                     }
 
-                    ForEach(lessons) { lesson in
-                        if lesson.isFree || store.isPro {
-                            Button { selected = lesson } label: { LessonRow(lesson: lesson, locked: false) }
-                                .buttonStyle(SBS())
-                        } else {
-                            Button { showPaywall = true } label: { LessonRow(lesson: lesson, locked: true) }
-                                .buttonStyle(SBS())
+                    ForEach(moduleGroups, id: \.number) { mod in
+                        VStack(alignment: .leading, spacing: 10) {
+                            HStack(spacing: 6) {
+                                Text("MODULE \(mod.number)")
+                                    .font(RWF.micro())
+                                    .foregroundColor(.rwTextMuted)
+                                    .tracking(1.5)
+                                Text("·").foregroundColor(.rwTextMuted)
+                                Text(mod.name.uppercased())
+                                    .font(RWF.micro())
+                                    .foregroundColor(.rwAccent)
+                                    .tracking(1.5)
+                                Spacer()
+                            }
+                            VStack(spacing: 8) {
+                                ForEach(mod.lessons) { lesson in
+                                    if lesson.isFree || store.isPro {
+                                        Button { selected = lesson } label: { LessonRow(lesson: lesson, locked: false) }
+                                            .buttonStyle(SBS())
+                                    } else {
+                                        Button { showPaywall = true } label: { LessonRow(lesson: lesson, locked: true) }
+                                            .buttonStyle(SBS())
+                                    }
+                                }
+                            }
                         }
                     }
 
@@ -543,6 +554,7 @@ struct LessonRow: View {
 struct LessonDetailView2: View {
     let lesson: LabLesson
     @Environment(\.dismiss) var dismiss
+    @State private var quizRevealed = false
 
     var body: some View {
         NavigationView {
@@ -555,60 +567,98 @@ struct LessonDetailView2: View {
                             .frame(width: 60, height: 60).background(lesson.color)
                             .clipShape(RoundedRectangle(cornerRadius: RR.lg))
                         VStack(alignment: .leading, spacing: 4) {
-                            Text("Lesson \(lesson.number)").font(RWF.cap()).foregroundColor(.rwTextMuted)
+                            HStack(spacing: 6) {
+                                Text("MODULE \(lesson.module)")
+                                    .font(RWF.micro()).foregroundColor(.rwTextMuted).tracking(1.4)
+                                Text("·").foregroundColor(.rwTextMuted)
+                                Text(lesson.moduleName.uppercased())
+                                    .font(RWF.micro()).foregroundColor(.rwAccent).tracking(1.4)
+                            }
                             Text(lesson.title).font(RWF.title(20)).foregroundColor(.rwTextPrimary)
                         }
                     }
 
-                    // Scenario
+                    // Lesson body
                     VStack(alignment: .leading, spacing: 8) {
-                        Label("Real scenario", systemImage: "doc.text.fill")
+                        Label("Lesson", systemImage: "book.fill")
                             .font(RWF.cap()).foregroundColor(.rwTextMuted)
-                        Text(lesson.scenario).font(RWF.body(15)).foregroundColor(.rwTextSecondary)
+                        Text(lesson.fullContent)
+                            .font(RWF.body(15)).foregroundColor(.rwTextPrimary)
                             .fixedSize(horizontal: false, vertical: true).lineSpacing(5)
-                            .padding(SP.md).background(Color.rwSurface)
-                            .clipShape(RoundedRectangle(cornerRadius: RR.lg))
                     }
 
-                    // What went wrong
-                    VStack(alignment: .leading, spacing: 8) {
-                        Label("What went wrong", systemImage: "exclamationmark.triangle.fill")
-                            .font(RWF.cap()).foregroundColor(Color(hex: "E8356D"))
-                        Text(lesson.whatWentWrong).font(RWF.body()).foregroundColor(.rwTextPrimary)
-                            .fixedSize(horizontal: false, vertical: true).lineSpacing(4)
+                    // Key insight callout
+                    HStack(alignment: .top, spacing: 12) {
+                        Image(systemName: "key.fill")
+                            .font(.system(size: 18, weight: .semibold))
+                            .foregroundColor(lesson.color)
+                        VStack(alignment: .leading, spacing: 4) {
+                            Text("Key insight").font(RWF.cap()).foregroundColor(.rwTextMuted).tracking(1.2)
+                            Text(lesson.keyInsight).font(RWF.head(15)).foregroundColor(.rwTextPrimary)
+                                .fixedSize(horizontal: false, vertical: true).lineSpacing(3)
+                        }
+                    }
+                    .padding(SP.md).background(lesson.color.opacity(0.08))
+                    .clipShape(RoundedRectangle(cornerRadius: RR.xl))
+                    .overlay(RoundedRectangle(cornerRadius: RR.xl).stroke(lesson.color.opacity(0.2), lineWidth: 1))
+
+                    // Research footnote
+                    VStack(alignment: .leading, spacing: 6) {
+                        Label("Research", systemImage: "books.vertical.fill")
+                            .font(RWF.cap()).foregroundColor(.rwTextMuted)
+                        Text(lesson.research)
+                            .font(RWF.body(13)).foregroundColor(.rwTextSecondary)
+                            .italic()
+                            .fixedSize(horizontal: false, vertical: true)
                     }
 
                     RWLine()
 
-                    // The principle
-                    VStack(alignment: .leading, spacing: 8) {
-                        Label("The principle", systemImage: "lightbulb.fill")
-                            .font(RWF.cap()).foregroundColor(Color(hex: "F59E0B"))
-                        Text(lesson.thePrinciple).font(RWF.body()).foregroundColor(.rwTextPrimary)
-                            .fixedSize(horizontal: false, vertical: true).lineSpacing(4)
-                    }
+                    // Quiz — tap to reveal
+                    VStack(alignment: .leading, spacing: 12) {
+                        Label("Quick check", systemImage: "questionmark.circle.fill")
+                            .font(RWF.cap()).foregroundColor(.rwAccent)
+                        Text(lesson.quizQuestion)
+                            .font(RWF.head(15)).foregroundColor(.rwTextPrimary)
+                            .fixedSize(horizontal: false, vertical: true).lineSpacing(3)
 
-                    // The fix
-                    VStack(alignment: .leading, spacing: 8) {
-                        Label("The fix", systemImage: "checkmark.circle.fill")
-                            .font(RWF.cap()).foregroundColor(Color(hex: "00BFB3"))
-                        Text(lesson.theFix).font(RWF.body()).foregroundColor(.rwTextPrimary)
-                            .fixedSize(horizontal: false, vertical: true).lineSpacing(4)
-                    }
-
-                    // Try this
-                    HStack(alignment: .top, spacing: 12) {
-                        Image(systemName: "arrow.right.circle.fill")
-                            .font(.system(size: 20)).foregroundColor(lesson.color)
-                        VStack(alignment: .leading, spacing: 4) {
-                            Text("Try this").font(RWF.head(14)).foregroundColor(.rwTextPrimary)
-                            Text(lesson.tryThis).font(RWF.body(14)).foregroundColor(.rwTextSecondary)
-                                .fixedSize(horizontal: false, vertical: true).lineSpacing(3)
+                        if quizRevealed {
+                            HStack(alignment: .top, spacing: 10) {
+                                Image(systemName: "checkmark.seal.fill")
+                                    .font(.system(size: 16))
+                                    .foregroundColor(Color(hex: "00BFB3"))
+                                    .padding(.top, 1)
+                                Text(lesson.quizAnswer)
+                                    .font(RWF.body(14)).foregroundColor(.rwTextPrimary)
+                                    .fixedSize(horizontal: false, vertical: true).lineSpacing(3)
+                            }
+                            .padding(SP.md)
+                            .background(Color(hex: "00BFB3").opacity(0.08))
+                            .clipShape(RoundedRectangle(cornerRadius: RR.lg))
+                            .overlay(RoundedRectangle(cornerRadius: RR.lg).stroke(Color(hex: "00BFB3").opacity(0.2), lineWidth: 1))
+                            .transition(.opacity.combined(with: .move(edge: .top)))
+                        } else {
+                            Button {
+                                withAnimation(.spring(response: 0.4, dampingFraction: 0.85)) {
+                                    quizRevealed = true
+                                }
+                                UIImpactFeedbackGenerator(style: .light).impactOccurred()
+                            } label: {
+                                HStack(spacing: 8) {
+                                    Image(systemName: "eye.fill").font(.system(size: 13))
+                                    Text("Tap to reveal answer").font(RWF.med(14))
+                                    Spacer()
+                                    Image(systemName: "chevron.right").font(.system(size: 12))
+                                }
+                                .foregroundColor(.rwAccent)
+                                .padding(SP.md)
+                                .background(Color.rwAccent.opacity(0.08))
+                                .clipShape(RoundedRectangle(cornerRadius: RR.lg))
+                                .overlay(RoundedRectangle(cornerRadius: RR.lg).stroke(Color.rwAccent.opacity(0.25), lineWidth: 1))
+                            }
+                            .buttonStyle(SBS())
                         }
                     }
-                    .padding(SP.md).background(lesson.color.opacity(0.06))
-                    .clipShape(RoundedRectangle(cornerRadius: RR.xl))
-                    .overlay(RoundedRectangle(cornerRadius: RR.xl).stroke(lesson.color.opacity(0.2), lineWidth: 1))
 
                     Spacer().frame(height: 60)
                 }
@@ -629,9 +679,13 @@ struct LessonDetailView2: View {
 struct LabLesson: Identifiable {
     let id = UUID()
     let number: Int; let isFree: Bool
+    let module: Int; let moduleName: String
     let title: String; let subtitle: String; let icon: String; let color: Color
-    let scenario: String; let whatWentWrong: String; let thePrinciple: String
-    let theFix: String; let tryThis: String
+    let fullContent: String
+    let keyInsight: String
+    let research: String
+    let quizQuestion: String
+    let quizAnswer: String
 }
 
 // MARK: - Text Simulator
