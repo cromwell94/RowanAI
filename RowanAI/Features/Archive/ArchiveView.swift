@@ -88,7 +88,7 @@ struct ArchiveView: View {
                             .onAppear { appeared = true }
                         }
                     }
-                    .refreshable { store.load() }
+                    .refreshable { await store.load() }
                 }
             }
             .rwBG()
