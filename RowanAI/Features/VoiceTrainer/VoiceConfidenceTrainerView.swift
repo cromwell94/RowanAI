@@ -39,7 +39,7 @@ struct VoiceConfidenceTrainerView: View {
             ZStack {
                 Circle().fill(Color.rwAccent.opacity(0.1)).frame(width: 96, height: 96)
                 Image(systemName: "mic.fill")
-                    .font(.system(size: 36, weight: .semibold))
+                    .font(.system(size: 36, weight: .semibold, design: .rounded))
                     .foregroundColor(.rwAccent)
             }
             .padding(.top, 12)
@@ -57,7 +57,7 @@ struct VoiceConfidenceTrainerView: View {
         RWCard {
             HStack(spacing: 14) {
                 Image(systemName: icon)
-                    .font(.system(size: 20, weight: .semibold))
+                    .font(.system(size: 20, weight: .semibold, design: .rounded))
                     .foregroundColor(.rwAccent)
                     .frame(width: 52, height: 52)
                     .background(Color.rwAccent.opacity(0.12))

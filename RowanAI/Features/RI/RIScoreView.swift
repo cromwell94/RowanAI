@@ -37,7 +37,7 @@ struct RIScoreView: View {
             ToolbarItem(placement: .navigationBarTrailing) {
                 Button { showShareCard = true } label: {
                     Image(systemName: "square.and.arrow.up")
-                        .font(.system(size: 15, weight: .semibold))
+                        .font(.system(size: 15, weight: .semibold, design: .rounded))
                         .foregroundColor(.rwAccent)
                 }
             }
@@ -86,7 +86,7 @@ struct RIScoreView: View {
                         .foregroundColor(.rwTextPrimary)
                         .contentTransition(.numericText())
                     Text(level.rawValue.uppercased())
-                        .font(.system(size: 12, weight: .bold))
+                        .font(.system(size: 12, weight: .bold, design: .rounded))
                         .foregroundColor(level.color)
                         .tracking(1.4)
                 }
@@ -223,14 +223,14 @@ struct RIScoreView: View {
                 ForEach(lowest, id: \.self) { dim in
                     HStack(alignment: .top, spacing: 10) {
                         Image(systemName: dim.icon)
-                            .font(.system(size: 12, weight: .bold))
+                            .font(.system(size: 12, weight: .bold, design: .rounded))
                             .foregroundColor(dim.color)
                             .frame(width: 24, height: 24)
                             .background(dim.color.opacity(0.12))
                             .clipShape(Circle())
                         VStack(alignment: .leading, spacing: 3) {
                             Text("\(dim.rawValue) is at \(store.score.value(for: dim))")
-                                .font(.system(size: 12, weight: .semibold))
+                                .font(.system(size: 12, weight: .semibold, design: .rounded))
                                 .foregroundColor(.rwTextSecondary)
                             Text(dim.improvementTip)
                                 .font(RWF.body(13))
@@ -311,10 +311,10 @@ private struct DimensionCard: View {
             VStack(alignment: .leading, spacing: 8) {
                 HStack(spacing: 6) {
                     Image(systemName: dimension.icon)
-                        .font(.system(size: 11, weight: .semibold))
+                        .font(.system(size: 11, weight: .semibold, design: .rounded))
                         .foregroundColor(dimension.color)
                     Text(dimension.rawValue)
-                        .font(.system(size: 12, weight: .semibold))
+                        .font(.system(size: 12, weight: .semibold, design: .rounded))
                         .foregroundColor(.rwTextSecondary)
                     Spacer()
                     trendArrow
@@ -325,7 +325,7 @@ private struct DimensionCard: View {
                         .font(.system(size: 22, weight: .heavy, design: .rounded))
                         .foregroundColor(.rwTextPrimary)
                     Text("/200")
-                        .font(.system(size: 11))
+                        .font(.system(size: 11, design: .rounded))
                         .foregroundColor(.rwTextMuted)
                 }
 
@@ -335,27 +335,27 @@ private struct DimensionCard: View {
                     Divider().background(Color.rwBorder)
                     VStack(alignment: .leading, spacing: 6) {
                         Text("Fed by")
-                            .font(.system(size: 10, weight: .bold))
+                            .font(.system(size: 10, weight: .bold, design: .rounded))
                             .foregroundColor(.rwTextMuted)
                             .tracking(0.5)
                         ForEach(dimension.feeders, id: \.self) { feeder in
                             HStack(alignment: .top, spacing: 6) {
                                 Circle().fill(dimension.color).frame(width: 4, height: 4).padding(.top, 6)
                                 Text(feeder)
-                                    .font(.system(size: 11))
+                                    .font(.system(size: 11, design: .rounded))
                                     .foregroundColor(.rwTextSecondary)
                                     .fixedSize(horizontal: false, vertical: true)
                             }
                         }
                         if !recentEvents.isEmpty {
                             Text("Recent")
-                                .font(.system(size: 10, weight: .bold))
+                                .font(.system(size: 10, weight: .bold, design: .rounded))
                                 .foregroundColor(.rwTextMuted)
                                 .tracking(0.5)
                                 .padding(.top, 4)
                             ForEach(recentEvents) { event in
                                 Text("+\(event.points) · \(event.reason)")
-                                    .font(.system(size: 10))
+                                    .font(.system(size: 10, design: .rounded))
                                     .foregroundColor(.rwTextMuted)
                                     .lineLimit(1)
                             }
@@ -386,7 +386,7 @@ private struct DimensionCard: View {
                 Image(systemName: "arrow.right").foregroundColor(.rwTextMuted)
             }
         }
-        .font(.system(size: 10, weight: .bold))
+        .font(.system(size: 10, weight: .bold, design: .rounded))
     }
 
     private var progressBar: some View {
@@ -429,7 +429,7 @@ private struct ActivityRow: View {
                     .font(RWF.body(13))
                     .foregroundColor(.rwTextPrimary)
                 Text("\(event.dimension.rawValue) · \(Self.formatter.localizedString(for: event.timestamp, relativeTo: Date()))")
-                    .font(.system(size: 10))
+                    .font(.system(size: 10, design: .rounded))
                     .foregroundColor(.rwTextMuted)
             }
             Spacer()
@@ -456,11 +456,11 @@ private struct LevelBadge: View {
                         .frame(width: 56, height: 56)
                 }
                 Image(systemName: isAchieved ? "checkmark" : "lock.fill")
-                    .font(.system(size: isCurrent ? 18 : 13, weight: .bold))
+                    .font(.system(size: isCurrent ? 18 : 13, weight: .bold, design: .rounded))
                     .foregroundColor(isAchieved ? level.color : .rwTextMuted)
             }
             Text(level.rawValue)
-                .font(.system(size: 10, weight: .semibold))
+                .font(.system(size: 10, weight: .semibold, design: .rounded))
                 .foregroundColor(isAchieved ? .rwTextPrimary : .rwTextMuted)
                 .lineLimit(1)
                 .minimumScaleFactor(0.8)
@@ -494,7 +494,7 @@ private struct MilestoneCelebrationView: View {
                         .fill(level.color.opacity(0.20))
                         .frame(width: 160, height: 160)
                     Image(systemName: "star.circle.fill")
-                        .font(.system(size: 88))
+                        .font(.system(size: 88, design: .rounded))
                         .foregroundStyle(LinearGradient(
                             colors: [level.color, level.color.opacity(0.6)],
                             startPoint: .top, endPoint: .bottom
@@ -505,13 +505,13 @@ private struct MilestoneCelebrationView: View {
 
                 VStack(spacing: 10) {
                     Text("You've reached")
-                        .font(.system(size: 14, weight: .semibold))
+                        .font(.system(size: 14, weight: .semibold, design: .rounded))
                         .foregroundColor(.white.opacity(0.7))
                     Text(level.rawValue)
                         .font(.system(size: 44, weight: .heavy, design: .rounded))
                         .foregroundColor(.white)
                     Text(level.blurb)
-                        .font(.system(size: 15))
+                        .font(.system(size: 15, design: .rounded))
                         .foregroundColor(.white.opacity(0.85))
                         .multilineTextAlignment(.center)
                         .padding(.horizontal, SP.xl)
@@ -524,7 +524,7 @@ private struct MilestoneCelebrationView: View {
 
                 Button(action: onDismiss) {
                     Text("Keep Going")
-                        .font(.system(size: 16, weight: .semibold))
+                        .font(.system(size: 16, weight: .semibold, design: .rounded))
                         .foregroundColor(.white)
                         .frame(maxWidth: .infinity)
                         .padding(.vertical, 14)
@@ -629,7 +629,7 @@ private struct ShareCardView: View {
         VStack(spacing: 18) {
             HStack(spacing: 8) {
                 Image(systemName: "heart.fill")
-                    .font(.system(size: 18))
+                    .font(.system(size: 18, design: .rounded))
                     .foregroundStyle(LinearGradient(
                         colors: [.rwAccent, Color.rwGold],
                         startPoint: .leading, endPoint: .trailing
@@ -642,13 +642,13 @@ private struct ShareCardView: View {
 
             VStack(spacing: 6) {
                 Text("My Relational Intelligence Score")
-                    .font(.system(size: 13, weight: .semibold))
+                    .font(.system(size: 13, weight: .semibold, design: .rounded))
                     .foregroundColor(.white.opacity(0.7))
                 Text("\(score.total)")
                     .font(.system(size: 78, weight: .heavy, design: .rounded))
                     .foregroundColor(.white)
                 Text(score.level.rawValue.uppercased())
-                    .font(.system(size: 13, weight: .bold))
+                    .font(.system(size: 13, weight: .bold, design: .rounded))
                     .foregroundColor(score.level.color)
                     .tracking(2)
             }
@@ -659,11 +659,11 @@ private struct ShareCardView: View {
                         Image(systemName: dim.icon)
                             .foregroundColor(dim.color)
                         Text(dim.rawValue)
-                            .font(.system(size: 13, weight: .semibold))
+                            .font(.system(size: 13, weight: .semibold, design: .rounded))
                             .foregroundColor(.white)
                         Spacer()
                         Text("\(score.value(for: dim))")
-                            .font(.system(size: 14, weight: .bold))
+                            .font(.system(size: 14, weight: .bold, design: .rounded))
                             .foregroundColor(.white)
                     }
                     .padding(.horizontal, 14).padding(.vertical, 10)
@@ -676,7 +676,7 @@ private struct ShareCardView: View {
             Spacer()
 
             Text("@RowanAI.app")
-                .font(.system(size: 11, weight: .semibold))
+                .font(.system(size: 11, weight: .semibold, design: .rounded))
                 .foregroundColor(.white.opacity(0.6))
                 .padding(.bottom, 24)
         }

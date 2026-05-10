@@ -25,7 +25,7 @@ struct ArchiveView: View {
                 // Search
                 HStack(spacing: 10) {
                     HStack(spacing: 8) {
-                        Image(systemName: "magnifyingglass").foregroundColor(.rwTextMuted).font(.system(size: 15))
+                        Image(systemName: "magnifyingglass").foregroundColor(.rwTextMuted).font(.system(size: 15, design: .rounded))
                         TextField("Search...", text: $search).font(RWF.body()).foregroundColor(.rwTextPrimary)
                         if !search.isEmpty { Button { search = "" } label: { Image(systemName: "xmark.circle.fill").foregroundColor(.rwTextMuted) } }
                     }
@@ -35,7 +35,7 @@ struct ArchiveView: View {
 
                     Button { withAnimation { grid.toggle() } } label: {
                         Image(systemName: grid ? "list.bullet" : "square.grid.2x2")
-                            .font(.system(size: 16, weight: .semibold)).foregroundColor(.rwTextSecondary)
+                            .font(.system(size: 16, weight: .semibold, design: .rounded)).foregroundColor(.rwTextSecondary)
                             .frame(width: 40, height: 40).background(Color.rwCard)
                             .clipShape(RoundedRectangle(cornerRadius: RR.md))
                     }
@@ -102,11 +102,11 @@ struct ArchiveView: View {
                     HStack(spacing: 12) {
                         if !store.archived.isEmpty {
                             Button { showArch = true } label: {
-                                Image(systemName: "archivebox").font(.system(size: 15, weight: .semibold)).foregroundColor(.rwTextSecondary)
+                                Image(systemName: "archivebox").font(.system(size: 15, weight: .semibold, design: .rounded)).foregroundColor(.rwTextSecondary)
                             }
                         }
                         Button { if StoreManager.shared.canAddToArchive() { showAdd = true } else { showPaywall = true } } label: {
-                            Image(systemName: "plus.circle.fill").font(.system(size: 22)).foregroundColor(.rwAccent)
+                            Image(systemName: "plus.circle.fill").font(.system(size: 22, design: .rounded)).foregroundColor(.rwAccent)
                         }
                     }
                 }
@@ -158,7 +158,7 @@ struct RowCard: View {
                     }
                     if photoCount > 0 {
                         HStack(spacing: 3) {
-                            Image(systemName: "photo.fill").font(.system(size: 9, weight: .medium))
+                            Image(systemName: "photo.fill").font(.system(size: 9, weight: .medium, design: .rounded))
                             Text("\(photoCount)").font(RWF.micro())
                         }
                         .foregroundColor(Color(hex: "9B59B6"))
@@ -170,7 +170,7 @@ struct RowCard: View {
             }
             Spacer()
             Image(systemName: "chevron.right")
-                .font(.system(size: 12, weight: .medium))
+                .font(.system(size: 12, weight: .medium, design: .rounded))
                 .foregroundColor(.rwTextMuted)
         }
         .padding(SP.md)
@@ -204,7 +204,7 @@ struct GridCard: View {
                     .padding(.top, 6)
                 if photoCount > 0 {
                     HStack(spacing: 3) {
-                        Image(systemName: "photo.fill").font(.system(size: 8, weight: .medium))
+                        Image(systemName: "photo.fill").font(.system(size: 8, weight: .medium, design: .rounded))
                         Text("\(photoCount)").font(RWF.micro())
                     }
                     .foregroundColor(.white)
@@ -220,7 +220,7 @@ struct GridCard: View {
                     .foregroundColor(.rwTextPrimary)
                     .lineLimit(1)
                 HStack(spacing: 4) {
-                    Image(systemName: p.status.icon).font(.system(size: 9, weight: .medium))
+                    Image(systemName: p.status.icon).font(.system(size: 9, weight: .medium, design: .rounded))
                     Text(p.status.rawValue).font(RWF.micro()).lineLimit(1)
                 }
                 .foregroundColor(p.status.color)
@@ -268,12 +268,12 @@ struct AddView: View {
                                 ForEach(Person.Source.allCases, id: \.rawValue) { s in
                                     Button { p.source = s } label: {
                                         VStack(spacing: 4) {
-                                            Image(systemName: s.icon).font(.system(size: 16, weight: .semibold))
+                                            Image(systemName: s.icon).font(.system(size: 16, weight: .semibold, design: .rounded))
                                                 .foregroundColor(p.source == s ? .white : s.color)
                                                 .frame(width: 36, height: 36)
                                                 .background(p.source == s ? s.color : s.color.opacity(0.12))
                                                 .clipShape(RoundedRectangle(cornerRadius: RR.sm))
-                                            Text(s.rawValue).font(.system(size: 10, weight: .medium))
+                                            Text(s.rawValue).font(.system(size: 10, weight: .medium, design: .rounded))
                                                 .foregroundColor(p.source == s ? .rwTextPrimary : .rwTextMuted)
                                                 .lineLimit(1).minimumScaleFactor(0.7)
                                         }
@@ -337,7 +337,7 @@ struct DetailView: View {
                 VStack(spacing: 12) {
                     ZStack {
                         Circle().fill(p.source.color.opacity(0.2)).frame(width: 90, height: 90)
-                        Text(p.initial).font(.system(size: 36, weight: .black)).foregroundColor(p.source.color)
+                        Text(p.initial).font(.system(size: 36, weight: .black, design: .rounded)).foregroundColor(p.source.color)
                     }.padding(.top, 12)
                     VStack(spacing: 6) {
                         HStack(spacing: 8) {
@@ -356,9 +356,9 @@ struct DetailView: View {
                                 }
                             } label: {
                                 HStack(spacing: 4) {
-                                    Image(systemName: p.status.icon).font(.system(size: 10, weight: .semibold))
+                                    Image(systemName: p.status.icon).font(.system(size: 10, weight: .semibold, design: .rounded))
                                     Text(p.status.rawValue).font(RWF.micro())
-                                    Image(systemName: "chevron.down").font(.system(size: 8))
+                                    Image(systemName: "chevron.down").font(.system(size: 8, design: .rounded))
                                 }
                                 .foregroundColor(p.status.color).padding(.horizontal, 9).padding(.vertical, 4)
                                 .background(p.status.color.opacity(0.12)).clipShape(Capsule())
@@ -378,7 +378,7 @@ struct DetailView: View {
                             ForEach(1...5, id: \.self) { i in
                                 Button { p.rating = i; store.update(p) } label: {
                                     Image(systemName: i <= p.rating ? "star.fill" : "star")
-                                        .font(.system(size: 22)).foregroundColor(i <= p.rating ? .rwGold : .rwTextMuted)
+                                        .font(.system(size: 22, design: .rounded)).foregroundColor(i <= p.rating ? .rwGold : .rwTextMuted)
                                 }
                                 .buttonStyle(SBS())
                             }

@@ -71,7 +71,7 @@ struct ProfileBioTab: View {
     private var quotaBar: some View {
         HStack(spacing: 8) {
             Image(systemName: "sparkle")
-                .font(.system(size: 11, weight: .medium))
+                .font(.system(size: 11, weight: .medium, design: .rounded))
                 .foregroundStyle(LinearGradient.accent)
             Text("\(storeManager.profileBiosRemainingToday()) free \(storeManager.profileBiosRemainingToday() == 1 ? "bio" : "bios") left today")
                 .font(RWF.cap(12))
@@ -286,7 +286,7 @@ struct BioRefinementSheet: View {
                     } label: {
                         HStack(spacing: 14) {
                             Image(systemName: option.1)
-                                .font(.system(size: 14, weight: .semibold))
+                                .font(.system(size: 14, weight: .semibold, design: .rounded))
                                 .foregroundColor(.rwAccent)
                                 .frame(width: 36, height: 36)
                                 .background(Color.rwAccent.opacity(0.10))
@@ -295,7 +295,7 @@ struct BioRefinementSheet: View {
                                 .foregroundColor(.rwTextPrimary)
                             Spacer()
                             Image(systemName: "chevron.right")
-                                .font(.system(size: 11, weight: .medium))
+                                .font(.system(size: 11, weight: .medium, design: .rounded))
                                 .foregroundColor(.rwTextMuted)
                         }
                         .padding(SP.md)
@@ -376,7 +376,7 @@ struct ProfileOpeningTab: View {
     private var quotaBar: some View {
         HStack(spacing: 8) {
             Image(systemName: "sparkle")
-                .font(.system(size: 11, weight: .medium))
+                .font(.system(size: 11, weight: .medium, design: .rounded))
                 .foregroundStyle(LinearGradient.accent)
             Text("\(storeManager.profileOpenersRemainingToday()) free \(storeManager.profileOpenersRemainingToday() == 1 ? "generation" : "generations") left today")
                 .font(RWF.cap(12))
@@ -464,7 +464,7 @@ struct ProfileOpeningTab: View {
                         if loading == key {
                             ProgressView().tint(color).scaleEffect(0.6)
                         } else {
-                            Image(systemName: "shuffle").font(.system(size: 11, weight: .semibold))
+                            Image(systemName: "shuffle").font(.system(size: 11, weight: .semibold, design: .rounded))
                         }
                         Text("Try a different angle").font(RWF.cap(11))
                     }

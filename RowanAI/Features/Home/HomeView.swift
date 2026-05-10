@@ -44,8 +44,8 @@ struct MainTabView: View {
                         .shadow(color: Color.rwAccent.opacity(0.4), radius: 12, x: 0, y: 4)
                     VStack(spacing: 2) {
                         Image(systemName: "bubble.left.and.bubble.right.fill")
-                            .font(.system(size: 18, weight: .semibold)).foregroundColor(.white)
-                        Text("Guide").font(.system(size: 9, weight: .bold)).foregroundColor(.white.opacity(0.9))
+                            .font(.system(size: 18, weight: .semibold, design: .rounded)).foregroundColor(.white)
+                        Text("Guide").font(.system(size: 9, weight: .bold, design: .rounded)).foregroundColor(.white.opacity(0.9))
                     }
                 }
             }
@@ -104,13 +104,15 @@ struct HomeView: View {
                     if RelationshipStore.shared.isInRelationship {
                         HStack(spacing: 10) {
                             Image(systemName: "heart.circle.fill")
-                                .font(.system(size: 16)).foregroundColor(Color(hex: "00BFB3"))
+                                .font(.system(size: 16, design: .rounded)).foregroundColor(Color(hex: "00BFB3"))
                             VStack(alignment: .leading, spacing: 2) {
                                 Text("Relationship Mode").font(RWF.head(14)).foregroundColor(.rwTextPrimary)
                                 Text("You & \(RelationshipStore.shared.relationship?.partnerName ?? "")").font(RWF.cap(12)).foregroundColor(.rwTextSecondary)
                             }
                             Spacer()
-                            Text("❤️").font(.system(size: 20))
+                            Image(systemName: "heart.fill")
+                                .font(.system(size: 20, design: .rounded))
+                                .foregroundStyle(LinearGradient.accent)
                         }
                         .padding(SP.md).background(Color(hex: "00BFB3").opacity(0.08))
                         .clipShape(RoundedRectangle(cornerRadius: RR.xl))
@@ -158,7 +160,7 @@ struct ModeTab: View {
     var body: some View {
         Button(action: tap) {
             HStack(spacing: 6) {
-                Image(systemName: icon).font(.system(size: 12, weight: .semibold))
+                Image(systemName: icon).font(.system(size: 12, weight: .semibold, design: .rounded))
                 Text(title).font(RWF.cap(13))
             }
             .foregroundColor(active ? .white : .rwTextMuted)
@@ -176,7 +178,7 @@ struct QCard: View {
     var body: some View {
         Button(action: onTap) {
             VStack(alignment: .leading, spacing: 10) {
-                Image(systemName: icon).font(.system(size: 22, weight: .semibold)).foregroundColor(color)
+                Image(systemName: icon).font(.system(size: 22, weight: .semibold, design: .rounded)).foregroundColor(color)
                     .frame(width: 44, height: 44).background(color.opacity(0.12))
                     .clipShape(RoundedRectangle(cornerRadius: RR.md))
                 VStack(alignment: .leading, spacing: 2) {
@@ -215,7 +217,7 @@ struct ProfileView: View {
                         ZStack {
                             Circle().fill(Color.rwAccent.opacity(0.15)).frame(width: 90, height: 90)
                             Text(String(AuthService.shared.currentUser?.name.prefix(1) ?? "R").uppercased())
-                                .font(.system(size: 36, weight: .black)).foregroundColor(.rwAccent)
+                                .font(.system(size: 36, weight: .black, design: .rounded)).foregroundColor(.rwAccent)
                         }.padding(.top, 20)
                         HStack(spacing: 8) {
                             Text(AuthService.shared.currentUser?.name ?? "")
@@ -232,6 +234,7 @@ struct ProfileView: View {
                         HStack(spacing: 6) {
                             Text("🔥 \(StreakManager.shared.currentStreak) day streak")
                                 .font(RWF.cap(12)).foregroundColor(.rwTextSecondary)
+                                .contentTransition(.numericText())
                             Text("·").foregroundColor(.rwTextMuted)
                             Text("\(StreakManager.shared.skillScore) pts")
                                 .font(RWF.cap(12)).foregroundColor(.rwTextSecondary)
@@ -244,7 +247,7 @@ struct ProfileView: View {
                     RWCard {
                         HStack(spacing: 14) {
                             Image(systemName: "brain.head.profile")
-                                .font(.system(size: 18, weight: .semibold))
+                                .font(.system(size: 18, weight: .semibold, design: .rounded))
                                 .foregroundColor(aiOn ? .rwAccent : .rwTextMuted)
                                 .frame(width: 44, height: 44)
                                 .background(aiOn ? Color.rwAccent.opacity(0.12) : Color.rwBackground)
@@ -278,7 +281,7 @@ struct ProfileView: View {
                     VStack(spacing: 0) {
                         HStack(spacing: 14) {
                             Image(systemName: "questionmark.circle.fill")
-                                .font(.system(size: 15, weight: .medium))
+                                .font(.system(size: 15, weight: .medium, design: .rounded))
                                 .foregroundColor(.rwAccent)
                                 .frame(width: 30)
                             VStack(alignment: .leading, spacing: 2) {
@@ -298,12 +301,12 @@ struct ProfileView: View {
                         Button { resetConfirmation = true } label: {
                             HStack(spacing: 14) {
                                 Image(systemName: "arrow.counterclockwise.circle.fill")
-                                    .font(.system(size: 15, weight: .medium))
+                                    .font(.system(size: 15, weight: .medium, design: .rounded))
                                     .foregroundColor(.rwAccent).frame(width: 30)
                                 Text("Reset all tutorials").font(RWF.body()).foregroundColor(.rwTextPrimary)
                                 Spacer()
                                 Image(systemName: "chevron.right")
-                                    .font(.system(size: 12, weight: .semibold))
+                                    .font(.system(size: 12, weight: .semibold, design: .rounded))
                                     .foregroundColor(.rwTextMuted)
                             }
                             .padding(.horizontal, SP.lg).padding(.vertical, 14)
@@ -319,7 +322,7 @@ struct ProfileView: View {
                     }
 
                     Text("Cyrano provides AI-generated coaching only — not professional relationship advice.")
-                        .font(.system(size: 11)).foregroundColor(.rwTextMuted).multilineTextAlignment(.center).padding(.horizontal, SP.xl)
+                        .font(.system(size: 11, design: .rounded)).foregroundColor(.rwTextMuted).multilineTextAlignment(.center).padding(.horizontal, SP.xl)
 
                     Spacer().frame(height: 100)
                 }
@@ -349,11 +352,11 @@ struct PRow: View {
     var body: some View {
         Button(action: action) {
             HStack(spacing: 14) {
-                Image(systemName: icon).font(.system(size: 15, weight: .semibold))
+                Image(systemName: icon).font(.system(size: 15, weight: .semibold, design: .rounded))
                     .foregroundColor(.rwAccent).frame(width: 30)
                 Text(title).font(RWF.body()).foregroundColor(.rwTextPrimary)
                 Spacer()
-                Image(systemName: "chevron.right").font(.system(size: 12, weight: .semibold)).foregroundColor(.rwTextMuted)
+                Image(systemName: "chevron.right").font(.system(size: 12, weight: .semibold, design: .rounded)).foregroundColor(.rwTextMuted)
             }
             .padding(.horizontal, SP.lg).padding(.vertical, 14)
         }
@@ -386,7 +389,7 @@ struct GuideSheet: View {
                 }
                 Spacer()
                 Button { open = false } label: {
-                    Image(systemName: "xmark").font(.system(size: 14, weight: .semibold))
+                    Image(systemName: "xmark").font(.system(size: 14, weight: .semibold, design: .rounded))
                         .foregroundColor(.rwTextSecondary).frame(width: 32, height: 32)
                         .background(Color.rwCard).clipShape(Circle())
                 }
@@ -452,7 +455,7 @@ struct GuideSheet: View {
                     .font(RWF.body()).foregroundColor(.rwTextPrimary).focused($focused)
                     .onSubmit { Task { await ask() } }
                 Button { Task { await ask() } } label: {
-                    Image(systemName: "arrow.up.circle.fill").font(.system(size: 28))
+                    Image(systemName: "arrow.up.circle.fill").font(.system(size: 28, design: .rounded))
                         .foregroundColor(question.isEmpty ? .rwTextMuted : .rwAccent)
                 }
                 .disabled(question.trimmingCharacters(in: .whitespaces).isEmpty).buttonStyle(SBS())
@@ -499,12 +502,12 @@ struct LanguageSettingsView: View {
                                 UIImpactFeedbackGenerator(style: .light).impactOccurred()
                             } label: {
                                 HStack(spacing: 10) {
-                                    Text(lang.flag).font(.system(size: 22))
+                                    Text(lang.flag).font(.system(size: 22, design: .rounded))
                                     Text(lang.rawValue).font(RWF.med(13)).foregroundColor(.rwTextPrimary)
                                     Spacer()
                                     if user.preferredLanguage == lang {
                                         Image(systemName: "checkmark.circle.fill")
-                                            .foregroundColor(.rwAccent).font(.system(size: 14))
+                                            .foregroundColor(.rwAccent).font(.system(size: 14, design: .rounded))
                                     }
                                 }
                                 .padding(SP.md)

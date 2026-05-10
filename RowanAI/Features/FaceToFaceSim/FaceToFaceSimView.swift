@@ -100,7 +100,7 @@ struct FaceToFaceSimView: View {
             VStack(alignment: .leading, spacing: 6) {
                 HStack(spacing: 8) {
                     Image(systemName: mode.icon)
-                        .font(.system(size: 11, weight: .medium))
+                        .font(.system(size: 11, weight: .medium, design: .rounded))
                         .foregroundColor(mode.color)
                     Text(mode.headerLabel.uppercased())
                         .font(RWF.micro())
@@ -139,7 +139,7 @@ struct FaceToFaceSimView: View {
                         UIImpactFeedbackGenerator(style: .light).impactOccurred()
                     } label: {
                         HStack(spacing: 5) {
-                            Image(systemName: m.icon).font(.system(size: 11, weight: .medium))
+                            Image(systemName: m.icon).font(.system(size: 11, weight: .medium, design: .rounded))
                             Text(m.shortLabel).font(RWF.cap(12))
                         }
                         .foregroundColor(mode == m ? .white : .rwTextSecondary)
@@ -245,11 +245,11 @@ private struct AvatarThumb: View {
                             .frame(width: 76, height: 76)
                             .opacity(isLocked ? 0.4 : 1)
                         Text(String(avatar.name.prefix(1)))
-                            .font(.system(size: 30, weight: .black))
+                            .font(.system(size: 30, weight: .black, design: .rounded))
                             .foregroundColor(.white)
                         if isLocked {
                             Image(systemName: "lock.fill")
-                                .font(.system(size: 14, weight: .bold))
+                                .font(.system(size: 14, weight: .bold, design: .rounded))
                                 .foregroundColor(.white)
                                 .padding(6)
                                 .background(Circle().fill(Color.black.opacity(0.5)))
@@ -299,7 +299,7 @@ private struct AvatarThumb: View {
                     ProgressView().tint(.white).scaleEffect(0.55)
                 } else {
                     Image(systemName: "speaker.wave.2.fill")
-                        .font(.system(size: 11, weight: .bold))
+                        .font(.system(size: 11, weight: .bold, design: .rounded))
                         .foregroundColor(.white)
                 }
             }
@@ -334,14 +334,14 @@ private struct EnvironmentCard: View {
             VStack(alignment: .leading, spacing: 8) {
                 HStack {
                     Image(systemName: env.icon)
-                        .font(.system(size: 18, weight: .semibold))
+                        .font(.system(size: 18, weight: .semibold, design: .rounded))
                         .foregroundColor(isSelected ? .white : env.color)
                         .frame(width: 36, height: 36)
                         .background(isSelected ? env.color : env.color.opacity(0.14))
                         .clipShape(RoundedRectangle(cornerRadius: RR.sm))
                     Spacer()
                     if isLocked {
-                        Image(systemName: "lock.fill").font(.system(size: 11)).foregroundColor(.rwTextMuted)
+                        Image(systemName: "lock.fill").font(.system(size: 11, design: .rounded)).foregroundColor(.rwTextMuted)
                     } else if isSelected {
                         Image(systemName: "checkmark.circle.fill").foregroundColor(env.color)
                     }
@@ -375,7 +375,7 @@ private struct PersonalityRow: View {
         Button(action: onTap) {
             HStack(spacing: 14) {
                 Image(systemName: personality.icon)
-                    .font(.system(size: 18, weight: .semibold))
+                    .font(.system(size: 18, weight: .semibold, design: .rounded))
                     .foregroundColor(isSelected ? .white : personality.difficulty.color)
                     .frame(width: 44, height: 44)
                     .background(isSelected ? personality.difficulty.color : personality.difficulty.color.opacity(0.12))
@@ -397,7 +397,7 @@ private struct PersonalityRow: View {
                 }
                 Spacer(minLength: 0)
                 if isLocked {
-                    Image(systemName: "lock.fill").font(.system(size: 14)).foregroundColor(.rwTextMuted)
+                    Image(systemName: "lock.fill").font(.system(size: 14, design: .rounded)).foregroundColor(.rwTextMuted)
                 } else if isSelected {
                     Image(systemName: "checkmark.circle.fill").foregroundColor(personality.difficulty.color)
                 }
@@ -468,7 +468,7 @@ struct SimPreSessionView: View {
         VStack(spacing: 12) {
             HStack(spacing: 6) {
                 Image(systemName: mode.icon)
-                    .font(.system(size: 11, weight: .medium))
+                    .font(.system(size: 11, weight: .medium, design: .rounded))
                     .foregroundColor(mode.color)
                 Text(mode.headerLabel.uppercased())
                     .font(RWF.micro())
@@ -482,7 +482,7 @@ struct SimPreSessionView: View {
                         startPoint: .topLeading, endPoint: .bottomTrailing))
                     .frame(width: 100, height: 100)
                 Text(String(avatar.name.prefix(1)))
-                    .font(.system(size: 40, weight: .black))
+                    .font(.system(size: 40, weight: .black, design: .rounded))
                     .foregroundColor(.white)
             }
             Text("\(avatar.name) · \(environment.displayTitle(for: mode))")

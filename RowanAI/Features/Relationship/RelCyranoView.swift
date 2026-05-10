@@ -79,7 +79,7 @@ struct RelFeatureCard: View {
     var body: some View {
         Button(action: action) {
             HStack(alignment: .top, spacing: 14) {
-                Image(systemName: icon).font(.system(size: 20, weight: .semibold))
+                Image(systemName: icon).font(.system(size: 20, weight: .semibold, design: .rounded))
                     .foregroundColor(.white).frame(width: 52, height: 52)
                     .background(color).clipShape(RoundedRectangle(cornerRadius: RR.md))
                 VStack(alignment: .leading, spacing: 6) {
@@ -122,7 +122,7 @@ struct VentView: View {
             // Header
             HStack {
                 Button(action: onBack) {
-                    Image(systemName: "chevron.left").font(.system(size: 16, weight: .semibold))
+                    Image(systemName: "chevron.left").font(.system(size: 16, weight: .semibold, design: .rounded))
                         .foregroundColor(.rwTextPrimary).frame(width: 36, height: 36)
                         .background(Color.rwSurface).clipShape(Circle())
                 }
@@ -163,7 +163,7 @@ struct VentView: View {
                                 ForEach(Vent.Mood.allCases, id: \.rawValue) { m in
                                     Button { mood = m } label: {
                                         HStack(spacing: 5) {
-                                            Image(systemName: m.icon).font(.system(size: 11, weight: .semibold))
+                                            Image(systemName: m.icon).font(.system(size: 11, weight: .semibold, design: .rounded))
                                             Text(m.rawValue).font(RWF.cap(12))
                                         }
                                         .foregroundColor(mood == m ? .white : .rwTextSecondary)
@@ -196,9 +196,9 @@ struct VentView: View {
 
                     // Disclaimer
                     HStack(spacing: 6) {
-                        Image(systemName: "lock.fill").font(.system(size: 11))
+                        Image(systemName: "lock.fill").font(.system(size: 11, design: .rounded))
                         Text("This is private. Cyrano won't judge, minimize, or give unsolicited advice.")
-                            .font(.system(size: 11))
+                            .font(.system(size: 11, design: .rounded))
                     }
                     .foregroundColor(.rwTextMuted)
 
@@ -327,7 +327,7 @@ struct IsThisNormalView: View {
         VStack(spacing: 0) {
             HStack {
                 Button(action: onBack) {
-                    Image(systemName: "chevron.left").font(.system(size: 16, weight: .semibold))
+                    Image(systemName: "chevron.left").font(.system(size: 16, weight: .semibold, design: .rounded))
                         .foregroundColor(.rwTextPrimary).frame(width: 36, height: 36)
                         .background(Color.rwSurface).clipShape(Circle())
                 }
@@ -361,7 +361,7 @@ struct IsThisNormalView: View {
                                         Text(p).font(RWF.body(14)).foregroundColor(.rwTextPrimary)
                                             .fixedSize(horizontal: false, vertical: true)
                                         Spacer()
-                                        Image(systemName: "chevron.right").foregroundColor(.rwTextMuted).font(.system(size: 12))
+                                        Image(systemName: "chevron.right").foregroundColor(.rwTextMuted).font(.system(size: 12, design: .rounded))
                                     }
                                     .padding(SP.md).background(Color.rwCard)
                                     .clipShape(RoundedRectangle(cornerRadius: RR.lg))
@@ -418,7 +418,7 @@ struct IsThisNormalView: View {
                         .font(RWF.body()).foregroundColor(.rwTextPrimary).focused($focused)
                         .onSubmit { Task { await ask() } }
                     Button { Task { await ask() } } label: {
-                        Image(systemName: "arrow.up.circle.fill").font(.system(size: 28))
+                        Image(systemName: "arrow.up.circle.fill").font(.system(size: 28, design: .rounded))
                             .foregroundColor(question.isEmpty ? .rwTextMuted : .rwAccent)
                     }
                     .disabled(question.trimmingCharacters(in: .whitespaces).isEmpty).buttonStyle(SBS())
@@ -474,7 +474,7 @@ struct CommunicateView: View {
         VStack(spacing: 0) {
             HStack {
                 Button(action: onBack) {
-                    Image(systemName: "chevron.left").font(.system(size: 16, weight: .semibold))
+                    Image(systemName: "chevron.left").font(.system(size: 16, weight: .semibold, design: .rounded))
                         .foregroundColor(.rwTextPrimary).frame(width: 36, height: 36)
                         .background(Color.rwSurface).clipShape(Circle())
                 }
@@ -507,7 +507,7 @@ struct CommunicateView: View {
                                     HStack {
                                         Text(s).font(RWF.body(14)).foregroundColor(.rwTextPrimary)
                                         Spacer()
-                                        Image(systemName: "chevron.right").foregroundColor(.rwTextMuted).font(.system(size: 12))
+                                        Image(systemName: "chevron.right").foregroundColor(.rwTextMuted).font(.system(size: 12, design: .rounded))
                                     }
                                     .padding(SP.md).background(Color.rwCard)
                                     .clipShape(RoundedRectangle(cornerRadius: RR.lg))
@@ -570,7 +570,7 @@ struct CommunicateView: View {
                         .font(RWF.body()).foregroundColor(.rwTextPrimary).focused($focused)
                         .onSubmit { Task { await getSuggestion() } }
                     Button { Task { await getSuggestion() } } label: {
-                        Image(systemName: "arrow.up.circle.fill").font(.system(size: 28))
+                        Image(systemName: "arrow.up.circle.fill").font(.system(size: 28, design: .rounded))
                             .foregroundColor(scenario.isEmpty ? .rwTextMuted : .rwAccent)
                     }
                     .disabled(scenario.trimmingCharacters(in: .whitespaces).isEmpty).buttonStyle(SBS())
@@ -614,11 +614,11 @@ struct CrisisQuickAccess: View {
         VStack(spacing: 0) {
             Button { withAnimation { expanded.toggle() } } label: {
                 HStack(spacing: 10) {
-                    Image(systemName: "cross.circle.fill").font(.system(size: 16)).foregroundColor(Color(hex: "E8356D"))
+                    Image(systemName: "cross.circle.fill").font(.system(size: 16, design: .rounded)).foregroundColor(Color(hex: "E8356D"))
                     Text("Crisis & Support Resources").font(RWF.cap()).foregroundColor(.rwTextSecondary)
                     Spacer()
                     Image(systemName: expanded ? "chevron.up" : "chevron.down")
-                        .font(.system(size: 11, weight: .semibold)).foregroundColor(.rwTextMuted)
+                        .font(.system(size: 11, weight: .semibold, design: .rounded)).foregroundColor(.rwTextMuted)
                 }
                 .padding(SP.md).background(Color.rwSurface)
                 .clipShape(RoundedRectangle(cornerRadius: RR.lg))
@@ -644,7 +644,7 @@ struct CrisisRow: View {
     var body: some View {
         Link(destination: URL(string: url)!) {
             HStack(spacing: 12) {
-                Image(systemName: icon).font(.system(size: 13, weight: .semibold))
+                Image(systemName: icon).font(.system(size: 13, weight: .semibold, design: .rounded))
                     .foregroundColor(color).frame(width: 32, height: 32)
                     .background(color.opacity(0.1)).clipShape(Circle())
                 VStack(alignment: .leading, spacing: 1) {
@@ -652,7 +652,7 @@ struct CrisisRow: View {
                     Text(sub).font(RWF.cap(11)).foregroundColor(.rwTextSecondary)
                 }
                 Spacer()
-                Image(systemName: "arrow.up.right").font(.system(size: 11)).foregroundColor(.rwTextMuted)
+                Image(systemName: "arrow.up.right").font(.system(size: 11, design: .rounded)).foregroundColor(.rwTextMuted)
             }
             .padding(SP.sm).background(Color.rwCard)
             .clipShape(RoundedRectangle(cornerRadius: RR.lg))

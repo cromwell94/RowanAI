@@ -238,8 +238,9 @@ struct StreakCard: View {
             HStack(spacing: 14) {
                 // Streak flame
                 VStack(spacing: 2) {
-                    Text(streak.isStreakActive() ? "🔥" : "💤")
-                        .font(.system(size: 28))
+                    Image(systemName: streak.isStreakActive() ? "flame.fill" : "moon.zzz.fill")
+                        .font(.system(size: 28, design: .rounded))
+                        .foregroundColor(streak.isStreakActive() ? Color(hex: "F59E0B") : .rwTextMuted)
                     Text("\(streak.currentStreak)")
                         .font(RWF.display(18))
                         .foregroundColor(streak.isStreakActive() ? Color(hex: "F59E0B") : .rwTextMuted)
@@ -279,7 +280,7 @@ struct StreakCard: View {
                 }
 
                 Spacer()
-                Image(systemName: "chevron.right").foregroundColor(.rwTextMuted).font(.system(size: 12))
+                Image(systemName: "chevron.right").foregroundColor(.rwTextMuted).font(.system(size: 12, design: .rounded))
             }
             .padding(SP.md).background(Color.rwCard)
             .clipShape(RoundedRectangle(cornerRadius: RR.xl))
@@ -346,13 +347,17 @@ struct WeeklyInsightsView: View {
                     // Streak
                     HStack {
                         VStack(spacing: 4) {
-                            Text(streak.isStreakActive() ? "🔥" : "💤").font(.system(size: 36))
+                            Image(systemName: streak.isStreakActive() ? "flame.fill" : "moon.zzz.fill")
+                                .font(.system(size: 36, design: .rounded))
+                                .foregroundColor(streak.isStreakActive() ? Color(hex: "F59E0B") : .rwTextMuted)
                             Text("\(streak.currentStreak)").font(RWF.display(28)).foregroundColor(.rwTextPrimary)
                             Text("Day Streak").font(RWF.cap()).foregroundColor(.rwTextSecondary)
                         }
                         Spacer()
                         VStack(spacing: 4) {
-                            Text("🏆").font(.system(size: 36))
+                            Image(systemName: "trophy.fill")
+                                .font(.system(size: 36, design: .rounded))
+                                .foregroundColor(Color(hex: "F59E0B"))
                             Text("\(streak.longestStreak)").font(RWF.display(28)).foregroundColor(.rwTextPrimary)
                             Text("Best Streak").font(RWF.cap()).foregroundColor(.rwTextSecondary)
                         }
@@ -417,7 +422,7 @@ struct WeekStat: View {
     let value: Int; let label: String; let icon: String; let color: Color
     var body: some View {
         VStack(spacing: 6) {
-            Image(systemName: icon).font(.system(size: 18, weight: .semibold))
+            Image(systemName: icon).font(.system(size: 18, weight: .semibold, design: .rounded))
                 .foregroundColor(color).frame(width: 44, height: 44)
                 .background(color.opacity(0.1)).clipShape(Circle())
             Text("\(value)").font(RWF.display(22)).foregroundColor(.rwTextPrimary)
@@ -433,7 +438,7 @@ struct PointRow: View {
     let icon: String; let action: String; let points: String
     var body: some View {
         HStack(spacing: 10) {
-            Image(systemName: icon).font(.system(size: 13, weight: .semibold))
+            Image(systemName: icon).font(.system(size: 13, weight: .semibold, design: .rounded))
                 .foregroundColor(.rwTextSecondary).frame(width: 20)
             Text(action).font(RWF.body(14)).foregroundColor(.rwTextSecondary)
             Spacer()
@@ -447,7 +452,7 @@ struct ProNudge: View {
     var body: some View {
         Button { showPaywall = true } label: {
             HStack(spacing: 14) {
-                Image(systemName: "crown.fill").font(.system(size: 20))
+                Image(systemName: "crown.fill").font(.system(size: 20, design: .rounded))
                     .foregroundStyle(LinearGradient.accent)
                 VStack(alignment: .leading, spacing: 3) {
                     Text("Go Pro to unlock everything").font(RWF.head(15)).foregroundColor(.rwTextPrimary)

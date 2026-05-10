@@ -65,7 +65,7 @@ struct RelHealthView: View {
             // Progress
             HStack {
                 Button { withAnimation { mode = .history } } label: {
-                    Image(systemName: "xmark").font(.system(size: 14, weight: .semibold))
+                    Image(systemName: "xmark").font(.system(size: 14, weight: .semibold, design: .rounded))
                         .foregroundColor(.rwTextSecondary).frame(width: 32, height: 32)
                         .background(Color.rwSurface).clipShape(Circle())
                 }

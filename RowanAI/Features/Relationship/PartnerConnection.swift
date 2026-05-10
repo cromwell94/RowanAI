@@ -186,7 +186,9 @@ struct PartnerConnectionView: View {
     var disconnectedView: some View {
         VStack(spacing: SP.xl) {
             VStack(spacing: 12) {
-                Text("💑").font(.system(size: 52))
+                Image(systemName: "person.2.fill")
+                    .font(.system(size: 52, design: .rounded))
+                    .foregroundStyle(LinearGradient.accent)
                 Text("Connect with your partner").font(RWF.title(22)).foregroundColor(.rwTextPrimary)
                     .multilineTextAlignment(.center)
                 Text("When you're both connected, Rowan tracks your relationship health from both sides and nudges you when things need attention.")
@@ -208,7 +210,7 @@ struct PartnerConnectionView: View {
                         DispatchQueue.main.asyncAfter(deadline: .now() + 2) { copied = false }
                     } label: {
                         Image(systemName: copied ? "checkmark.circle.fill" : "doc.on.doc")
-                            .font(.system(size: 20))
+                            .font(.system(size: 20, design: .rounded))
                             .foregroundColor(copied ? .rwSuccess : .rwTextMuted)
                     }
                     .buttonStyle(SBS())
@@ -226,7 +228,7 @@ struct PartnerConnectionView: View {
             }
 
             Text("Both of you need Rowan installed. This is local — no account required.")
-                .font(.system(size: 11)).foregroundColor(.rwTextMuted).multilineTextAlignment(.center)
+                .font(.system(size: 11, design: .rounded)).foregroundColor(.rwTextMuted).multilineTextAlignment(.center)
         }
     }
 
@@ -276,7 +278,7 @@ struct PartnerConnectionView: View {
                                 .font(RWF.head(22)).foregroundColor(.rwAccent))
                     }
                     VStack(spacing: 6) {
-                        Image(systemName: "heart.fill").font(.system(size: 20)).foregroundColor(.rwAccent)
+                        Image(systemName: "heart.fill").font(.system(size: 20, design: .rounded)).foregroundColor(.rwAccent)
                         RoundedRectangle(cornerRadius: 2).fill(Color.rwAccent.opacity(0.3))
                             .frame(width: 40, height: 2)
                     }
@@ -342,7 +344,7 @@ struct ConnInfoRow: View {
     let icon: String; let color: Color; let text: String
     var body: some View {
         HStack(spacing: 10) {
-            Image(systemName: icon).font(.system(size: 13, weight: .semibold))
+            Image(systemName: icon).font(.system(size: 13, weight: .semibold, design: .rounded))
                 .foregroundColor(color).frame(width: 28)
             Text(text).font(RWF.body(13)).foregroundColor(.rwTextSecondary)
                 .fixedSize(horizontal: false, vertical: true)
@@ -364,7 +366,7 @@ struct RelNudgeBanner: View {
             VStack(alignment: .leading, spacing: 12) {
                 HStack(spacing: 10) {
                     Image(systemName: "heart.slash.fill")
-                        .font(.system(size: 16, weight: .semibold))
+                        .font(.system(size: 16, weight: .semibold, design: .rounded))
                         .foregroundColor(.white)
                         .frame(width: 36, height: 36)
                         .background(Color(hex: "E8356D"))
@@ -378,7 +380,7 @@ struct RelNudgeBanner: View {
                     }
                     Spacer()
                     Button { withAnimation { dismissed = true } } label: {
-                        Image(systemName: "xmark").font(.system(size: 11, weight: .bold))
+                        Image(systemName: "xmark").font(.system(size: 11, weight: .bold, design: .rounded))
                             .foregroundColor(.rwTextMuted).frame(width: 24, height: 24)
                             .background(Color.rwSurface).clipShape(Circle())
                     }

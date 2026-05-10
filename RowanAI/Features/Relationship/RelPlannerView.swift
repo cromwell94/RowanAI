@@ -61,7 +61,7 @@ struct DateNightView: View {
                     if store.needsDateNight {
                         HStack(spacing: 6) {
                             Image(systemName: "exclamationmark.circle.fill")
-                                .font(.system(size: 12)).foregroundColor(Color(hex: "F59E0B"))
+                                .font(.system(size: 12, design: .rounded)).foregroundColor(Color(hex: "F59E0B"))
                             Text("You haven't had a date night in a while.")
                                 .font(RWF.cap(12)).foregroundColor(Color(hex: "F59E0B"))
                         }
@@ -90,7 +90,7 @@ struct DateNightView: View {
                         ForEach(suggestions) { s in
                             VStack(alignment: .leading, spacing: 8) {
                                 HStack(spacing: 10) {
-                                    Text(s.emoji).font(.system(size: 28))
+                                    Text(s.emoji).font(.system(size: 28, design: .rounded))
                                     VStack(alignment: .leading, spacing: 2) {
                                         Text(s.title).font(RWF.head(15)).foregroundColor(.rwTextPrimary)
                                         Text(s.description).font(RWF.body(13)).foregroundColor(.rwTextSecondary)
@@ -115,7 +115,7 @@ struct DateNightView: View {
                         RWSectionLabel("PLACES YOU'VE BEEN TOGETHER")
                         ForEach(visited.prefix(4)) { v in
                             HStack(spacing: 10) {
-                                Image(systemName: v.category.icon).font(.system(size: 14, weight: .semibold))
+                                Image(systemName: v.category.icon).font(.system(size: 14, weight: .semibold, design: .rounded))
                                     .foregroundColor(v.category.color).frame(width: 32, height: 32)
                                     .background(v.category.color.opacity(0.1)).clipShape(Circle())
                                 VStack(alignment: .leading, spacing: 2) {
@@ -123,7 +123,7 @@ struct DateNightView: View {
                                     HStack(spacing: 3) {
                                         ForEach(1...5, id: \.self) { i in
                                             Image(systemName: i <= v.dateRating ? "heart.fill" : "heart")
-                                                .font(.system(size: 10))
+                                                .font(.system(size: 10, design: .rounded))
                                                 .foregroundColor(i <= v.dateRating ? .rwAccent : .rwBorder)
                                         }
                                     }
@@ -199,7 +199,7 @@ struct BucketListView: View {
                     }
                     Spacer()
                     Button { showAdd = true; focused = true } label: {
-                        Image(systemName: "plus.circle.fill").font(.system(size: 28))
+                        Image(systemName: "plus.circle.fill").font(.system(size: 28, design: .rounded))
                             .foregroundStyle(LinearGradient.accent)
                     }
                     .buttonStyle(SBS())
@@ -212,7 +212,7 @@ struct BucketListView: View {
                             .font(RWF.body()).foregroundColor(.rwTextPrimary).focused($focused)
                             .onSubmit { addItem() }
                         Button { addItem() } label: {
-                            Image(systemName: "checkmark.circle.fill").font(.system(size: 24)).foregroundColor(.rwAccent)
+                            Image(systemName: "checkmark.circle.fill").font(.system(size: 24, design: .rounded)).foregroundColor(.rwAccent)
                         }
                         .disabled(newItem.trimmingCharacters(in: .whitespaces).isEmpty).buttonStyle(SBS())
                     }
@@ -283,7 +283,7 @@ struct BucketItemRow: View {
                 UIImpactFeedbackGenerator(style: .light).impactOccurred()
             } label: {
                 Image(systemName: item.isDone ? "checkmark.circle.fill" : "circle")
-                    .font(.system(size: 22))
+                    .font(.system(size: 22, design: .rounded))
                     .foregroundColor(item.isDone ? .rwSuccess : .rwBorder)
             }
             .buttonStyle(SBS())
@@ -311,7 +311,7 @@ struct MilestonesView: View {
                     Text("Milestones").font(RWF.title(22)).foregroundColor(.rwTextPrimary).padding(.top, 8)
                     Spacer()
                     Button { showAdd = true } label: {
-                        Image(systemName: "plus.circle.fill").font(.system(size: 28)).foregroundStyle(LinearGradient.accent)
+                        Image(systemName: "plus.circle.fill").font(.system(size: 28, design: .rounded)).foregroundStyle(LinearGradient.accent)
                     }
                     .buttonStyle(SBS())
                 }
@@ -331,7 +331,7 @@ struct MilestonesView: View {
                         ForEach(rel.milestones.sorted { $0.date > $1.date }) { m in
                             HStack(alignment: .top, spacing: 14) {
                                 VStack(spacing: 4) {
-                                    Image(systemName: m.type.icon).font(.system(size: 16, weight: .semibold))
+                                    Image(systemName: m.type.icon).font(.system(size: 16, weight: .semibold, design: .rounded))
                                         .foregroundColor(.white).frame(width: 40, height: 40)
                                         .background(m.type.color).clipShape(Circle())
                                     Rectangle().fill(Color.rwBorder).frame(width: 2).frame(maxHeight: .infinity)
@@ -379,7 +379,7 @@ struct AddMilestoneView: View {
                             ForEach(Milestone.MType.allCases, id: \.rawValue) { t in
                                 Button { type = t } label: {
                                     HStack(spacing: 6) {
-                                        Image(systemName: t.icon).font(.system(size: 12))
+                                        Image(systemName: t.icon).font(.system(size: 12, design: .rounded))
                                         Text(t.rawValue).font(RWF.cap(12))
                                     }
                                     .foregroundColor(type == t ? .white : .rwTextSecondary)

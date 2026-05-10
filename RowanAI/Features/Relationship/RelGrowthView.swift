@@ -59,7 +59,7 @@ struct RelGrowthView: View {
         Button(action: action) {
             HStack(spacing: 14) {
                 Image(systemName: icon)
-                    .font(.system(size: 20, weight: .semibold))
+                    .font(.system(size: 20, weight: .semibold, design: .rounded))
                     .foregroundColor(tint)
                     .frame(width: 48, height: 48)
                     .background(tint.opacity(0.12))
@@ -83,7 +83,7 @@ struct RelGrowthView: View {
         Button { showChemistry = true } label: {
             HStack(spacing: 14) {
                 Image(systemName: "sparkle")
-                    .font(.system(size: 20, weight: .semibold))
+                    .font(.system(size: 20, weight: .semibold, design: .rounded))
                     .foregroundColor(Color(hex: "E8356D"))
                     .frame(width: 48, height: 48)
                     .background(Color(hex: "E8356D").opacity(0.12))
@@ -391,7 +391,7 @@ struct CoupleChemistryStubView: View {
             ScrollView(showsIndicators: false) {
                 VStack(spacing: SP.lg) {
                     Image(systemName: "sparkle")
-                        .font(.system(size: 48)).foregroundColor(Color(hex: "E8356D"))
+                        .font(.system(size: 48, design: .rounded)).foregroundColor(Color(hex: "E8356D"))
                         .padding(.top, 32)
                     Text("Couple Chemistry Report").font(RWF.title()).foregroundColor(.rwTextPrimary)
                     Text("Coming in Build 4.").font(RWF.cap()).foregroundColor(.rwTextMuted)

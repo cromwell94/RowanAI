@@ -37,7 +37,7 @@ struct MapSnapshotView: View {
                             if failed {
                                 VStack(spacing: 6) {
                                     Image(systemName: "map")
-                                        .font(.system(size: 22))
+                                        .font(.system(size: 22, design: .rounded))
                                         .foregroundColor(.rwTextMuted)
                                     Text("Map preview unavailable")
                                         .font(RWF.cap(11))
@@ -64,7 +64,7 @@ struct MapSnapshotView: View {
                 .overlay(Circle().stroke(Color.white, lineWidth: 2))
                 .shadow(color: Color.rwAccent.opacity(0.45), radius: 6, x: 0, y: 3)
             Image(systemName: "mappin")
-                .font(.system(size: 13, weight: .bold))
+                .font(.system(size: 13, weight: .bold, design: .rounded))
                 .foregroundColor(.white)
         }
     }
@@ -173,7 +173,7 @@ struct PlaceDetailSheet: View {
             if !address.isEmpty {
                 HStack(alignment: .top, spacing: 6) {
                     Image(systemName: "mappin")
-                        .font(.system(size: 12))
+                        .font(.system(size: 12, design: .rounded))
                         .foregroundColor(.rwTextMuted)
                         .padding(.top, 2)
                     Text(address)
@@ -288,7 +288,7 @@ struct PlaceDetailSheet: View {
         Button(action: action) {
             HStack(spacing: 8) {
                 Image(systemName: icon)
-                    .font(.system(size: 13, weight: .semibold))
+                    .font(.system(size: 13, weight: .semibold, design: .rounded))
                 Text(label).font(RWF.cap(13))
             }
             .foregroundColor(selected ? .white : tint)
@@ -359,7 +359,7 @@ struct PlaceDetailSheet: View {
             Link(destination: url) {
                 HStack(spacing: 8) {
                     Image(systemName: "phone.fill")
-                        .font(.system(size: 13, weight: .semibold))
+                        .font(.system(size: 13, weight: .semibold, design: .rounded))
                     Text(phone).font(RWF.med(14))
                 }
                 .foregroundColor(.rwTextPrimary)
@@ -413,7 +413,7 @@ struct PlaceDetailSheet: View {
         } label: {
             HStack(spacing: 12) {
                 Image(systemName: category.icon)
-                    .font(.system(size: 13, weight: .semibold))
+                    .font(.system(size: 13, weight: .semibold, design: .rounded))
                     .foregroundColor(.white)
                     .frame(width: 32, height: 32)
                     .background(category.color)
@@ -433,7 +433,7 @@ struct PlaceDetailSheet: View {
                 }
                 Spacer()
                 Image(systemName: "chevron.right")
-                    .font(.system(size: 11, weight: .medium))
+                    .font(.system(size: 11, weight: .medium, design: .rounded))
                     .foregroundColor(.rwTextMuted)
             }
             .padding(SP.sm)

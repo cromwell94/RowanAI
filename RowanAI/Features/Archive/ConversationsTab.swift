@@ -100,7 +100,7 @@ struct ConversationsTabContent: View {
     private var emptyState: some View {
         VStack(spacing: 14) {
             Image(systemName: "bubble.left.and.bubble.right.fill")
-                .font(.system(size: 40))
+                .font(.system(size: 40, design: .rounded))
                 .foregroundColor(.rwTextMuted)
             Text("No conversations tracked yet")
                 .font(RWF.head(16)).foregroundColor(.rwTextPrimary)
@@ -130,7 +130,7 @@ struct ConversationsTabContent: View {
                 Button { showFullTimeline = true } label: {
                     HStack(spacing: 6) {
                         Image(systemName: "rectangle.stack.fill")
-                            .font(.system(size: 12, weight: .semibold))
+                            .font(.system(size: 12, weight: .semibold, design: .rounded))
                         Text("Full Timeline")
                             .font(RWF.cap())
                     }
@@ -156,11 +156,11 @@ struct ConversationsTabContent: View {
                     } label: {
                         HStack(spacing: 6) {
                             Image(systemName: thread.platform.icon)
-                                .font(.system(size: 12, weight: .semibold))
+                                .font(.system(size: 12, weight: .semibold, design: .rounded))
                             Text(thread.platform.rawValue)
                                 .font(RWF.cap())
                             Text("\(thread.messages.count)")
-                                .font(.system(size: 10, weight: .bold))
+                                .font(.system(size: 10, weight: .bold, design: .rounded))
                                 .foregroundColor(selected ? .white : .rwTextMuted)
                                 .padding(.horizontal, 6).padding(.vertical, 1)
                                 .background(selected ? Color.white.opacity(0.25) : Color.rwTextMuted.opacity(0.15))
@@ -218,7 +218,7 @@ struct ConversationsTabContent: View {
                     }
                 } label: {
                     Image(systemName: "ellipsis.circle")
-                        .font(.system(size: 16))
+                        .font(.system(size: 16, design: .rounded))
                         .foregroundColor(.rwTextMuted)
                 }
             }
@@ -332,10 +332,10 @@ struct ConversationsTabContent: View {
         if case .failed(let message) = screenshotState, screenshotThreadID == threadID {
             HStack(spacing: 6) {
                 Image(systemName: "exclamationmark.triangle.fill")
-                    .font(.system(size: 11, weight: .semibold))
+                    .font(.system(size: 11, weight: .semibold, design: .rounded))
                     .foregroundColor(.rwGold)
                 Text(message)
-                    .font(.system(size: 11))
+                    .font(.system(size: 11, design: .rounded))
                     .foregroundColor(.rwTextSecondary)
             }
             .padding(.top, 4)
@@ -454,11 +454,11 @@ struct MessageBubble: View {
                 HStack(spacing: 4) {
                     if showPlatformBadge {
                         Image(systemName: message.platform.icon)
-                            .font(.system(size: 9, weight: .semibold))
+                            .font(.system(size: 9, weight: .semibold, design: .rounded))
                             .foregroundColor(message.platform.color)
                     }
                     Text(Self.timeFormatter.string(from: message.timestamp))
-                        .font(.system(size: 10))
+                        .font(.system(size: 10, design: .rounded))
                         .foregroundColor(.rwTextMuted)
                 }
             }
@@ -596,7 +596,7 @@ struct PlatformPickerSheet: View {
                         if filtered.values.allSatisfy({ $0.isEmpty }) {
                             VStack(spacing: 10) {
                                 Image(systemName: "magnifyingglass")
-                                    .font(.system(size: 28))
+                                    .font(.system(size: 28, design: .rounded))
                                     .foregroundColor(.rwTextMuted)
                                 Text("No platforms match \"\(search)\"")
                                     .font(RWF.body()).foregroundColor(.rwTextSecondary)
@@ -633,7 +633,7 @@ struct PlatformPickerSheet: View {
                     Button { onPick(platform) } label: {
                         HStack(spacing: 8) {
                             Image(systemName: platform.icon)
-                                .font(.system(size: 14, weight: .semibold))
+                                .font(.system(size: 14, weight: .semibold, design: .rounded))
                                 .foregroundColor(platform.color)
                                 .frame(width: 22)
                             Text(platform.rawValue)
@@ -821,7 +821,7 @@ struct ScreenshotPreviewSheet: View {
                 UIImpactFeedbackGenerator(style: .light).impactOccurred()
             } label: {
                 Text(message.sender.rawValue)
-                    .font(.system(size: 11, weight: .bold))
+                    .font(.system(size: 11, weight: .bold, design: .rounded))
                     .foregroundColor(.white)
                     .padding(.horizontal, 8).padding(.vertical, 4)
                     .background(message.sender == .user ? Color.rwAccent : Color.rwGold)
@@ -840,7 +840,7 @@ struct ScreenshotPreviewSheet: View {
                 if isOmitted { omitted.remove(message.id) } else { omitted.insert(message.id) }
             } label: {
                 Image(systemName: isOmitted ? "arrow.uturn.backward" : "xmark")
-                    .font(.system(size: 12, weight: .semibold))
+                    .font(.system(size: 12, weight: .semibold, design: .rounded))
                     .foregroundColor(.rwTextMuted)
                     .frame(width: 26, height: 26)
                     .background(Color.rwSurface)

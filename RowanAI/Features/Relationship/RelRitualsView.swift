@@ -117,7 +117,7 @@ private struct RitualCard: View {
         Button(action: onTap) {
             HStack(spacing: 12) {
                 Image(systemName: kind.icon)
-                    .font(.system(size: 18, weight: .semibold))
+                    .font(.system(size: 18, weight: .semibold, design: .rounded))
                     .foregroundColor(kind.tint)
                     .frame(width: 44, height: 44)
                     .background(kind.tint.opacity(0.12))
@@ -299,7 +299,7 @@ private struct MeditationCard: View {
         Button(action: onTap) {
             HStack(spacing: 12) {
                 Image(systemName: kind.icon)
-                    .font(.system(size: 18, weight: .semibold))
+                    .font(.system(size: 18, weight: .semibold, design: .rounded))
                     .foregroundColor(.rwGold)
                     .frame(width: 44, height: 44)
                     .background(Color.rwGold.opacity(0.12))
@@ -329,7 +329,7 @@ struct MeditationSheet: View {
             ScrollView(showsIndicators: false) {
                 VStack(spacing: SP.md) {
                     Image(systemName: kind.icon)
-                        .font(.system(size: 48))
+                        .font(.system(size: 48, design: .rounded))
                         .foregroundColor(.rwGold)
                         .padding(.top, 32)
                     Text(kind.title).font(RWF.title()).foregroundColor(.rwTextPrimary)

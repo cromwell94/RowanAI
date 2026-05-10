@@ -142,7 +142,7 @@ struct ContactDetailView: View {
                 HStack(spacing: 8) {
                     // Source
                     HStack(spacing: 4) {
-                        Image(systemName: p.source.icon).font(.system(size: 10, weight: .semibold))
+                        Image(systemName: p.source.icon).font(.system(size: 10, weight: .semibold, design: .rounded))
                         Text(p.source.rawValue).font(RWF.micro())
                     }
                     .foregroundColor(p.source.color)
@@ -159,9 +159,9 @@ struct ContactDetailView: View {
                         }
                     } label: {
                         HStack(spacing: 4) {
-                            Image(systemName: p.status.icon).font(.system(size: 10, weight: .semibold))
+                            Image(systemName: p.status.icon).font(.system(size: 10, weight: .semibold, design: .rounded))
                             Text(p.status.rawValue).font(RWF.micro())
-                            Image(systemName: "chevron.down").font(.system(size: 8))
+                            Image(systemName: "chevron.down").font(.system(size: 8, design: .rounded))
                         }
                         .foregroundColor(p.status.color)
                         .padding(.horizontal, 9).padding(.vertical, 4)
@@ -180,7 +180,7 @@ struct ContactDetailView: View {
             // Cold warning
             if p.isGoingCold {
                 HStack(spacing: 8) {
-                    Image(systemName: "thermometer.snowflake").font(.system(size: 13))
+                    Image(systemName: "thermometer.snowflake").font(.system(size: 13, design: .rounded))
                     Text("Going cold — \(p.daysSinceLastSpoke ?? 0) days since last contact")
                         .font(RWF.cap(12))
                     Spacer()
@@ -228,7 +228,7 @@ struct ContactDetailView: View {
                         UIImpactFeedbackGenerator(style: .light).impactOccurred()
                     } label: {
                         Image(systemName: i <= p.rating ? "star.fill" : "star")
-                            .font(.system(size: 24))
+                            .font(.system(size: 24, design: .rounded))
                             .foregroundColor(i <= p.rating ? Color(hex: "F59E0B") : .rwBorder)
                     }
                     .buttonStyle(SBS())
@@ -329,7 +329,7 @@ struct ContactDetailView: View {
             if p.outcome != .active {
                 InfoCard(title: "Outcome", icon: p.outcome.icon, color: p.outcome.color) {
                     HStack(spacing: 12) {
-                        Image(systemName: p.outcome.icon).font(.system(size: 20))
+                        Image(systemName: p.outcome.icon).font(.system(size: 20, design: .rounded))
                             .foregroundColor(p.outcome.color)
                             .frame(width: 44, height: 44).background(p.outcome.color.opacity(0.1))
                             .clipShape(Circle())
@@ -346,7 +346,7 @@ struct ContactDetailView: View {
             // Cyrano Date Suggestions
             VStack(alignment: .leading, spacing: 12) {
                 HStack(spacing: 8) {
-                    Image(systemName: "sparkles").font(.system(size: 13, weight: .semibold))
+                    Image(systemName: "sparkles").font(.system(size: 13, weight: .semibold, design: .rounded))
                         .foregroundStyle(LinearGradient.accent)
                     Text("Cyrano's Date Ideas").font(RWF.head(15)).foregroundColor(.rwTextPrimary)
                     Spacer()
@@ -355,7 +355,7 @@ struct ContactDetailView: View {
                             dateSuggestions = []
                             Task { await loadSuggestions() }
                         } label: {
-                            Image(systemName: "arrow.counterclockwise").font(.system(size: 13))
+                            Image(systemName: "arrow.counterclockwise").font(.system(size: 13, design: .rounded))
                                 .foregroundColor(.rwTextMuted)
                         }
                     }
@@ -424,7 +424,7 @@ struct ContactDetailView: View {
         } label: {
             HStack(spacing: 14) {
                 Image(systemName: "map.fill")
-                    .font(.system(size: 19, weight: .medium))
+                    .font(.system(size: 19, weight: .medium, design: .rounded))
                     .foregroundColor(.white)
                     .frame(width: 46, height: 46)
                     .background(LinearGradient.accent)
@@ -443,7 +443,7 @@ struct ContactDetailView: View {
                 }
                 Spacer(minLength: 0)
                 Image(systemName: "chevron.right")
-                    .font(.system(size: 12, weight: .medium))
+                    .font(.system(size: 12, weight: .medium, design: .rounded))
                     .foregroundColor(.rwTextMuted)
             }
             .padding(SP.md)
@@ -462,7 +462,7 @@ struct ContactDetailView: View {
         VStack(spacing: 14) {
             if p.dateHistory.isEmpty {
                 VStack(spacing: 14) {
-                    Image(systemName: "calendar.badge.plus").font(.system(size: 44)).foregroundColor(.rwTextMuted)
+                    Image(systemName: "calendar.badge.plus").font(.system(size: 44, design: .rounded)).foregroundColor(.rwTextMuted)
                     Text("No dates logged yet").font(RWF.head()).foregroundColor(.rwTextSecondary)
                     Text("Log your dates to track how things are progressing.")
                         .font(RWF.body()).foregroundColor(.rwTextMuted).multilineTextAlignment(.center)
@@ -512,7 +512,7 @@ struct ContactDetailView: View {
                         ForEach(p.thingsToAsk, id: \.self) { q in
                             HStack(alignment: .top, spacing: 8) {
                                 Image(systemName: "questionmark.circle.fill")
-                                    .font(.system(size: 12)).foregroundColor(Color(hex: "5B8DEF"))
+                                    .font(.system(size: 12, design: .rounded)).foregroundColor(Color(hex: "5B8DEF"))
                                 Text(q).font(RWF.body(14)).foregroundColor(.rwTextPrimary)
                                     .fixedSize(horizontal: false, vertical: true)
                             }
@@ -555,7 +555,7 @@ struct ContactDetailView: View {
                         ForEach(p.thingsToAvoid, id: \.self) { item in
                             HStack(alignment: .top, spacing: 8) {
                                 Image(systemName: "minus.circle.fill")
-                                    .font(.system(size: 12)).foregroundColor(Color(hex: "F59E0B"))
+                                    .font(.system(size: 12, design: .rounded)).foregroundColor(Color(hex: "F59E0B"))
                                 Text(item).font(RWF.body(14)).foregroundColor(.rwTextPrimary)
                                     .fixedSize(horizontal: false, vertical: true)
                             }
@@ -572,7 +572,7 @@ struct ContactDetailView: View {
 
             if p.thingsToAsk.isEmpty && p.greenFlags.isEmpty && p.redFlags.isEmpty {
                 VStack(spacing: 14) {
-                    Image(systemName: "brain.head.profile").font(.system(size: 44)).foregroundColor(.rwTextMuted)
+                    Image(systemName: "brain.head.profile").font(.system(size: 44, design: .rounded)).foregroundColor(.rwTextMuted)
                     Text("No intel yet").font(RWF.head()).foregroundColor(.rwTextSecondary)
                     Text("Add flags, questions, and things to remember when you edit this contact.")
                         .font(RWF.body()).foregroundColor(.rwTextMuted).multilineTextAlignment(.center)
@@ -610,7 +610,7 @@ struct ContactDetailView: View {
                                     }
                                 Text(ContactPhotoStore.shared.addedDate(for: url),
                                      format: .dateTime.day().month(.abbreviated))
-                                    .font(.system(size: 9, weight: .medium))
+                                    .font(.system(size: 9, weight: .medium, design: .rounded))
                                     .foregroundColor(.rwTextMuted)
                             }
                         }
@@ -641,7 +641,7 @@ struct ContactDetailView: View {
                     Task { await ingestIntelPicks() }
                 }
                 Text("Long-press a photo to add a caption or delete it.")
-                    .font(.system(size: 11))
+                    .font(.system(size: 11, design: .rounded))
                     .foregroundColor(.rwTextMuted)
             }
         }
@@ -726,7 +726,7 @@ struct ContactDetailView: View {
             }
             if p.notes.isEmpty && p.privateNotes.isEmpty {
                 VStack(spacing: 14) {
-                    Image(systemName: "note.text").font(.system(size: 44)).foregroundColor(.rwTextMuted)
+                    Image(systemName: "note.text").font(.system(size: 44, design: .rounded)).foregroundColor(.rwTextMuted)
                     Text("No notes yet").font(RWF.head()).foregroundColor(.rwTextSecondary)
                     RWButton("Add Notes", icon: "plus", style: .secondary) { showEdit = true }
                 }
@@ -762,7 +762,7 @@ struct ContactDetailView: View {
             Image(systemName: syncing
                   ? "arrow.triangle.2.circlepath"
                   : "arrow.triangle.2.circlepath.circle")
-                .font(.system(size: 16, weight: .semibold))
+                .font(.system(size: 16, weight: .semibold, design: .rounded))
                 .foregroundColor(.rwAccent)
                 .rotationEffect(.degrees(syncing ? 360 : 0))
                 .animation(syncing
@@ -778,7 +778,7 @@ struct ContactDetailView: View {
         if let toast = syncToast {
             HStack(spacing: 10) {
                 Image(systemName: "checkmark.circle.fill")
-                    .font(.system(size: 18))
+                    .font(.system(size: 18, design: .rounded))
                     .foregroundColor(.rwSuccess)
                 Text(toast).font(RWF.head(14)).foregroundColor(.rwTextPrimary)
             }
@@ -947,7 +947,7 @@ struct QuickAction: View {
     var body: some View {
         Button(action: action) {
             VStack(spacing: 5) {
-                Image(systemName: icon).font(.system(size: 18, weight: .semibold))
+                Image(systemName: icon).font(.system(size: 18, weight: .semibold, design: .rounded))
                     .foregroundColor(color).frame(width: 48, height: 48)
                     .background(color.opacity(0.1)).clipShape(Circle())
                 Text(label).font(RWF.micro()).foregroundColor(.rwTextSecondary)
@@ -966,7 +966,7 @@ struct InfoCard<Content: View>: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
             HStack(spacing: 8) {
-                Image(systemName: icon).font(.system(size: 12, weight: .semibold))
+                Image(systemName: icon).font(.system(size: 12, weight: .semibold, design: .rounded))
                     .foregroundColor(color)
                 Text(title).font(RWF.cap()).foregroundColor(.rwTextSecondary).tracking(0.5)
             }
@@ -996,7 +996,7 @@ struct ContactRow: View {
     let icon: String; let value: String; let color: Color
     var body: some View {
         HStack(spacing: 10) {
-            Image(systemName: icon).font(.system(size: 14, weight: .semibold))
+            Image(systemName: icon).font(.system(size: 14, weight: .semibold, design: .rounded))
                 .foregroundColor(color).frame(width: 32, height: 32)
                 .background(color.opacity(0.1)).clipShape(Circle())
             Text(value).font(RWF.body()).foregroundColor(.rwTextPrimary)
@@ -1005,7 +1005,7 @@ struct ContactRow: View {
                 UIPasteboard.general.string = value
                 UIImpactFeedbackGenerator(style: .light).impactOccurred()
             } label: {
-                Image(systemName: "doc.on.doc").font(.system(size: 13)).foregroundColor(.rwTextMuted)
+                Image(systemName: "doc.on.doc").font(.system(size: 13, design: .rounded)).foregroundColor(.rwTextMuted)
             }
         }
     }
@@ -1060,13 +1060,13 @@ struct DateEntryCard: View {
                 HStack(spacing: 2) {
                     ForEach(1...5, id: \.self) { i in
                         Image(systemName: i <= entry.rating ? "star.fill" : "star")
-                            .font(.system(size: 12)).foregroundColor(i <= entry.rating ? Color(hex: "F59E0B") : .rwBorder)
+                            .font(.system(size: 12, design: .rounded)).foregroundColor(i <= entry.rating ? Color(hex: "F59E0B") : .rwBorder)
                     }
                 }
             }
             if !entry.location.isEmpty {
                 HStack(spacing: 5) {
-                    Image(systemName: "mappin.circle.fill").font(.system(size: 12))
+                    Image(systemName: "mappin.circle.fill").font(.system(size: 12, design: .rounded))
                     Text(entry.location).font(RWF.body(13))
                 }
                 .foregroundColor(.rwTextSecondary)
@@ -1130,7 +1130,7 @@ struct AddDateView: View {
                                 ForEach(1...5, id: \.self) { i in
                                     Button { entry.rating = i } label: {
                                         Image(systemName: i <= entry.rating ? "star.fill" : "star")
-                                            .font(.system(size: 32))
+                                            .font(.system(size: 32, design: .rounded))
                                             .foregroundColor(i <= entry.rating ? Color(hex: "F59E0B") : .rwBorder)
                                     }
                                     .buttonStyle(SBS())
@@ -1218,7 +1218,7 @@ struct Toggle2Button: View {
     var body: some View {
         Button(action: action) {
             HStack(spacing: 6) {
-                Image(systemName: icon).font(.system(size: 13, weight: .semibold))
+                Image(systemName: icon).font(.system(size: 13, weight: .semibold, design: .rounded))
                 Text(title).font(RWF.cap(13))
             }
             .foregroundColor(isOn ? .white : .rwTextSecondary)
@@ -1251,7 +1251,7 @@ struct OutcomeView: View {
                         ForEach(Person.Outcome.allCases.filter { $0 != .active }, id: \.rawValue) { outcome in
                             Button { withAnimation { selected = outcome } } label: {
                                 HStack(spacing: 14) {
-                                    Image(systemName: outcome.icon).font(.system(size: 18, weight: .semibold))
+                                    Image(systemName: outcome.icon).font(.system(size: 18, weight: .semibold, design: .rounded))
                                         .foregroundColor(selected == outcome ? .white : outcome.color)
                                         .frame(width: 46, height: 46)
                                         .background(selected == outcome ? outcome.color : outcome.color.opacity(0.1))
@@ -1259,7 +1259,7 @@ struct OutcomeView: View {
                                     Text(outcome.rawValue).font(RWF.head(16)).foregroundColor(.rwTextPrimary)
                                     Spacer()
                                     if selected == outcome {
-                                        Image(systemName: "checkmark.circle.fill").foregroundColor(outcome.color).font(.system(size: 20))
+                                        Image(systemName: "checkmark.circle.fill").foregroundColor(outcome.color).font(.system(size: 20, design: .rounded))
                                     }
                                 }
                                 .padding(SP.md)
@@ -1447,7 +1447,7 @@ struct EditContactView: View {
                 .autocorrectionDisabled()
                 if p.contactCoordinate != nil {
                     Image(systemName: "checkmark.seal.fill")
-                        .font(.system(size: 13, weight: .medium))
+                        .font(.system(size: 13, weight: .medium, design: .rounded))
                         .foregroundColor(.rwAccent)
                 }
                 if !p.location.isEmpty || !locationCompleter.query.isEmpty {
@@ -1475,7 +1475,7 @@ struct EditContactView: View {
                         Button { Task { await pickLocation(completion) } } label: {
                             HStack(alignment: .top, spacing: 10) {
                                 Image(systemName: "mappin")
-                                    .font(.system(size: 12, weight: .medium))
+                                    .font(.system(size: 12, weight: .medium, design: .rounded))
                                     .foregroundColor(.rwAccent)
                                     .padding(.top, 3)
                                 VStack(alignment: .leading, spacing: 2) {
@@ -1548,12 +1548,12 @@ struct EditContactView: View {
                     ForEach(Person.Source.allCases, id: \.rawValue) { s in
                         Button { p.source = s } label: {
                             VStack(spacing: 4) {
-                                Image(systemName: s.icon).font(.system(size: 16, weight: .semibold))
+                                Image(systemName: s.icon).font(.system(size: 16, weight: .semibold, design: .rounded))
                                     .foregroundColor(p.source == s ? .white : s.color)
                                     .frame(width: 36, height: 36)
                                     .background(p.source == s ? s.color : s.color.opacity(0.12))
                                     .clipShape(RoundedRectangle(cornerRadius: RR.sm))
-                                Text(s.rawValue).font(.system(size: 10, weight: .medium))
+                                Text(s.rawValue).font(.system(size: 10, weight: .medium, design: .rounded))
                                     .foregroundColor(p.source == s ? .rwTextPrimary : .rwTextMuted)
                                     .lineLimit(1).minimumScaleFactor(0.7)
                             }
@@ -1652,7 +1652,7 @@ struct TagEditor: View {
                         HStack(spacing: 4) {
                             Text(tag).font(RWF.cap(12)).foregroundColor(color)
                             Button { tags.removeAll { $0 == tag } } label: {
-                                Image(systemName: "xmark").font(.system(size: 9, weight: .bold)).foregroundColor(color)
+                                Image(systemName: "xmark").font(.system(size: 9, weight: .bold, design: .rounded)).foregroundColor(color)
                             }
                         }
                         .padding(.horizontal, 10).padding(.vertical, 5)
@@ -1667,7 +1667,7 @@ struct TagEditor: View {
                     let t = newTag.trimmingCharacters(in: .whitespaces)
                     if !t.isEmpty && !tags.contains(t) { tags.append(t); newTag = "" }
                 } label: {
-                    Image(systemName: "plus.circle.fill").font(.system(size: 22)).foregroundColor(color)
+                    Image(systemName: "plus.circle.fill").font(.system(size: 22, design: .rounded)).foregroundColor(color)
                 }
                 .disabled(newTag.trimmingCharacters(in: .whitespaces).isEmpty)
             }
@@ -1714,7 +1714,7 @@ struct ContactDateSuggestionCard: View {
         VStack(alignment: .leading, spacing: 10) {
             HStack(spacing: 10) {
                 Image(systemName: cat.icon)
-                    .font(.system(size: 14, weight: .semibold)).foregroundColor(.white)
+                    .font(.system(size: 14, weight: .semibold, design: .rounded)).foregroundColor(.white)
                     .frame(width: 36, height: 36).background(cat.color)
                     .clipShape(RoundedRectangle(cornerRadius: RR.sm))
                 VStack(alignment: .leading, spacing: 2) {
@@ -1726,7 +1726,7 @@ struct ContactDateSuggestionCard: View {
 
             if !suggestion.tip.isEmpty {
                 HStack(alignment: .top, spacing: 6) {
-                    Image(systemName: "lightbulb.fill").font(.system(size: 10)).foregroundColor(Color(hex: "F59E0B"))
+                    Image(systemName: "lightbulb.fill").font(.system(size: 10, design: .rounded)).foregroundColor(Color(hex: "F59E0B"))
                     Text(suggestion.tip).font(RWF.body(12)).foregroundColor(.rwTextMuted)
                         .fixedSize(horizontal: false, vertical: true)
                 }
@@ -1769,7 +1769,10 @@ struct MoveToRelationshipView: View {
             ScrollView {
                 VStack(spacing: SP.xl) {
                     VStack(spacing: 16) {
-                        Text("❤️").font(.system(size: 52)).padding(.top, 20)
+                        Image(systemName: "heart.fill")
+                            .font(.system(size: 52, design: .rounded))
+                            .foregroundStyle(LinearGradient.accent)
+                            .padding(.top, 20)
                         Text("Things are getting serious with \(p.name).")
                             .font(RWF.title(22)).foregroundColor(.rwTextPrimary).multilineTextAlignment(.center)
                         Text("Want to move them to your Relationship space? You'll get access to relationship tools, date planning for couples, and Cyrano's relationship coaching.")
@@ -1876,7 +1879,7 @@ struct IntelPhotoFullscreen: View {
                     Spacer()
                     Button { dismiss() } label: {
                         Image(systemName: "xmark")
-                            .font(.system(size: 16, weight: .bold))
+                            .font(.system(size: 16, weight: .bold, design: .rounded))
                             .foregroundColor(.white)
                             .frame(width: 36, height: 36)
                             .background(Color.black.opacity(0.5))

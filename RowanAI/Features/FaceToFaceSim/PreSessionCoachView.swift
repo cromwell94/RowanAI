@@ -83,7 +83,7 @@ struct PreSessionCoachView: View {
                 dismiss()
             } label: {
                 Image(systemName: "chevron.left")
-                    .font(.system(size: 15, weight: .semibold))
+                    .font(.system(size: 15, weight: .semibold, design: .rounded))
                     .foregroundColor(.rwInkText)
                     .frame(width: 44, height: 44)
                     .background(Color.white.opacity(0.10))
@@ -100,7 +100,7 @@ struct PreSessionCoachView: View {
             } label: {
                 HStack(spacing: 6) {
                     Text("Skip").font(RWF.cap(13))
-                    Image(systemName: "arrow.right").font(.system(size: 11, weight: .semibold))
+                    Image(systemName: "arrow.right").font(.system(size: 11, weight: .semibold, design: .rounded))
                 }
                 .foregroundColor(.rwInkText)
                 .padding(.horizontal, 14).padding(.vertical, 9)
@@ -128,7 +128,7 @@ struct PreSessionCoachView: View {
                         .overlay(Circle().stroke(Color.white.opacity(0.18), lineWidth: 1.5))
                         .shadow(color: accentStart.opacity(0.5), radius: 24, x: 0, y: 12)
                     Image(systemName: personality.icon)
-                        .font(.system(size: 44, weight: .semibold))
+                        .font(.system(size: 44, weight: .semibold, design: .rounded))
                         .foregroundColor(.white)
                 }
 
@@ -161,7 +161,7 @@ struct PreSessionCoachView: View {
                 slideEyebrow("STEP 2 OF 3 · ONE FOCUS")
 
                 Image(systemName: "scope")
-                    .font(.system(size: 42, weight: .semibold))
+                    .font(.system(size: 42, weight: .semibold, design: .rounded))
                     .foregroundStyle(personalityGradient)
                     .padding(20)
                     .background(Circle().fill(Color.white.opacity(0.08)))
@@ -202,7 +202,7 @@ struct PreSessionCoachView: View {
                 slideEyebrow("STEP 3 OF 3 · WIN CONDITION")
 
                 Image(systemName: "trophy.fill")
-                    .font(.system(size: 44, weight: .semibold))
+                    .font(.system(size: 44, weight: .semibold, design: .rounded))
                     .foregroundStyle(personalityGradient)
                     .padding(20)
                     .background(Circle().fill(Color.white.opacity(0.08)))
@@ -271,7 +271,7 @@ struct PreSessionCoachView: View {
     private func bulletRow(icon: String, title: String, text: String) -> some View {
         HStack(alignment: .top, spacing: 12) {
             Image(systemName: icon)
-                .font(.system(size: 13, weight: .semibold))
+                .font(.system(size: 13, weight: .semibold, design: .rounded))
                 .foregroundStyle(personalityGradient)
                 .frame(width: 26, height: 26)
                 .background(Color.white.opacity(0.08)).clipShape(Circle())
@@ -315,7 +315,7 @@ struct PreSessionCoachView: View {
             } label: {
                 HStack(spacing: 10) {
                     Text("Start Session").font(RWF.head(16))
-                    Image(systemName: "arrow.right").font(.system(size: 14, weight: .bold))
+                    Image(systemName: "arrow.right").font(.system(size: 14, weight: .bold, design: .rounded))
                 }
                 .foregroundColor(.white)
                 .frame(maxWidth: .infinity)
@@ -333,7 +333,7 @@ struct PreSessionCoachView: View {
             } label: {
                 HStack(spacing: 8) {
                     Text("Next").font(RWF.cap(13))
-                    Image(systemName: "arrow.right").font(.system(size: 11, weight: .semibold))
+                    Image(systemName: "arrow.right").font(.system(size: 11, weight: .semibold, design: .rounded))
                 }
                 .foregroundColor(.rwInkText)
                 .frame(maxWidth: .infinity)

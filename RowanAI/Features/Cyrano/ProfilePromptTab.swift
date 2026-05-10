@@ -56,7 +56,7 @@ struct ProfilePromptTab: View {
     private var quotaBar: some View {
         HStack(spacing: 8) {
             Image(systemName: "sparkle")
-                .font(.system(size: 11, weight: .medium))
+                .font(.system(size: 11, weight: .medium, design: .rounded))
                 .foregroundStyle(LinearGradient.accent)
             Text("\(storeManager.profilePromptsRemainingToday()) free \(storeManager.profilePromptsRemainingToday() == 1 ? "generation" : "generations") left today")
                 .font(RWF.cap(12))
@@ -97,7 +97,7 @@ struct ProfilePromptTab: View {
         } label: {
             HStack(spacing: 6) {
                 Image(systemName: app.icon)
-                    .font(.system(size: 12, weight: .semibold))
+                    .font(.system(size: 12, weight: .semibold, design: .rounded))
                 Text(app.rawValue).font(RWF.cap(13))
             }
             .foregroundColor(on ? .white : .rwTextPrimary)
@@ -162,7 +162,7 @@ struct ProfilePromptTab: View {
             } label: {
                 HStack(spacing: 12) {
                     Image(systemName: "text.quote")
-                        .font(.system(size: 13, weight: .semibold))
+                        .font(.system(size: 13, weight: .semibold, design: .rounded))
                         .foregroundStyle(LinearGradient.accent)
                         .frame(width: 32, height: 32)
                         .background(Color.rwAccent.opacity(0.10))
@@ -176,7 +176,7 @@ struct ProfilePromptTab: View {
 
                     Spacer()
                     Image(systemName: isOpen ? "chevron.up" : "chevron.down")
-                        .font(.system(size: 11, weight: .medium))
+                        .font(.system(size: 11, weight: .medium, design: .rounded))
                         .foregroundColor(.rwTextMuted)
                 }
             }
@@ -236,7 +236,7 @@ struct ProfilePromptTab: View {
         VStack(alignment: .leading, spacing: 8) {
             HStack {
                 HStack(spacing: 5) {
-                    Text(emoji).font(.system(size: 13))
+                    Text(emoji).font(.system(size: 13, design: .rounded))
                     Text(label.uppercased()).font(RWF.micro()).tracking(1.5)
                 }
                 .foregroundColor(color)
@@ -327,7 +327,7 @@ struct CopyButton: View {
         } label: {
             HStack(spacing: 4) {
                 Image(systemName: copied ? "checkmark" : "doc.on.doc")
-                    .font(.system(size: 11, weight: .semibold))
+                    .font(.system(size: 11, weight: .semibold, design: .rounded))
                 Text(copied ? "Copied" : "Copy").font(RWF.cap(12))
             }
             .foregroundColor(copied ? .white : .rwTextSecondary)

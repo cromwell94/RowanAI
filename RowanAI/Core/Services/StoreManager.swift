@@ -644,7 +644,7 @@ struct PaywallView: View {
                 Spacer()
                 Button { dismiss() } label: {
                     Image(systemName: "xmark")
-                        .font(.system(size: 14, weight: .semibold))
+                        .font(.system(size: 14, weight: .semibold, design: .rounded))
                         .foregroundColor(.rwTextSecondary)
                         .frame(width: 32, height: 32)
                         .background(Color.rwSurface)
@@ -689,7 +689,7 @@ struct PaywallView: View {
                         ForEach(proFeatures, id: \.0) { feature in
                             HStack(spacing: 12) {
                                 Image(systemName: feature.0)
-                                    .font(.system(size: 14, weight: .semibold))
+                                    .font(.system(size: 14, weight: .semibold, design: .rounded))
                                     .foregroundStyle(LinearGradient.accent)
                                     .frame(width: 28)
                                 Text(feature.1).font(RWF.body()).foregroundColor(.rwTextPrimary)
@@ -724,7 +724,7 @@ struct PaywallView: View {
                         }
 
                         Text("7-day free trial, then auto-renews. Cancel anytime in your Apple ID settings. No charges during trial.")
-                            .font(.system(size: 11)).foregroundColor(.rwTextMuted)
+                            .font(.system(size: 11, design: .rounded)).foregroundColor(.rwTextMuted)
                             .multilineTextAlignment(.center)
                     }
                     .opacity(on ? 1 : 0)
@@ -740,10 +740,10 @@ struct PaywallView: View {
 
                         HStack(spacing: 14) {
                             Button("Terms of Service") { showTerms = true }
-                                .font(.system(size: 11)).foregroundColor(.rwTextMuted)
-                            Text("·").font(.system(size: 11)).foregroundColor(.rwTextMuted)
+                                .font(.system(size: 11, design: .rounded)).foregroundColor(.rwTextMuted)
+                            Text("·").font(.system(size: 11, design: .rounded)).foregroundColor(.rwTextMuted)
                             Button("Privacy Policy") { showTerms = true }
-                                .font(.system(size: 11)).foregroundColor(.rwTextMuted)
+                                .font(.system(size: 11, design: .rounded)).foregroundColor(.rwTextMuted)
                         }
                     }
                     .opacity(on ? 1 : 0)
@@ -759,7 +759,7 @@ struct PaywallView: View {
     private var trialCallout: some View {
         HStack(spacing: 10) {
             Image(systemName: "gift.fill")
-                .font(.system(size: 15, weight: .semibold))
+                .font(.system(size: 15, weight: .semibold, design: .rounded))
                 .foregroundStyle(LinearGradient.accent)
             VStack(alignment: .leading, spacing: 2) {
                 Text("7-day free trial").font(RWF.head(14)).foregroundColor(.rwTextPrimary)
@@ -779,7 +779,7 @@ struct PaywallView: View {
             Spacer()
             VStack(spacing: 16) {
                 Image(systemName: "checkmark.circle.fill")
-                    .font(.system(size: 72))
+                    .font(.system(size: 72, design: .rounded))
                     .foregroundStyle(LinearGradient.accent)
                 Text("Welcome to Pro").font(RWF.display()).foregroundColor(.rwTextPrimary)
                 Text("You now have unlimited access to everything Rowan has to offer.")
@@ -840,7 +840,7 @@ struct PaywallView: View {
     private func loadErrorCard(message: String) -> some View {
         VStack(spacing: 12) {
             Image(systemName: "wifi.exclamationmark")
-                .font(.system(size: 28, weight: .medium))
+                .font(.system(size: 28, weight: .medium, design: .rounded))
                 .foregroundStyle(LinearGradient.accent)
             Text("Couldn't load pricing")
                 .font(RWF.head(15)).foregroundColor(.rwTextPrimary)
@@ -901,7 +901,7 @@ struct PaywallView: View {
                 Text(label).font(RWF.med(13))
                 if let badge = badge {
                     Text(badge)
-                        .font(.system(size: 10, weight: .bold))
+                        .font(.system(size: 10, weight: .bold, design: .rounded))
                         .padding(.horizontal, 6).padding(.vertical, 2)
                         .background(isSelected
                                     ? Color.white.opacity(0.22)
@@ -1062,9 +1062,9 @@ struct TierCard: View {
                 if isCurrent {
                     HStack(spacing: 4) {
                         Image(systemName: "checkmark.circle.fill")
-                            .font(.system(size: 11, weight: .semibold))
+                            .font(.system(size: 11, weight: .semibold, design: .rounded))
                         Text("Current Plan")
-                            .font(.system(size: 11, weight: .semibold))
+                            .font(.system(size: 11, weight: .semibold, design: .rounded))
                     }
                     .foregroundColor(.rwSuccess)
                 }
@@ -1090,9 +1090,9 @@ struct TierCard: View {
             if let badge = badge {
                 HStack(spacing: 4) {
                     if let icon = badgeIcon {
-                        Image(systemName: icon).font(.system(size: 10, weight: .semibold))
+                        Image(systemName: icon).font(.system(size: 10, weight: .semibold, design: .rounded))
                     }
-                    Text(badge).font(.system(size: 10, weight: .bold))
+                    Text(badge).font(.system(size: 10, weight: .bold, design: .rounded))
                 }
                 .foregroundColor(.white)
                 .padding(.horizontal, 8).padding(.vertical, 3)
@@ -1102,7 +1102,7 @@ struct TierCard: View {
             Spacer()
             if isSelected {
                 Image(systemName: "checkmark.circle.fill")
-                    .font(.system(size: 18))
+                    .font(.system(size: 18, design: .rounded))
                     .foregroundColor(accent)
             }
         }
@@ -1130,7 +1130,7 @@ struct TierCard: View {
             ForEach(features, id: \.self) { feature in
                 HStack(alignment: .firstTextBaseline, spacing: 6) {
                     Image(systemName: "checkmark")
-                        .font(.system(size: 9, weight: .bold))
+                        .font(.system(size: 9, weight: .bold, design: .rounded))
                         .foregroundColor(accent)
                         .frame(width: 12)
                     Text(feature)
@@ -1285,7 +1285,7 @@ struct ProGate<Content: View>: View {
             Button { showPaywall = true } label: {
                 HStack(spacing: 10) {
                     Image(systemName: "lock.fill")
-                        .font(.system(size: 14, weight: .semibold))
+                        .font(.system(size: 14, weight: .semibold, design: .rounded))
                         .foregroundStyle(LinearGradient.accent)
                     Text("Unlock with Pro")
                         .font(RWF.med()).foregroundColor(.rwTextPrimary)

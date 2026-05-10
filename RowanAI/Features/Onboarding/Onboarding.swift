@@ -64,7 +64,7 @@ struct OnboardingFlowView: View {
             default: EmptyView()
             }
         }
-        .animation(.easeInOut(duration: 0.35), value: step)
+        .animation(.spring(response: 0.5, dampingFraction: 0.85), value: step)
     }
 }
 
@@ -179,11 +179,11 @@ struct Pill: View {
         HStack(spacing: 14) {
             ZStack {
                 RoundedRectangle(cornerRadius: RR.sm).fill(Color.rwAccent.opacity(0.1)).frame(width: 38, height: 38)
-                Image(systemName: icon).font(.system(size: 16, weight: .semibold)).foregroundColor(.rwAccent)
+                Image(systemName: icon).font(.system(size: 16, weight: .semibold, design: .rounded)).foregroundColor(.rwAccent)
             }
             Text(text).font(RWF.med(15)).foregroundColor(.rwTextPrimary)
             Spacer()
-            Image(systemName: "checkmark").font(.system(size: 12, weight: .semibold)).foregroundColor(.rwAccent.opacity(0.5))
+            Image(systemName: "checkmark").font(.system(size: 12, weight: .semibold, design: .rounded)).foregroundColor(.rwAccent.opacity(0.5))
         }
         .padding(.horizontal, SP.lg).padding(.vertical, SP.md)
         .background(Color.rwCard)
@@ -216,7 +216,7 @@ struct DisclosureView: View {
     var body: some View {
         VStack(spacing: 0) {
             VStack(spacing: 10) {
-                Image(systemName: "shield.checkered").font(.system(size: 40)).foregroundColor(.rwAccent).padding(.top, 56)
+                Image(systemName: "shield.checkered").font(.system(size: 40, design: .rounded)).foregroundColor(.rwAccent).padding(.top, 56)
                 Text("Before You Begin").font(RWF.display(26)).foregroundColor(.rwTextPrimary)
                 Text("Please read and agree before using Rowan.").font(RWF.body()).foregroundColor(.rwTextSecondary)
             }
@@ -228,7 +228,7 @@ struct DisclosureView: View {
                 VStack(spacing: 10) {
                     ForEach(items, id: \.1) { item in
                         HStack(alignment: .top, spacing: 12) {
-                            Image(systemName: item.0).font(.system(size: 14, weight: .semibold))
+                            Image(systemName: item.0).font(.system(size: 14, weight: .semibold, design: .rounded))
                                 .foregroundColor(.rwAccent)
                                 .frame(width: 40, height: 40)
                                 .background(Color.rwAccent.opacity(0.12))
@@ -251,7 +251,7 @@ struct DisclosureView: View {
                                 RoundedRectangle(cornerRadius: 5)
                                     .stroke(aiConsent ? Color(hex: "5B8DEF") : Color.rwBorder, lineWidth: 2)
                                     .frame(width: 22, height: 22)
-                                if aiConsent { Image(systemName: "checkmark").font(.system(size: 12, weight: .bold)).foregroundColor(Color(hex: "5B8DEF")) }
+                                if aiConsent { Image(systemName: "checkmark").font(.system(size: 12, weight: .bold, design: .rounded)).foregroundColor(Color(hex: "5B8DEF")) }
                             }.padding(.top, 1)
                             VStack(alignment: .leading, spacing: 4) {
                                 Text("I agree to Cyrano's AI Terms")
@@ -276,7 +276,7 @@ struct DisclosureView: View {
                                 RoundedRectangle(cornerRadius: 5)
                                     .stroke(agreed ? Color.rwAccent : Color.rwBorder, lineWidth: 2)
                                     .frame(width: 22, height: 22)
-                                if agreed { Image(systemName: "checkmark").font(.system(size: 12, weight: .bold)).foregroundColor(.rwAccent) }
+                                if agreed { Image(systemName: "checkmark").font(.system(size: 12, weight: .bold, design: .rounded)).foregroundColor(.rwAccent) }
                             }.padding(.top, 1)
                             VStack(alignment: .leading, spacing: 4) {
                                 Text("I agree to the Terms of Service and Privacy Policy")
@@ -371,14 +371,14 @@ struct GCard: View {
         Button(action: tap) {
             HStack(spacing: 14) {
                 Image(systemName: "person.fill")
-                    .font(.system(size: 18, weight: .semibold))
+                    .font(.system(size: 18, weight: .semibold, design: .rounded))
                     .foregroundColor(sel ? .white : color)
                     .frame(width: 46, height: 46)
                     .background(sel ? color : color.opacity(0.12))
                     .clipShape(RoundedRectangle(cornerRadius: RR.md))
                 Text(g.rawValue).font(RWF.head(17)).foregroundColor(.rwTextPrimary)
                 Spacer(minLength: 0)
-                if sel { Image(systemName: "checkmark.circle.fill").foregroundColor(color).font(.system(size: 20)) }
+                if sel { Image(systemName: "checkmark.circle.fill").foregroundColor(color).font(.system(size: 20, design: .rounded)) }
             }
             .padding(SP.lg)
             .background(sel ? color.opacity(0.08) : Color.rwCard)
@@ -402,14 +402,14 @@ struct GoalView: View {
                 ForEach(RWUser.DatingGoal.allCases, id: \.rawValue) { g in
                     Button { user.datingGoal = g } label: {
                         HStack(spacing: 14) {
-                            Image(systemName: g.icon).font(.system(size: 22, weight: .semibold))
+                            Image(systemName: g.icon).font(.system(size: 22, weight: .semibold, design: .rounded))
                                 .foregroundColor(user.datingGoal == g ? .white : .rwAccent)
                                 .frame(width: 46, height: 46)
                                 .background(user.datingGoal == g ? Color.rwAccent : Color.rwAccent.opacity(0.12))
                                 .clipShape(RoundedRectangle(cornerRadius: RR.md))
                             Text(g.rawValue).font(RWF.head()).foregroundColor(.rwTextPrimary)
                             Spacer()
-                            if user.datingGoal == g { Image(systemName: "checkmark.circle.fill").foregroundColor(.rwAccent).font(.system(size: 20)) }
+                            if user.datingGoal == g { Image(systemName: "checkmark.circle.fill").foregroundColor(.rwAccent).font(.system(size: 20, design: .rounded)) }
                         }
                         .padding(SP.lg)
                         .background(user.datingGoal == g ? Color.rwAccent.opacity(0.08) : Color.rwCard)
@@ -555,7 +555,7 @@ struct AttachQuizView: View {
     private func bullet(icon: String, text: String) -> some View {
         HStack(spacing: 12) {
             Image(systemName: icon)
-                .font(.system(size: 14, weight: .semibold))
+                .font(.system(size: 14, weight: .semibold, design: .rounded))
                 .foregroundColor(.rwAccent)
                 .frame(width: 32, height: 32)
                 .background(Color.rwAccent.opacity(0.12))
@@ -665,7 +665,7 @@ struct AttachQuizView: View {
             Spacer()
             VStack(spacing: 18) {
                 Image(systemName: style.icon)
-                    .font(.system(size: 48, weight: .semibold))
+                    .font(.system(size: 48, weight: .semibold, design: .rounded))
                     .foregroundColor(style.color)
                     .frame(width: 96, height: 96)
                     .background(style.color.opacity(0.12))
@@ -694,7 +694,7 @@ struct AttachQuizView: View {
             RWButton("Looks right — continue", icon: "arrow.right") { next() }
                 .padding(.horizontal, SP.xl)
             Text("Brief assessment based on Brennan, Clark & Shaver (1998). Not a clinical diagnosis. You can retake this anytime in Profile.")
-                .font(.system(size: 11)).foregroundColor(.rwTextMuted)
+                .font(.system(size: 11, design: .rounded)).foregroundColor(.rwTextMuted)
                 .multilineTextAlignment(.center).padding(.horizontal, SP.xl).padding(.top, 8)
             Button("Retake quiz") {
                 withAnimation { stage = .quiz; index = 0; answers = [] }
@@ -842,7 +842,7 @@ struct LoveLanguageView: View {
                 } label: {
                     HStack(spacing: 16) {
                         Image(systemName: "questionmark.circle.fill")
-                            .font(.system(size: 22, weight: .semibold))
+                            .font(.system(size: 22, weight: .semibold, design: .rounded))
                             .foregroundColor(.white)
                             .frame(width: 52, height: 52)
                             .background(LinearGradient.accent)
@@ -866,7 +866,7 @@ struct LoveLanguageView: View {
                 } label: {
                     HStack(spacing: 16) {
                         Image(systemName: "hand.tap.fill")
-                            .font(.system(size: 22, weight: .semibold))
+                            .font(.system(size: 22, weight: .semibold, design: .rounded))
                             .foregroundColor(.rwTextSecondary)
                             .frame(width: 52, height: 52)
                             .background(Color.rwSurface)
@@ -962,7 +962,7 @@ struct LoveLanguageView: View {
             Spacer()
             VStack(spacing: 20) {
                 Image(systemName: quizResult.icon)
-                    .font(.system(size: 56, weight: .semibold))
+                    .font(.system(size: 56, weight: .semibold, design: .rounded))
                     .foregroundColor(quizResult.color)
                     .frame(width: 100, height: 100)
                     .background(quizResult.color.opacity(0.1))
@@ -993,7 +993,7 @@ struct LoveLanguageView: View {
             RWButton("Looks right — continue", icon: "arrow.right") { next() }
                 .padding(.horizontal, SP.xl)
             Text("Based on Gary Chapman's Love Languages framework. For a full 30-question assessment visit 5lovelanguages.com")
-                .font(.system(size: 11)).foregroundColor(.rwTextMuted)
+                .font(.system(size: 11, design: .rounded)).foregroundColor(.rwTextMuted)
                 .multilineTextAlignment(.center).padding(.horizontal, SP.xl)
 
             Button("Retake quiz") {
@@ -1020,7 +1020,7 @@ struct LoveLanguageView: View {
                     } label: {
                         HStack(spacing: 14) {
                             Image(systemName: lang.icon)
-                                .font(.system(size: 18, weight: .semibold))
+                                .font(.system(size: 18, weight: .semibold, design: .rounded))
                                 .foregroundColor(selected ? .white : lang.color)
                                 .frame(width: 46, height: 46)
                                 .background(selected ? lang.color : lang.color.opacity(0.1))
@@ -1033,7 +1033,7 @@ struct LoveLanguageView: View {
                             Spacer(minLength: 0)
                             if selected {
                                 Image(systemName: "checkmark.circle.fill")
-                                    .foregroundColor(lang.color).font(.system(size: 20))
+                                    .foregroundColor(lang.color).font(.system(size: 20, design: .rounded))
                             }
                         }
                         .padding(SP.md)
@@ -1079,12 +1079,12 @@ struct LanguageView: View {
                     ForEach(AppLanguage.allCases) { lang in
                         Button { user.preferredLanguage = lang } label: {
                             HStack(spacing: 10) {
-                                Text(lang.flag).font(.system(size: 24))
+                                Text(lang.flag).font(.system(size: 24, design: .rounded))
                                 Text(lang.rawValue).font(RWF.med(14)).foregroundColor(.rwTextPrimary)
                                 Spacer()
                                 if user.preferredLanguage == lang {
                                     Image(systemName: "checkmark.circle.fill")
-                                        .foregroundColor(.rwAccent).font(.system(size: 16))
+                                        .foregroundColor(.rwAccent).font(.system(size: 16, design: .rounded))
                                 }
                             }
                             .padding(SP.md)
@@ -1176,7 +1176,7 @@ struct FirstRelCard: View {
         Button(action: onTap) {
             HStack(spacing: 14) {
                 Image(systemName: icon)
-                    .font(.system(size: 20, weight: .semibold))
+                    .font(.system(size: 20, weight: .semibold, design: .rounded))
                     .foregroundColor(selected ? .white : color)
                     .frame(width: 52, height: 52)
                     .background(selected ? color : color.opacity(0.12))
@@ -1188,7 +1188,7 @@ struct FirstRelCard: View {
                 Spacer()
                 if selected {
                     Image(systemName: "checkmark.circle.fill")
-                        .foregroundColor(color).font(.system(size: 20))
+                        .foregroundColor(color).font(.system(size: 20, design: .rounded))
                 }
             }
             .padding(SP.lg)
@@ -1287,7 +1287,7 @@ private struct RSCard: View {
         Button(action: onTap) {
             HStack(spacing: 14) {
                 Image(systemName: status.icon)
-                    .font(.system(size: 20, weight: .semibold))
+                    .font(.system(size: 20, weight: .semibold, design: .rounded))
                     .foregroundColor(selected ? .white : status.color)
                     .frame(width: 52, height: 52)
                     .background(selected ? status.color : status.color.opacity(0.12))
@@ -1300,7 +1300,7 @@ private struct RSCard: View {
                 Spacer()
                 if selected {
                     Image(systemName: "checkmark.circle.fill")
-                        .foregroundColor(status.color).font(.system(size: 20))
+                        .foregroundColor(status.color).font(.system(size: 20, design: .rounded))
                 }
             }
             .padding(SP.lg)
@@ -1385,7 +1385,7 @@ struct RelationshipDurationView: View {
                     } label: {
                         HStack(spacing: 14) {
                             Image(systemName: "clock.fill")
-                                .font(.system(size: 16, weight: .semibold))
+                                .font(.system(size: 16, weight: .semibold, design: .rounded))
                                 .foregroundColor(selected ? .white : .rwGold)
                                 .frame(width: 44, height: 44)
                                 .background(selected ? Color.rwGold : Color.rwGold.opacity(0.12))
@@ -1394,7 +1394,7 @@ struct RelationshipDurationView: View {
                             Spacer()
                             if selected {
                                 Image(systemName: "checkmark.circle.fill")
-                                    .foregroundColor(.rwGold).font(.system(size: 18))
+                                    .foregroundColor(.rwGold).font(.system(size: 18, design: .rounded))
                             }
                         }
                         .padding(SP.md)
@@ -1446,7 +1446,7 @@ struct RelationshipGoalsView: View {
                     } label: {
                         HStack(spacing: 14) {
                             Image(systemName: goal.icon)
-                                .font(.system(size: 18, weight: .semibold))
+                                .font(.system(size: 18, weight: .semibold, design: .rounded))
                                 .foregroundColor(selected ? .white : .rwGold)
                                 .frame(width: 46, height: 46)
                                 .background(selected ? Color.rwGold : Color.rwGold.opacity(0.12))
@@ -1459,7 +1459,7 @@ struct RelationshipGoalsView: View {
                             Spacer(minLength: 0)
                             if selected {
                                 Image(systemName: "checkmark.circle.fill")
-                                    .foregroundColor(.rwGold).font(.system(size: 20))
+                                    .foregroundColor(.rwGold).font(.system(size: 20, design: .rounded))
                             }
                         }
                         .padding(SP.md)
@@ -1551,7 +1551,7 @@ struct PartnerInviteView: View {
     private func inviteOption(icon: String, title: String, sub: String, tinted: Bool) -> some View {
         HStack(spacing: 14) {
             Image(systemName: icon)
-                .font(.system(size: 20, weight: .semibold))
+                .font(.system(size: 20, weight: .semibold, design: .rounded))
                 .foregroundColor(tinted ? .white : .rwTextSecondary)
                 .frame(width: 52, height: 52)
                 .background(tinted ? Color.rwGold : Color.rwSurface)
@@ -1575,7 +1575,7 @@ struct PartnerInviteView: View {
             Spacer()
             VStack(spacing: 22) {
                 Image(systemName: "person.2.fill")
-                    .font(.system(size: 44, weight: .semibold))
+                    .font(.system(size: 44, weight: .semibold, design: .rounded))
                     .foregroundColor(.rwGold)
                     .frame(width: 96, height: 96)
                     .background(Color.rwGold.opacity(0.12))

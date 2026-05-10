@@ -34,7 +34,7 @@ struct HardConversationView: View {
             // Header
             HStack {
                 Button(action: onBack) {
-                    Image(systemName: "chevron.left").font(.system(size: 16, weight: .semibold))
+                    Image(systemName: "chevron.left").font(.system(size: 16, weight: .semibold, design: .rounded))
                         .foregroundColor(.rwTextPrimary).frame(width: 36, height: 36)
                         .background(Color.rwSurface).clipShape(Circle())
                 }
@@ -62,7 +62,10 @@ struct HardConversationView: View {
         ScrollView(showsIndicators: false) {
             VStack(spacing: SP.xl) {
                 VStack(spacing: 16) {
-                    Text("💬").font(.system(size: 52)).padding(.top, 20)
+                    Image(systemName: "bubble.left.and.bubble.right.fill")
+                        .font(.system(size: 52, design: .rounded))
+                        .foregroundStyle(LinearGradient.accent)
+                        .padding(.top, 20)
                     Text("Let's say it\nthe right way.").font(RWF.display(28)).foregroundColor(.rwTextPrimary)
                         .multilineTextAlignment(.center)
                     Text("Hard conversations go better when you know what you actually feel and need — before you start talking.")
@@ -100,7 +103,7 @@ struct HardConversationView: View {
                 // Kitchen sinking warning
                 HStack(spacing: 10) {
                     Image(systemName: "exclamationmark.triangle.fill")
-                        .font(.system(size: 13)).foregroundColor(Color(hex: "F59E0B"))
+                        .font(.system(size: 13, design: .rounded)).foregroundColor(Color(hex: "F59E0B"))
                     Text("Stay focused on one thing. No old arguments, no other issues — just this.")
                         .font(RWF.cap(12)).foregroundColor(Color(hex: "F59E0B"))
                 }
@@ -271,7 +274,10 @@ struct HardConversationView: View {
         ScrollView(showsIndicators: false) {
             VStack(spacing: SP.xl) {
                 VStack(spacing: 12) {
-                    Text("✅").font(.system(size: 52)).padding(.top, 20)
+                    Image(systemName: "checkmark.circle.fill")
+                        .font(.system(size: 52, design: .rounded))
+                        .foregroundColor(.rwGold)
+                        .padding(.top, 20)
                     Text("You're ready.").font(RWF.display(28)).foregroundColor(.rwTextPrimary)
                     Text("You know what you feel and what you need. That's most of the battle.")
                         .font(RWF.body()).foregroundColor(.rwTextSecondary).multilineTextAlignment(.center)
@@ -371,7 +377,7 @@ struct HCPrinciple: View {
     let icon: String; let color: Color; let title: String; let sub: String
     var body: some View {
         HStack(alignment: .top, spacing: 12) {
-            Image(systemName: icon).font(.system(size: 18, weight: .semibold))
+            Image(systemName: icon).font(.system(size: 18, weight: .semibold, design: .rounded))
                 .foregroundColor(color).frame(width: 36, height: 36)
                 .background(color.opacity(0.1)).clipShape(Circle())
             VStack(alignment: .leading, spacing: 3) {
@@ -390,7 +396,7 @@ struct HCReminder: View {
     let icon: String; let color: Color; let text: String
     var body: some View {
         HStack(alignment: .top, spacing: 10) {
-            Image(systemName: icon).font(.system(size: 13, weight: .semibold))
+            Image(systemName: icon).font(.system(size: 13, weight: .semibold, design: .rounded))
                 .foregroundColor(color).frame(width: 24)
             Text(text).font(RWF.body(13)).foregroundColor(.rwTextSecondary)
                 .fixedSize(horizontal: false, vertical: true)

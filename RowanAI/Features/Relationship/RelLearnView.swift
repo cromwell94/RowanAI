@@ -292,7 +292,7 @@ Esther Perel's insight: desire needs space. You can't want what you already have
                         Button { withAnimation { selected = section } } label: {
                             HStack(spacing: 14) {
                                 Image(systemName: section.icon)
-                                    .font(.system(size: 20, weight: .semibold)).foregroundColor(.white)
+                                    .font(.system(size: 20, weight: .semibold, design: .rounded)).foregroundColor(.white)
                                     .frame(width: 52, height: 52).background(section.color)
                                     .clipShape(RoundedRectangle(cornerRadius: RR.md))
                                 VStack(alignment: .leading, spacing: 5) {
@@ -345,7 +345,7 @@ struct ArticleListView: View {
             VStack(spacing: 0) {
                 HStack {
                     Button(action: onBack) {
-                        Image(systemName: "chevron.left").font(.system(size: 16, weight: .semibold))
+                        Image(systemName: "chevron.left").font(.system(size: 16, weight: .semibold, design: .rounded))
                             .foregroundColor(.rwTextPrimary).frame(width: 36, height: 36)
                             .background(Color.rwSurface).clipShape(Circle())
                     }
@@ -363,7 +363,7 @@ struct ArticleListView: View {
                             Button { withAnimation { selected = article } } label: {
                                 HStack(spacing: 12) {
                                     Image(systemName: section.icon)
-                                        .font(.system(size: 14, weight: .semibold)).foregroundColor(section.color)
+                                        .font(.system(size: 14, weight: .semibold, design: .rounded)).foregroundColor(section.color)
                                         .frame(width: 36, height: 36).background(section.color.opacity(0.1))
                                         .clipShape(Circle())
                                     Text(article.title).font(RWF.head(15)).foregroundColor(.rwTextPrimary)
@@ -395,7 +395,7 @@ struct ArticleView: View {
         VStack(spacing: 0) {
             HStack {
                 Button(action: onBack) {
-                    Image(systemName: "chevron.left").font(.system(size: 16, weight: .semibold))
+                    Image(systemName: "chevron.left").font(.system(size: 16, weight: .semibold, design: .rounded))
                         .foregroundColor(.rwTextPrimary).frame(width: 36, height: 36)
                         .background(Color.rwSurface).clipShape(Circle())
                 }

@@ -97,7 +97,7 @@ struct RelIntimacyView: View {
     private func tile(icon: String, title: String, sub: String, tint: Color) -> some View {
         HStack(spacing: 14) {
             Image(systemName: icon)
-                .font(.system(size: 20, weight: .semibold))
+                .font(.system(size: 20, weight: .semibold, design: .rounded))
                 .foregroundColor(tint)
                 .frame(width: 48, height: 48)
                 .background(tint.opacity(0.12))
@@ -124,7 +124,7 @@ private struct AgeGateScreen: View {
         VStack(spacing: SP.lg) {
             Spacer()
             Image(systemName: "lock.shield.fill")
-                .font(.system(size: 48)).foregroundColor(.rwAccent)
+                .font(.system(size: 48, design: .rounded)).foregroundColor(.rwAccent)
             Text("18+ only").font(RWF.title()).foregroundColor(.rwTextPrimary)
             Text("Intimacy Builder includes adult content for partnered couples. By continuing you confirm you're 18 or older.")
                 .font(RWF.body()).foregroundColor(.rwTextSecondary)
@@ -275,7 +275,7 @@ struct TouchInventoryView: View {
             ScrollView(showsIndicators: false) {
                 VStack(spacing: SP.lg) {
                     Image(systemName: "hand.raised.fill")
-                        .font(.system(size: 48)).foregroundColor(Color(hex: "00BFB3"))
+                        .font(.system(size: 48, design: .rounded)).foregroundColor(Color(hex: "00BFB3"))
                         .padding(.top, 24)
                     Text("How present is touch in your relationship this week?")
                         .font(RWF.head()).foregroundColor(.rwTextPrimary)

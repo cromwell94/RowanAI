@@ -201,7 +201,7 @@ struct FillMeInView: View {
     private var quotaBar: some View {
         HStack(spacing: 8) {
             Image(systemName: "sparkle")
-                .font(.system(size: 11, weight: .medium))
+                .font(.system(size: 11, weight: .medium, design: .rounded))
                 .foregroundStyle(LinearGradient.accent)
             Text("\(storeManager.fillMeInsRemainingThisWeek()) free \(storeManager.fillMeInsRemainingThisWeek() == 1 ? "analysis" : "analyses") left this week")
                 .font(RWF.cap(12))
@@ -287,7 +287,7 @@ struct FillMeInView: View {
     private var emptyState: some View {
         VStack(spacing: 6) {
             Image(systemName: "bubble.left.and.bubble.right")
-                .font(.system(size: 24))
+                .font(.system(size: 24, design: .rounded))
                 .foregroundStyle(LinearGradient.accentSoft)
             Text("Start with what you said or what they said.")
                 .font(RWF.cap(12))
@@ -322,7 +322,7 @@ struct FillMeInView: View {
         } label: {
             HStack(spacing: 6) {
                 Image(systemName: "plus.circle.fill")
-                    .font(.system(size: 13, weight: .semibold))
+                    .font(.system(size: 13, weight: .semibold, design: .rounded))
                 Text(label).font(RWF.cap(13))
             }
             .foregroundColor(color)
@@ -602,7 +602,7 @@ struct AnalysisSection: View {
         VStack(alignment: .leading, spacing: 8) {
             HStack(spacing: 8) {
                 Image(systemName: icon)
-                    .font(.system(size: 13, weight: .semibold))
+                    .font(.system(size: 13, weight: .semibold, design: .rounded))
                     .foregroundColor(color)
                 Text(title)
                     .font(RWF.head(14))
@@ -635,7 +635,7 @@ struct SuggestionCard: View {
             HStack {
                 HStack(spacing: 5) {
                     if let t = toneEnum {
-                        Image(systemName: t.icon).font(.system(size: 11, weight: .bold))
+                        Image(systemName: t.icon).font(.system(size: 11, weight: .bold, design: .rounded))
                     }
                     Text(tone.uppercased()).font(RWF.micro()).tracking(1.5)
                 }
@@ -652,7 +652,7 @@ struct SuggestionCard: View {
                 } label: {
                     HStack(spacing: 4) {
                         Image(systemName: copied ? "checkmark" : "doc.on.doc")
-                            .font(.system(size: 11, weight: .semibold))
+                            .font(.system(size: 11, weight: .semibold, design: .rounded))
                         Text(copied ? "Copied" : "Copy").font(RWF.cap(12))
                     }
                     .foregroundColor(copied ? .white : .rwTextSecondary)
@@ -693,7 +693,7 @@ struct SavedConversationRow: View {
                 Spacer()
                 Button(action: triggerDelete) {
                     Image(systemName: "trash.fill")
-                        .font(.system(size: 14, weight: .semibold))
+                        .font(.system(size: 14, weight: .semibold, design: .rounded))
                         .foregroundColor(.white)
                         .frame(width: 60, height: 60)
                         .background(Color.rwDanger)
@@ -706,7 +706,7 @@ struct SavedConversationRow: View {
             Button(action: onTap) {
                 HStack(spacing: 12) {
                     Image(systemName: "bubble.left.and.bubble.right.fill")
-                        .font(.system(size: 14, weight: .semibold))
+                        .font(.system(size: 14, weight: .semibold, design: .rounded))
                         .foregroundColor(.white)
                         .frame(width: 38, height: 38)
                         .background(LinearGradient.accent)
@@ -729,11 +729,11 @@ struct SavedConversationRow: View {
                     Spacer()
                     if conversation.cyranoAnalysis != nil {
                         Image(systemName: "sparkles")
-                            .font(.system(size: 11))
+                            .font(.system(size: 11, design: .rounded))
                             .foregroundStyle(LinearGradient.accent)
                     }
                     Image(systemName: "chevron.right")
-                        .font(.system(size: 11, weight: .medium))
+                        .font(.system(size: 11, weight: .medium, design: .rounded))
                         .foregroundColor(.rwTextMuted)
                 }
                 .padding(SP.md)

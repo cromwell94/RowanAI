@@ -34,7 +34,7 @@ struct CommunicationLabView: View {
                 if !store.isPro {
                     HStack(spacing: 10) {
                         Image(systemName: "gift.fill")
-                            .font(.system(size: 14, weight: .semibold))
+                            .font(.system(size: 14, weight: .semibold, design: .rounded))
                             .foregroundColor(.white)
                             .frame(width: 36, height: 36)
                             .background(LinearGradient.accent)
@@ -88,7 +88,7 @@ struct CommunicationLabView: View {
                         ], id: \.self) { item in
                             HStack(alignment: .top, spacing: 10) {
                                 Image(systemName: "checkmark.circle.fill")
-                                    .font(.system(size: 13)).foregroundColor(Color(hex: "00BFB3"))
+                                    .font(.system(size: 13, design: .rounded)).foregroundColor(Color(hex: "00BFB3"))
                                     .padding(.top, 1)
                                 Text(item).font(RWF.body(13)).foregroundColor(.rwTextSecondary)
                                     .fixedSize(horizontal: false, vertical: true)
@@ -119,7 +119,7 @@ struct LabFeatureCard: View {
         Button(action: action) {
             HStack(alignment: .top, spacing: 14) {
                 Image(systemName: icon)
-                    .font(.system(size: 20, weight: .semibold)).foregroundColor(.white)
+                    .font(.system(size: 20, weight: .semibold, design: .rounded)).foregroundColor(.white)
                     .frame(width: 52, height: 52).background(color)
                     .clipShape(RoundedRectangle(cornerRadius: RR.md))
                 VStack(alignment: .leading, spacing: 6) {
@@ -442,7 +442,7 @@ struct LabLessonsView: View {
         VStack(spacing: 0) {
             HStack {
                 Button(action: onBack) {
-                    Image(systemName: "chevron.left").font(.system(size: 16, weight: .semibold))
+                    Image(systemName: "chevron.left").font(.system(size: 16, weight: .semibold, design: .rounded))
                         .foregroundColor(.rwTextPrimary).frame(width: 36, height: 36)
                         .background(Color.rwSurface).clipShape(Circle())
                 }
@@ -458,7 +458,7 @@ struct LabLessonsView: View {
                 VStack(spacing: 22) {
                     if !store.isPro {
                         HStack(spacing: 8) {
-                            Image(systemName: "lock.fill").font(.system(size: 11))
+                            Image(systemName: "lock.fill").font(.system(size: 11, design: .rounded))
                             Text("Lessons 4–20 require Pro. Lessons 1–3 are free.")
                                 .font(RWF.cap(12))
                         }
@@ -522,9 +522,9 @@ struct LessonRow: View {
                     .fill(locked ? Color.rwSurface : lesson.color)
                     .frame(width: 52, height: 52)
                 if locked {
-                    Image(systemName: "lock.fill").font(.system(size: 18)).foregroundColor(.rwTextMuted)
+                    Image(systemName: "lock.fill").font(.system(size: 18, design: .rounded)).foregroundColor(.rwTextMuted)
                 } else {
-                    Image(systemName: lesson.icon).font(.system(size: 18, weight: .semibold)).foregroundColor(.white)
+                    Image(systemName: lesson.icon).font(.system(size: 18, weight: .semibold, design: .rounded)).foregroundColor(.white)
                 }
             }
             VStack(alignment: .leading, spacing: 4) {
@@ -541,7 +541,7 @@ struct LessonRow: View {
             }
             Spacer()
             Image(systemName: locked ? "lock.fill" : "chevron.right")
-                .font(.system(size: 13)).foregroundColor(.rwTextMuted)
+                .font(.system(size: 13, design: .rounded)).foregroundColor(.rwTextMuted)
         }
         .padding(SP.md).background(Color.rwCard)
         .clipShape(RoundedRectangle(cornerRadius: RR.xl))
@@ -563,7 +563,7 @@ struct LessonDetailView2: View {
                     // Header
                     HStack(spacing: 14) {
                         Image(systemName: lesson.icon)
-                            .font(.system(size: 24, weight: .semibold)).foregroundColor(.white)
+                            .font(.system(size: 24, weight: .semibold, design: .rounded)).foregroundColor(.white)
                             .frame(width: 60, height: 60).background(lesson.color)
                             .clipShape(RoundedRectangle(cornerRadius: RR.lg))
                         VStack(alignment: .leading, spacing: 4) {
@@ -590,7 +590,7 @@ struct LessonDetailView2: View {
                     // Key insight callout
                     HStack(alignment: .top, spacing: 12) {
                         Image(systemName: "key.fill")
-                            .font(.system(size: 18, weight: .semibold))
+                            .font(.system(size: 18, weight: .semibold, design: .rounded))
                             .foregroundColor(lesson.color)
                         VStack(alignment: .leading, spacing: 4) {
                             Text("Key insight").font(RWF.cap()).foregroundColor(.rwTextMuted).tracking(1.2)
@@ -625,7 +625,7 @@ struct LessonDetailView2: View {
                         if quizRevealed {
                             HStack(alignment: .top, spacing: 10) {
                                 Image(systemName: "checkmark.seal.fill")
-                                    .font(.system(size: 16))
+                                    .font(.system(size: 16, design: .rounded))
                                     .foregroundColor(Color(hex: "00BFB3"))
                                     .padding(.top, 1)
                                 Text(lesson.quizAnswer)
@@ -645,10 +645,10 @@ struct LessonDetailView2: View {
                                 UIImpactFeedbackGenerator(style: .light).impactOccurred()
                             } label: {
                                 HStack(spacing: 8) {
-                                    Image(systemName: "eye.fill").font(.system(size: 13))
+                                    Image(systemName: "eye.fill").font(.system(size: 13, design: .rounded))
                                     Text("Tap to reveal answer").font(RWF.med(14))
                                     Spacer()
-                                    Image(systemName: "chevron.right").font(.system(size: 12))
+                                    Image(systemName: "chevron.right").font(.system(size: 12, design: .rounded))
                                 }
                                 .foregroundColor(.rwAccent)
                                 .padding(SP.md)
@@ -759,7 +759,7 @@ struct LabSimulatorView: View {
                     if scenario != nil { scenario = nil; messages = []; coachCard = nil; exchangeCount = 0; showFinalDebrief = false }
                     else { onBack() }
                 }) {
-                    Image(systemName: "chevron.left").font(.system(size: 16, weight: .semibold))
+                    Image(systemName: "chevron.left").font(.system(size: 16, weight: .semibold, design: .rounded))
                         .foregroundColor(.rwTextPrimary).frame(width: 36, height: 36)
                         .background(Color.rwSurface).clipShape(Circle())
                 }
@@ -833,7 +833,7 @@ struct LabSimulatorView: View {
                                 RoundedRectangle(cornerRadius: RR.md).fill(s.isFree || store.isPro ? Color(hex: "E8356D") : Color.rwSurface)
                                     .frame(width: 52, height: 52)
                                 Image(systemName: s.isFree || store.isPro ? "message.fill" : "lock.fill")
-                                    .font(.system(size: 18, weight: .semibold))
+                                    .font(.system(size: 18, weight: .semibold, design: .rounded))
                                     .foregroundColor(s.isFree || store.isPro ? .white : .rwTextMuted)
                             }
                             VStack(alignment: .leading, spacing: 5) {
@@ -850,7 +850,7 @@ struct LabSimulatorView: View {
                             }
                             Spacer(minLength: 0)
                             Image(systemName: s.isFree || store.isPro ? "chevron.right" : "lock.fill")
-                                .font(.system(size: 13)).foregroundColor(.rwTextMuted)
+                                .font(.system(size: 13, design: .rounded)).foregroundColor(.rwTextMuted)
                         }
                         .padding(SP.md).background(Color.rwCard)
                         .clipShape(RoundedRectangle(cornerRadius: RR.xl))
@@ -883,7 +883,7 @@ struct LabSimulatorView: View {
             // Free limit warning
             if !store.isPro && exchangeCount >= freeMessageLimit - 1 {
                 HStack(spacing: 8) {
-                    Image(systemName: "lock.fill").font(.system(size: 11)).foregroundColor(.rwAccent)
+                    Image(systemName: "lock.fill").font(.system(size: 11, design: .rounded)).foregroundColor(.rwAccent)
                     Text(exchangeCount >= freeMessageLimit ?
                         "Free session complete — Go Pro to continue" :
                         "1 free message remaining")
@@ -953,7 +953,7 @@ struct LabSimulatorView: View {
                         .font(RWF.body()).foregroundColor(.rwTextPrimary).focused($focused)
                         .onSubmit { Task { await send(scenario: s) } }
                     Button { Task { await send(scenario: s) } } label: {
-                        Image(systemName: "arrow.up.circle.fill").font(.system(size: 30))
+                        Image(systemName: "arrow.up.circle.fill").font(.system(size: 30, design: .rounded))
                             .foregroundColor(input.isEmpty ? .rwTextMuted : .rwAccent)
                     }
                     .disabled(input.trimmingCharacters(in: .whitespaces).isEmpty || isLoading).buttonStyle(SBS())
@@ -1128,12 +1128,12 @@ struct CoachCardView: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 10) {
             HStack(spacing: 8) {
-                Image(systemName: card.ratingIcon).font(.system(size: 14, weight: .semibold))
+                Image(systemName: card.ratingIcon).font(.system(size: 14, weight: .semibold, design: .rounded))
                     .foregroundColor(card.ratingColor)
                 Text("Cyrano").font(RWF.micro()).foregroundColor(.rwAccent).tracking(1.5)
                 Spacer()
                 Button(action: onDismiss) {
-                    Image(systemName: "xmark").font(.system(size: 11, weight: .bold))
+                    Image(systemName: "xmark").font(.system(size: 11, weight: .bold, design: .rounded))
                         .foregroundColor(.rwTextMuted).frame(width: 24, height: 24)
                         .background(Color.rwSurface).clipShape(Circle())
                 }
@@ -1142,7 +1142,7 @@ struct CoachCardView: View {
             Text(card.insight).font(RWF.body(13)).foregroundColor(.rwTextSecondary)
                 .fixedSize(horizontal: false, vertical: true)
             HStack(alignment: .top, spacing: 6) {
-                Image(systemName: "arrow.right.circle.fill").font(.system(size: 12))
+                Image(systemName: "arrow.right.circle.fill").font(.system(size: 12, design: .rounded))
                     .foregroundColor(card.ratingColor)
                 Text(card.tip).font(RWF.body(13)).foregroundColor(card.ratingColor)
                     .fixedSize(horizontal: false, vertical: true)

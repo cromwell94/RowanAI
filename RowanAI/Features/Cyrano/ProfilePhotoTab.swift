@@ -64,7 +64,7 @@ struct ProfilePhotoTab: View {
     private var quotaBar: some View {
         HStack(spacing: 8) {
             Image(systemName: "sparkle")
-                .font(.system(size: 11, weight: .medium))
+                .font(.system(size: 11, weight: .medium, design: .rounded))
                 .foregroundStyle(LinearGradient.accent)
             Text("\(storeManager.profilePhotosRemainingThisWeek()) free \(storeManager.profilePhotosRemainingThisWeek() == 1 ? "analysis" : "analyses") left this week")
                 .font(RWF.cap(12))
@@ -90,7 +90,7 @@ struct ProfilePhotoTab: View {
         ) {
             HStack(spacing: 8) {
                 Image(systemName: "photo.badge.plus.fill")
-                    .font(.system(size: 14, weight: .semibold))
+                    .font(.system(size: 14, weight: .semibold, design: .rounded))
                 Text(store.uploadedPhotos.isEmpty ? "Add photos" : "Replace photos")
                     .font(RWF.med(15))
             }
@@ -132,7 +132,7 @@ struct ProfilePhotoTab: View {
                     store.uploadedPhotos.removeAll { $0.id == photo.id }
                 } label: {
                     Image(systemName: "xmark")
-                        .font(.system(size: 11, weight: .bold))
+                        .font(.system(size: 11, weight: .bold, design: .rounded))
                         .foregroundColor(.white)
                         .frame(width: 26, height: 26)
                         .background(Color.black.opacity(0.6))
@@ -197,7 +197,7 @@ struct ProfilePhotoTab: View {
         }()
 
         return HStack(spacing: 4) {
-            Image(systemName: rec.icon).font(.system(size: 10, weight: .semibold))
+            Image(systemName: rec.icon).font(.system(size: 10, weight: .semibold, design: .rounded))
             Text(rec.rawValue).font(RWF.cap(11))
         }
         .foregroundColor(tint)
@@ -258,7 +258,7 @@ struct ProfilePhotoTab: View {
                     ForEach(photo.positives, id: \.self) { p in
                         HStack(alignment: .top, spacing: 8) {
                             Image(systemName: "checkmark.seal.fill")
-                                .font(.system(size: 11, weight: .bold))
+                                .font(.system(size: 11, weight: .bold, design: .rounded))
                                 .foregroundColor(.rwSuccess)
                                 .padding(.top, 1)
                             Text(p)
@@ -275,7 +275,7 @@ struct ProfilePhotoTab: View {
                     ForEach(photo.improvements, id: \.self) { i in
                         HStack(alignment: .top, spacing: 8) {
                             Image(systemName: "arrow.up.right.circle.fill")
-                                .font(.system(size: 11, weight: .bold))
+                                .font(.system(size: 11, weight: .bold, design: .rounded))
                                 .foregroundColor(.rwWarning)
                                 .padding(.top, 1)
                             Text(i)
@@ -309,7 +309,7 @@ struct ProfilePhotoTab: View {
                 } label: {
                     HStack(spacing: 4) {
                         Image(systemName: copiedOrder ? "checkmark" : "doc.on.doc")
-                            .font(.system(size: 10, weight: .semibold))
+                            .font(.system(size: 10, weight: .semibold, design: .rounded))
                         Text(copiedOrder ? "Copied" : "Copy Order to Notes")
                             .font(RWF.cap(11))
                     }
@@ -334,7 +334,7 @@ struct ProfilePhotoTab: View {
         let isCut = photo.recommendation == .cut
         return HStack(spacing: 12) {
             Image(systemName: "line.3.horizontal")
-                .font(.system(size: 12, weight: .medium))
+                .font(.system(size: 12, weight: .medium, design: .rounded))
                 .foregroundColor(.rwTextMuted)
 
             if let img = photo.image {

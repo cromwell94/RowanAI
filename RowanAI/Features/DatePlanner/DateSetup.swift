@@ -347,7 +347,7 @@ struct DateSetupView: View {
                         }
                     } label: {
                         Image(systemName: "chevron.left")
-                            .font(.system(size: 13, weight: .semibold))
+                            .font(.system(size: 13, weight: .semibold, design: .rounded))
                             .foregroundColor(.rwTextSecondary)
                             .frame(width: 48, height: 48)
                             .background(Color.rwSurface)
@@ -458,7 +458,7 @@ private struct WhoStep: View {
         Button(action: action) {
             HStack(spacing: 14) {
                 Image(systemName: icon)
-                    .font(.system(size: 16, weight: .semibold))
+                    .font(.system(size: 16, weight: .semibold, design: .rounded))
                     .foregroundColor(selected ? .white : .rwAccent)
                     .frame(width: 44, height: 44)
                     .background(selected ? AnyShapeStyle(LinearGradient.accent) : AnyShapeStyle(Color.rwAccent.opacity(0.10)))
@@ -473,7 +473,7 @@ private struct WhoStep: View {
                 if selected {
                     Image(systemName: "checkmark.circle.fill")
                         .foregroundStyle(LinearGradient.accent)
-                        .font(.system(size: 18))
+                        .font(.system(size: 18, design: .rounded))
                 }
             }
             .padding(SP.md)
@@ -540,7 +540,7 @@ private struct OccasionStep: View {
         } label: {
             VStack(alignment: .leading, spacing: 10) {
                 Image(systemName: o.icon)
-                    .font(.system(size: 18, weight: .semibold))
+                    .font(.system(size: 18, weight: .semibold, design: .rounded))
                     .foregroundColor(selected ? .white : .rwAccent)
                     .frame(width: 36, height: 36)
                     .background(selected ? AnyShapeStyle(LinearGradient.accent) : AnyShapeStyle(Color.rwAccent.opacity(0.10)))
@@ -600,7 +600,7 @@ private struct VibeStep: View {
         } label: {
             HStack(spacing: 6) {
                 Image(systemName: vibe.icon)
-                    .font(.system(size: 11, weight: .medium))
+                    .font(.system(size: 11, weight: .medium, design: .rounded))
                 Text(vibe.rawValue).font(RWF.cap(13))
             }
             .foregroundColor(on ? .white : .rwTextPrimary)
@@ -707,7 +707,7 @@ private struct LocationStep: View {
         VStack(spacing: 10) {
             HStack(spacing: 8) {
                 Image(systemName: "magnifyingglass")
-                    .font(.system(size: 13))
+                    .font(.system(size: 13, design: .rounded))
                     .foregroundColor(.rwTextMuted)
                 TextField("City or area…", text: $query)
                     .focused($queryFocused)
@@ -742,7 +742,7 @@ private struct LocationStep: View {
                         } label: {
                             HStack(alignment: .top, spacing: 10) {
                                 Image(systemName: "mappin")
-                                    .font(.system(size: 12, weight: .medium))
+                                    .font(.system(size: 12, weight: .medium, design: .rounded))
                                     .foregroundColor(.rwAccent)
                                     .padding(.top, 3)
                                 VStack(alignment: .leading, spacing: 2) {
@@ -781,7 +781,7 @@ private struct LocationStep: View {
         VStack(alignment: .leading, spacing: 10) {
             HStack(spacing: 6) {
                 Image(systemName: "scope")
-                    .font(.system(size: 11, weight: .medium))
+                    .font(.system(size: 11, weight: .medium, design: .rounded))
                     .foregroundStyle(LinearGradient.accent)
                 Text("HOW FAR ARE YOU WILLING TO GO?")
                     .font(RWF.micro())
@@ -818,7 +818,7 @@ private struct LocationStep: View {
         Button(action: action) {
             HStack(spacing: 14) {
                 Image(systemName: icon)
-                    .font(.system(size: 17, weight: .semibold))
+                    .font(.system(size: 17, weight: .semibold, design: .rounded))
                     .foregroundColor(selected ? .white : .rwAccent)
                     .frame(width: 44, height: 44)
                     .background(selected ? AnyShapeStyle(LinearGradient.accent) : AnyShapeStyle(Color.rwAccent.opacity(0.10)))
@@ -831,7 +831,7 @@ private struct LocationStep: View {
                 }
                 Spacer()
                 Image(systemName: "chevron.right")
-                    .font(.system(size: 11, weight: .medium))
+                    .font(.system(size: 11, weight: .medium, design: .rounded))
                     .foregroundColor(.rwTextMuted)
             }
             .padding(SP.md)
@@ -883,7 +883,7 @@ private struct BudgetStep: View {
                 if selected {
                     Image(systemName: "checkmark.circle.fill")
                         .foregroundStyle(LinearGradient.accent)
-                        .font(.system(size: 18))
+                        .font(.system(size: 18, design: .rounded))
                 }
             }
             .padding(SP.md)
@@ -965,7 +965,7 @@ struct DateContextHeaderBar: View {
         VStack(alignment: .leading, spacing: 8) {
             HStack(spacing: 8) {
                 Image(systemName: "wand.and.stars")
-                    .font(.system(size: 11, weight: .semibold))
+                    .font(.system(size: 11, weight: .semibold, design: .rounded))
                     .foregroundStyle(LinearGradient.accent)
                 Text("THE SCENE")
                     .font(RWF.micro())
@@ -979,7 +979,7 @@ struct DateContextHeaderBar: View {
                 }
                 Button(action: onClear) {
                     Image(systemName: "xmark")
-                        .font(.system(size: 9, weight: .bold))
+                        .font(.system(size: 9, weight: .bold, design: .rounded))
                         .foregroundColor(.rwTextSecondary)
                         .frame(width: 22, height: 22)
                         .background(Color.rwSurface)

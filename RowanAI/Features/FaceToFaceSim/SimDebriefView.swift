@@ -78,7 +78,7 @@ struct SimDebriefView: View {
                             Circle().fill(Color.rwCard)
                                 .frame(width: 32, height: 32)
                             Image(systemName: "xmark")
-                                .font(.system(size: 14, weight: .bold))
+                                .font(.system(size: 14, weight: .bold, design: .rounded))
                                 .foregroundColor(.rwTextSecondary)
                         }
                         .frame(width: 44, height: 44)
@@ -117,7 +117,7 @@ struct SimDebriefView: View {
                 .fixedSize(horizontal: false, vertical: true)
             HStack(spacing: 6) {
                 Image(systemName: mode.icon)
-                    .font(.system(size: 10, weight: .medium))
+                    .font(.system(size: 10, weight: .medium, design: .rounded))
                     .foregroundColor(mode.color)
                 Text(mode.headerLabel.uppercased())
                     .font(RWF.micro())

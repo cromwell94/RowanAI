@@ -67,7 +67,7 @@ struct DebriefRow: View {
             ZStack {
                 Circle().fill(Color(hex: "6B7FD7").opacity(0.12)).frame(width: 48, height: 48)
                 Text(String(d.personName.prefix(1)).uppercased())
-                    .font(.system(size: 18, weight: .bold)).foregroundStyle(LinearGradient.accent)
+                    .font(.system(size: 18, weight: .bold, design: .rounded)).foregroundStyle(LinearGradient.accent)
             }
             VStack(alignment: .leading, spacing: 4) {
                 Text(d.personName.isEmpty ? "Unnamed" : d.personName).font(RWF.head(16)).foregroundColor(.rwTextPrimary)
@@ -80,7 +80,7 @@ struct DebriefRow: View {
                     .padding(.horizontal, 9).padding(.vertical, 4)
                     .background(a.recommendation.color.opacity(0.12)).clipShape(Capsule())
             }
-            Image(systemName: "chevron.right").font(.system(size: 12, weight: .semibold)).foregroundColor(.rwTextMuted)
+            Image(systemName: "chevron.right").font(.system(size: 12, weight: .semibold, design: .rounded)).foregroundColor(.rwTextMuted)
         }
         .padding(SP.md).background(Color.rwCard)
         .clipShape(RoundedRectangle(cornerRadius: RR.xl))
@@ -186,7 +186,7 @@ struct NewDebrief: View {
             VStack(spacing: SP.lg) {
                 if let a = result {
                     VStack(spacing: 10) {
-                        Image(systemName: a.recommendation.icon).font(.system(size: 44)).foregroundColor(a.recommendation.color)
+                        Image(systemName: a.recommendation.icon).font(.system(size: 44, design: .rounded)).foregroundColor(a.recommendation.color)
                         Text(a.recommendation.rawValue).font(RWF.display(26)).foregroundColor(.rwTextPrimary)
                         Text(a.keyInsight).font(RWF.body()).foregroundColor(.rwTextSecondary).multilineTextAlignment(.center).padding(.horizontal)
                     }
@@ -209,7 +209,7 @@ struct NewDebrief: View {
                     }
 
                     Text("AI analysis — not professional advice. Trust your own instincts.")
-                        .font(.system(size: 11)).foregroundColor(.rwTextMuted).multilineTextAlignment(.center).padding(.horizontal)
+                        .font(.system(size: 11, design: .rounded)).foregroundColor(.rwTextMuted).multilineTextAlignment(.center).padding(.horizontal)
 
                     RWButton("Save to Journal", icon: "book.fill", style: .secondary) {
                         d.analysis = result; save(); dismiss()
@@ -239,7 +239,7 @@ struct Flags: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 10) {
             HStack(spacing: 8) {
-                Image(systemName: icon).font(.system(size: 13, weight: .semibold)).foregroundColor(color)
+                Image(systemName: icon).font(.system(size: 13, weight: .semibold, design: .rounded)).foregroundColor(color)
                 Text(title).font(RWF.head(15)).foregroundColor(.rwTextPrimary)
             }
             VStack(spacing: 6) {
@@ -265,7 +265,7 @@ struct DebriefDetail: View {
             VStack(spacing: SP.lg) {
                 if let a = d.analysis {
                     VStack(spacing: 10) {
-                        Image(systemName: a.recommendation.icon).font(.system(size: 44)).foregroundColor(a.recommendation.color)
+                        Image(systemName: a.recommendation.icon).font(.system(size: 44, design: .rounded)).foregroundColor(a.recommendation.color)
                         Text(a.recommendation.rawValue).font(RWF.display(26)).foregroundColor(.rwTextPrimary)
                         Text(a.keyInsight).font(RWF.body()).foregroundColor(.rwTextSecondary).multilineTextAlignment(.center).padding(.horizontal)
                     }

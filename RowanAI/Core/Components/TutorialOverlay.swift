@@ -49,7 +49,7 @@ struct TutorialOverlay: View {
                 Spacer()
                 Button(action: skip) {
                     Image(systemName: "xmark")
-                        .font(.system(size: 13, weight: .medium))
+                        .font(.system(size: 13, weight: .medium, design: .rounded))
                         .foregroundColor(.rwTextSecondary)
                         .frame(width: 36, height: 36)
                         .background(Color.rwSurface)
@@ -119,10 +119,10 @@ struct TutorialOverlay: View {
                 .fill(Color.rwAccent.opacity(0.10))
                 .frame(width: 60, height: 60)
             if isEmoji {
-                Text(s.icon).font(.system(size: 36))
+                Text(s.icon).font(.system(size: 36, design: .rounded))
             } else {
                 Image(systemName: s.icon)
-                    .font(.system(size: 30, weight: .medium))
+                    .font(.system(size: 30, weight: .medium, design: .rounded))
                     .foregroundStyle(LinearGradient.accent)
             }
         }
@@ -131,7 +131,7 @@ struct TutorialOverlay: View {
     private func tipCard(_ text: String) -> some View {
         HStack(alignment: .top, spacing: 10) {
             Image(systemName: "lightbulb.fill")
-                .font(.system(size: 13, weight: .medium))
+                .font(.system(size: 13, weight: .medium, design: .rounded))
                 .foregroundStyle(LinearGradient.accent)
                 .padding(.top, 3)
             VStack(alignment: .leading, spacing: 4) {
@@ -160,7 +160,7 @@ struct TutorialOverlay: View {
         } label: {
             HStack(spacing: 10) {
                 Image(systemName: disableAll ? "checkmark.square.fill" : "square")
-                    .font(.system(size: 16, weight: .medium))
+                    .font(.system(size: 16, weight: .medium, design: .rounded))
                     .foregroundColor(disableAll ? .rwAccent : .rwTextMuted)
                 Text("Don't show tutorials again")
                     .font(RWF.cap(13))
@@ -274,7 +274,7 @@ struct TutorialReplayButton: View {
             forceShow = true
         } label: {
             Image(systemName: "questionmark")
-                .font(.system(size: 13, weight: .semibold))
+                .font(.system(size: 13, weight: .semibold, design: .rounded))
                 .foregroundStyle(LinearGradient.accent)
                 .frame(width: 32, height: 32)
                 .background(Color.rwSurface)

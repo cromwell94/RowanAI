@@ -92,7 +92,7 @@ struct SituationSwitcherSheet: View {
                         .fill(selected ? status.color : status.color.opacity(0.12))
                         .frame(width: 46, height: 46)
                     Image(systemName: status.icon)
-                        .font(.system(size: 16, weight: .medium))
+                        .font(.system(size: 16, weight: .medium, design: .rounded))
                         .foregroundColor(selected ? .white : status.color)
                 }
                 VStack(alignment: .leading, spacing: 3) {
@@ -114,7 +114,7 @@ struct SituationSwitcherSheet: View {
                 Spacer()
                 if selected {
                     Image(systemName: "checkmark.circle.fill")
-                        .foregroundColor(status.color).font(.system(size: 20))
+                        .foregroundColor(status.color).font(.system(size: 20, design: .rounded))
                 }
             }
             .padding(SP.md)
@@ -208,7 +208,7 @@ struct SituationSwitcherSheet: View {
         } label: {
             HStack(spacing: 12) {
                 Image(systemName: "clock.fill")
-                    .font(.system(size: 14, weight: .medium))
+                    .font(.system(size: 14, weight: .medium, design: .rounded))
                     .foregroundColor(selected ? .white : .rwGold)
                     .frame(width: 36, height: 36)
                     .background(selected ? Color.rwGold : Color.rwGold.opacity(0.12))
@@ -218,7 +218,7 @@ struct SituationSwitcherSheet: View {
                 Spacer()
                 if selected {
                     Image(systemName: "checkmark.circle.fill")
-                        .foregroundColor(.rwGold).font(.system(size: 18))
+                        .foregroundColor(.rwGold).font(.system(size: 18, design: .rounded))
                 }
             }
             .padding(SP.md)
@@ -237,7 +237,7 @@ struct SituationSwitcherSheet: View {
         VStack(alignment: .leading, spacing: SP.lg) {
             VStack(alignment: .leading, spacing: 8) {
                 Image(systemName: "leaf.fill")
-                    .font(.system(size: 32))
+                    .font(.system(size: 32, design: .rounded))
                     .foregroundStyle(LinearGradient.amber)
                     .padding(.bottom, 6)
                 Text("Switching to \(pickedStatus.displayLabel.lowercased())")
@@ -345,7 +345,7 @@ struct SituationPill: View {
                 ZStack {
                     Circle().fill(status.color.opacity(0.14)).frame(width: 32, height: 32)
                     Image(systemName: status.icon)
-                        .font(.system(size: 12, weight: .medium))
+                        .font(.system(size: 12, weight: .medium, design: .rounded))
                         .foregroundColor(status.color)
                 }
                 VStack(alignment: .leading, spacing: 1) {
@@ -359,7 +359,7 @@ struct SituationPill: View {
                 }
                 Spacer()
                 Image(systemName: "pencil")
-                    .font(.system(size: 12, weight: .medium))
+                    .font(.system(size: 12, weight: .medium, design: .rounded))
                     .foregroundColor(.rwTextMuted)
                     .frame(width: 28, height: 28)
                     .background(Color.rwSurface)

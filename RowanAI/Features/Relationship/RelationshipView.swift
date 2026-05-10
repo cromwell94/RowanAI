@@ -76,7 +76,9 @@ struct RelationshipSetupView: View {
                     ZStack {
                         Circle().fill(Color(hex: "E8356D").opacity(0.07)).frame(width: 110, height: 110)
                         Circle().fill(Color(hex: "E8356D").opacity(0.12)).frame(width: 80, height: 80)
-                        Text("❤️").font(.system(size: 44))
+                        Image(systemName: "heart.fill")
+                            .font(.system(size: 44, design: .rounded))
+                            .foregroundStyle(LinearGradient.accent)
                     }
                     .padding(.top, 40)
                     Text("You're in a relationship!").font(RWF.display(28)).foregroundColor(.rwTextPrimary)
@@ -111,7 +113,7 @@ struct RelationshipSetupView: View {
                                         } label: {
                                             HStack(spacing: 5) {
                                                 Circle().fill(p.source.color.opacity(0.2)).frame(width: 20, height: 20)
-                                                    .overlay(Text(p.initial).font(.system(size: 10, weight: .bold)).foregroundColor(p.source.color))
+                                                    .overlay(Text(p.initial).font(.system(size: 10, weight: .bold, design: .rounded)).foregroundColor(p.source.color))
                                                 Text(p.name).font(RWF.cap(12))
                                             }
                                             .foregroundColor(selectedPersonId == p.id ? .white : .rwTextSecondary)
@@ -191,7 +193,7 @@ struct RelHomeView: View {
                 Button { showPartnerConnect = true } label: {
                     HStack(spacing: 10) {
                         Image(systemName: partnerStore.isConnected ? "link.circle.fill" : "link.circle")
-                            .font(.system(size: 18, weight: .semibold))
+                            .font(.system(size: 18, weight: .semibold, design: .rounded))
                             .foregroundColor(partnerStore.isConnected ? Color(hex: "00BFB3") : .rwTextMuted)
                         VStack(alignment: .leading, spacing: 2) {
                             Text(partnerStore.isConnected ? "Connected with \(partnerStore.partnerName)" : "Connect with your partner")
@@ -200,7 +202,7 @@ struct RelHomeView: View {
                                 .font(RWF.cap(12)).foregroundColor(.rwTextSecondary)
                         }
                         Spacer()
-                        Image(systemName: "chevron.right").foregroundColor(.rwTextMuted).font(.system(size: 12))
+                        Image(systemName: "chevron.right").foregroundColor(.rwTextMuted).font(.system(size: 12, design: .rounded))
                     }
                     .padding(SP.md).background(Color.rwCard)
                     .clipShape(RoundedRectangle(cornerRadius: RR.xl))
@@ -228,7 +230,9 @@ struct RelHomeView: View {
                         Spacer()
                         ZStack {
                             Circle().fill(Color(hex: "E8356D").opacity(0.08)).frame(width: 64, height: 64)
-                            Text("❤️").font(.system(size: 30))
+                            Image(systemName: "heart.fill")
+                                .font(.system(size: 30, design: .rounded))
+                                .foregroundStyle(LinearGradient.accent)
                         }
                     }
                 }
@@ -272,7 +276,7 @@ struct RelHomeView: View {
                         RWSectionLabel("MILESTONES")
                         ForEach(rel.milestones.sorted { $0.date > $1.date }.prefix(3)) { m in
                             HStack(spacing: 12) {
-                                Image(systemName: m.type.icon).font(.system(size: 14, weight: .semibold))
+                                Image(systemName: m.type.icon).font(.system(size: 14, weight: .semibold, design: .rounded))
                                     .foregroundColor(m.type.color).frame(width: 36, height: 36)
                                     .background(m.type.color.opacity(0.1)).clipShape(Circle())
                                 VStack(alignment: .leading, spacing: 2) {
@@ -301,7 +305,7 @@ struct NudgeCard: View {
                     .fill(LinearGradient(colors: [color, color.opacity(0.7)], startPoint: .topLeading, endPoint: .bottomTrailing))
                     .frame(width: 50, height: 50)
                 Image(systemName: icon)
-                    .font(.system(size: 20, weight: .semibold))
+                    .font(.system(size: 20, weight: .semibold, design: .rounded))
                     .foregroundColor(.white)
             }
             VStack(alignment: .leading, spacing: 3) {
@@ -325,7 +329,7 @@ struct RelActionCard: View {
     let icon: String; let title: String; let sub: String; let color: Color
     var body: some View {
         VStack(alignment: .leading, spacing: 10) {
-            Image(systemName: icon).font(.system(size: 22, weight: .semibold)).foregroundColor(color)
+            Image(systemName: icon).font(.system(size: 22, weight: .semibold, design: .rounded)).foregroundColor(color)
                 .frame(width: 44, height: 44).background(color.opacity(0.1))
                 .clipShape(RoundedRectangle(cornerRadius: RR.md))
             VStack(alignment: .leading, spacing: 2) {

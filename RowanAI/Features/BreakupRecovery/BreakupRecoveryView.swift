@@ -30,7 +30,7 @@ struct BreakupRecoveryView: View {
             ZStack {
                 Circle().fill(Color(hex: "C0A020").opacity(0.10)).frame(width: 110, height: 110)
                 Image(systemName: "leaf.fill")
-                    .font(.system(size: 40, weight: .semibold))
+                    .font(.system(size: 40, weight: .semibold, design: .rounded))
                     .foregroundColor(Color(hex: "C0A020"))
             }
             .padding(.top, 20)

@@ -25,7 +25,7 @@ struct FirstImpressionLabView: View {
             ZStack {
                 Circle().fill(Color.rwAccent.opacity(0.1)).frame(width: 96, height: 96)
                 Image(systemName: "timer")
-                    .font(.system(size: 36, weight: .semibold))
+                    .font(.system(size: 36, weight: .semibold, design: .rounded))
                     .foregroundColor(.rwAccent)
             }
             .padding(.top, 12)

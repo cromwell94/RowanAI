@@ -53,7 +53,7 @@ struct RelCommunicationLab: View {
         } label: {
             HStack(spacing: 14) {
                 Image(systemName: "person.2.fill")
-                    .font(.system(size: 22, weight: .semibold))
+                    .font(.system(size: 22, weight: .semibold, design: .rounded))
                     .foregroundColor(.white)
                     .frame(width: 52, height: 52)
                     .background(LinearGradient.accent)
@@ -79,7 +79,7 @@ struct RelCommunicationLab: View {
         Button { startDifficult = true } label: {
             HStack(spacing: 14) {
                 Image(systemName: "exclamationmark.bubble.fill")
-                    .font(.system(size: 20, weight: .semibold))
+                    .font(.system(size: 20, weight: .semibold, design: .rounded))
                     .foregroundColor(Color.rwGold)
                     .frame(width: 52, height: 52)
                     .background(Color.rwGold.opacity(0.12))
@@ -267,7 +267,7 @@ struct CouplesLessonView: View {
 
                     HStack(alignment: .top, spacing: 12) {
                         Image(systemName: "key.fill")
-                            .font(.system(size: 18, weight: .semibold))
+                            .font(.system(size: 18, weight: .semibold, design: .rounded))
                             .foregroundColor(.rwGold)
                         VStack(alignment: .leading, spacing: 4) {
                             Text("Key insight").font(RWF.cap()).foregroundColor(.rwTextMuted).tracking(1.2)
@@ -405,7 +405,7 @@ struct DifficultConversationStubView: View {
             ScrollView(showsIndicators: false) {
                 VStack(spacing: SP.lg) {
                     Image(systemName: "exclamationmark.bubble.fill")
-                        .font(.system(size: 48)).foregroundColor(Color.rwGold)
+                        .font(.system(size: 48, design: .rounded)).foregroundColor(Color.rwGold)
                         .padding(.top, 32)
                     Text("Difficult Conversation Simulator")
                         .font(RWF.title()).foregroundColor(.rwTextPrimary)

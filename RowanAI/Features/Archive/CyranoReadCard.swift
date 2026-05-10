@@ -64,7 +64,7 @@ struct CyranoReadCard: View {
                 Spacer()
                 Button { manualRefresh() } label: {
                     Image(systemName: generating ? "arrow.triangle.2.circlepath" : "arrow.clockwise")
-                        .font(.system(size: 14, weight: .semibold))
+                        .font(.system(size: 14, weight: .semibold, design: .rounded))
                         .foregroundColor(.rwTextSecondary)
                         .rotationEffect(.degrees(generating ? 360 : 0))
                         .animation(generating
@@ -144,7 +144,7 @@ struct CyranoReadCard: View {
             // Footer
             HStack {
                 Text(footerText(for: a))
-                    .font(.system(size: 10))
+                    .font(.system(size: 10, design: .rounded))
                     .foregroundColor(.rwTextMuted)
                 Spacer()
                 Button {
@@ -152,8 +152,8 @@ struct CyranoReadCard: View {
                 } label: {
                     HStack(spacing: 4) {
                         Image(systemName: "clock.arrow.circlepath")
-                            .font(.system(size: 10, weight: .semibold))
-                        Text("History").font(.system(size: 11, weight: .semibold))
+                            .font(.system(size: 10, weight: .semibold, design: .rounded))
+                        Text("History").font(.system(size: 11, weight: .semibold, design: .rounded))
                     }
                     .foregroundColor(.rwTextSecondary)
                 }
@@ -162,7 +162,7 @@ struct CyranoReadCard: View {
 
             if let error = error {
                 Text(error)
-                    .font(.system(size: 11))
+                    .font(.system(size: 11, design: .rounded))
                     .foregroundColor(.rwDanger)
             }
         }
@@ -192,14 +192,14 @@ struct CyranoReadCard: View {
                         .font(RWF.cap())
                         .foregroundColor(tint)
                     Text("\(items.count)")
-                        .font(.system(size: 10, weight: .bold))
+                        .font(.system(size: 10, weight: .bold, design: .rounded))
                         .foregroundColor(tint)
                         .padding(.horizontal, 6).padding(.vertical, 1)
                         .background(tint.opacity(0.15))
                         .clipShape(Capsule())
                     Spacer()
                     Image(systemName: "chevron.down")
-                        .font(.system(size: 10, weight: .semibold))
+                        .font(.system(size: 10, weight: .semibold, design: .rounded))
                         .foregroundColor(.rwTextMuted)
                         .rotationEffect(.degrees(expanded.wrappedValue ? 180 : 0))
                 }
@@ -268,7 +268,7 @@ struct CyranoReadCard: View {
         return VStack(alignment: .leading, spacing: 10) {
             HStack(spacing: 8) {
                 Image(systemName: icon)
-                    .font(.system(size: 14, weight: .semibold))
+                    .font(.system(size: 14, weight: .semibold, design: .rounded))
                     .foregroundStyle(LinearGradient.accent)
                 Text(title)
                     .font(RWF.head(15))
@@ -277,7 +277,7 @@ struct CyranoReadCard: View {
                 if hasEnoughData && kind != .shimmer {
                     Button { manualRefresh() } label: {
                         Image(systemName: "arrow.clockwise")
-                            .font(.system(size: 13, weight: .semibold))
+                            .font(.system(size: 13, weight: .semibold, design: .rounded))
                             .foregroundColor(.rwAccent)
                     }
                     .buttonStyle(SBS())
@@ -291,7 +291,7 @@ struct CyranoReadCard: View {
 
             if let error = error {
                 Text(error)
-                    .font(.system(size: 11))
+                    .font(.system(size: 11, design: .rounded))
                     .foregroundColor(.rwDanger)
             }
         }
@@ -441,7 +441,7 @@ struct AnalysisHistorySheet: View {
                 Text(DateFormatter.localizedString(from: a.lastUpdatedAt,
                                                    dateStyle: .medium,
                                                    timeStyle: .short))
-                    .font(.system(size: 11))
+                    .font(.system(size: 11, design: .rounded))
                     .foregroundColor(.rwTextMuted)
             }
             Text(a.overallRead)
@@ -450,7 +450,7 @@ struct AnalysisHistorySheet: View {
                 .fixedSize(horizontal: false, vertical: true)
             if !a.connectionStage.rawValue.isEmpty {
                 Text(a.connectionStage.rawValue)
-                    .font(.system(size: 11, weight: .semibold))
+                    .font(.system(size: 11, weight: .semibold, design: .rounded))
                     .foregroundColor(.rwTextSecondary)
             }
         }

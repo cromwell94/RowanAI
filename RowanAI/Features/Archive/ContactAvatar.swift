@@ -29,7 +29,7 @@ struct ContactAvatar: View {
                     .fill(person.source.color.opacity(0.15))
                     .frame(width: size, height: size)
                 Text(person.initial)
-                    .font(.system(size: size * 0.42, weight: .black))
+                    .font(.system(size: size * 0.42, weight: .black, design: .rounded))
                     .foregroundColor(person.source.color)
             }
             if showFavoriteBadge && person.isFavorite {

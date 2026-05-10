@@ -109,7 +109,7 @@ struct AttachmentTipsRow: View {
         VStack(alignment: .leading, spacing: 12) {
             HStack(spacing: 8) {
                 Image(systemName: style.icon)
-                    .font(.system(size: 12, weight: .medium))
+                    .font(.system(size: 12, weight: .medium, design: .rounded))
                     .foregroundColor(style.color)
                 Text("FOR YOUR \(style.rawValue.uppercased()) STYLE")
                     .font(RWF.micro())
@@ -144,7 +144,7 @@ private struct TipChipCard: View {
                 ZStack {
                     Circle().fill(accent.opacity(0.12)).frame(width: 36, height: 36)
                     Image(systemName: tip.icon)
-                        .font(.system(size: 14, weight: .medium))
+                        .font(.system(size: 14, weight: .medium, design: .rounded))
                         .foregroundColor(accent)
                 }
                 Text(tip.headline)
@@ -156,7 +156,7 @@ private struct TipChipCard: View {
                 Spacer(minLength: 0)
                 HStack(spacing: 4) {
                     Text("Read more").font(RWF.cap(11)).foregroundColor(accent)
-                    Image(systemName: "arrow.up.right").font(.system(size: 10, weight: .semibold))
+                    Image(systemName: "arrow.up.right").font(.system(size: 10, weight: .semibold, design: .rounded))
                         .foregroundColor(accent)
                 }
             }
@@ -182,7 +182,7 @@ private struct TipDetailSheet: View {
                 ZStack {
                     Circle().fill(accent.opacity(0.12)).frame(width: 64, height: 64)
                     Image(systemName: tip.icon)
-                        .font(.system(size: 26, weight: .medium))
+                        .font(.system(size: 26, weight: .medium, design: .rounded))
                         .foregroundColor(accent)
                 }
                 .padding(.top, 4)

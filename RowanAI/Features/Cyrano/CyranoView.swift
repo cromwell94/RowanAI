@@ -6,7 +6,7 @@ struct CyranoTabButton: View {
     var body: some View {
         Button(action: tap) {
             HStack(spacing: 5) {
-                Image(systemName: icon).font(.system(size: 11, weight: .semibold))
+                Image(systemName: icon).font(.system(size: 11, weight: .semibold, design: .rounded))
                 Text(title).font(RWF.cap(12))
             }
             .foregroundColor(active ? .white : .rwTextSecondary)
@@ -182,7 +182,7 @@ struct CyranoView: View {
                                      photoLibrary: .shared()) {
                             HStack(spacing: 6) {
                                 Image(systemName: "photo.on.rectangle")
-                                    .font(.system(size: 13, weight: .medium))
+                                    .font(.system(size: 13, weight: .medium, design: .rounded))
                                 Text(screenshotImage == nil ? "Add screenshot" : "Replace screenshot")
                                     .font(RWF.cap(12))
                             }
@@ -198,7 +198,7 @@ struct CyranoView: View {
                         Button { withAnimation { showCtx.toggle() } } label: {
                             HStack(spacing: 6) {
                                 Image(systemName: showCtx ? "minus.circle" : "plus.circle")
-                                    .font(.system(size: 13, weight: .medium))
+                                    .font(.system(size: 13, weight: .medium, design: .rounded))
                                 Text(showCtx ? "Remove context" : "Add context")
                                     .font(RWF.cap(12))
                             }
@@ -239,7 +239,7 @@ struct CyranoView: View {
                                         UIImpactFeedbackGenerator(style: .light).impactOccurred()
                                     } label: {
                                         HStack(spacing: 6) {
-                                            Image(systemName: g.icon).font(.system(size: 11, weight: .medium))
+                                            Image(systemName: g.icon).font(.system(size: 11, weight: .medium, design: .rounded))
                                             Text(g.rawValue).font(RWF.cap(12))
                                         }
                                         .foregroundColor(goal == g ? .white : .rwTextSecondary)
@@ -260,11 +260,12 @@ struct CyranoView: View {
                     if !store.isPro {
                         HStack(spacing: 8) {
                             Image(systemName: "sparkle")
-                                .font(.system(size: 11, weight: .medium))
+                                .font(.system(size: 11, weight: .medium, design: .rounded))
                                 .foregroundStyle(LinearGradient.accent)
                             Text("\(store.repliesRemainingToday()) free \(store.repliesRemainingToday() == 1 ? "reply" : "replies") left today")
                                 .font(RWF.cap(12))
                                 .foregroundColor(.rwTextSecondary)
+                                .contentTransition(.numericText())
                             Spacer()
                             Button { showPaywall = true } label: {
                                 Text("Go Pro")
@@ -290,8 +291,8 @@ struct CyranoView: View {
                     .opacity((message.isEmpty && screenshotImage == nil) ? 0.5 : 1)
 
                     HStack(spacing: 4) {
-                        Image(systemName: "info.circle").font(.system(size: 11))
-                        Text("AI suggestions only — not professional advice").font(.system(size: 11))
+                        Image(systemName: "info.circle").font(.system(size: 11, design: .rounded))
+                        Text("AI suggestions only — not professional advice").font(.system(size: 11, design: .rounded))
                     }
                     .foregroundColor(.rwTextMuted)
 
@@ -309,7 +310,7 @@ struct CyranoView: View {
                                 RWSectionLabel("YOUR REPLIES")
                                 if lastSendIncludedScreenshot {
                                     HStack(spacing: 4) {
-                                        Text("📸").font(.system(size: 10))
+                                        Text("📸").font(.system(size: 10, design: .rounded))
                                         Text("with screenshot").font(RWF.cap(11))
                                     }
                                     .foregroundColor(.rwAccent)
@@ -321,7 +322,7 @@ struct CyranoView: View {
                             if visionFallback {
                                 HStack(spacing: 8) {
                                     Image(systemName: "exclamationmark.circle")
-                                        .font(.system(size: 11)).foregroundColor(.rwTextMuted)
+                                        .font(.system(size: 11, design: .rounded)).foregroundColor(.rwTextMuted)
                                     Text("Screenshot couldn't be processed — coaching based on your description.")
                                         .font(RWF.cap(11)).foregroundColor(.rwTextMuted)
                                         .fixedSize(horizontal: false, vertical: true)
@@ -440,7 +441,7 @@ struct CyranoView: View {
                     UIImpactFeedbackGenerator(style: .light).impactOccurred()
                 } label: {
                     Image(systemName: "xmark")
-                        .font(.system(size: 11, weight: .bold))
+                        .font(.system(size: 11, weight: .bold, design: .rounded))
                         .foregroundColor(.white)
                         .frame(width: 26, height: 26)
                         .background(Color.black.opacity(0.6))
@@ -570,7 +571,7 @@ struct ReplyCard: View {
         VStack(alignment: .leading, spacing: 12) {
             HStack {
                 HStack(spacing: 5) {
-                    Image(systemName: r.tone.icon).font(.system(size: 11, weight: .bold))
+                    Image(systemName: r.tone.icon).font(.system(size: 11, weight: .bold, design: .rounded))
                     Text(r.tone.rawValue.uppercased()).font(RWF.micro()).tracking(1.5)
                 }
                 .foregroundColor(r.tone.color).padding(.horizontal, 9).padding(.vertical, 4)
@@ -578,7 +579,7 @@ struct ReplyCard: View {
                 Spacer()
                 Button(action: copy) {
                     HStack(spacing: 4) {
-                        Image(systemName: copied ? "checkmark" : "doc.on.doc").font(.system(size: 12, weight: .semibold))
+                        Image(systemName: copied ? "checkmark" : "doc.on.doc").font(.system(size: 12, weight: .semibold, design: .rounded))
                         Text(copied ? "Copied!" : "Copy").font(RWF.cap(12))
                     }
                     .foregroundColor(copied ? .white : .rwTextSecondary)
@@ -596,7 +597,7 @@ struct ReplyCard: View {
             RWLine()
 
             HStack(alignment: .top, spacing: 6) {
-                Image(systemName: "lightbulb.fill").font(.system(size: 10)).foregroundColor(.rwGold)
+                Image(systemName: "lightbulb.fill").font(.system(size: 10, design: .rounded)).foregroundColor(.rwGold)
                 Text(r.reasoning).font(RWF.body(12)).foregroundColor(.rwTextMuted).fixedSize(horizontal: false, vertical: true)
             }
         }
@@ -635,7 +636,7 @@ struct AIOffBanner: View {
     let feature: String; let msg: String
     var body: some View {
         HStack(alignment: .top, spacing: 12) {
-            Image(systemName: "brain.head.profile").font(.system(size: 16))
+            Image(systemName: "brain.head.profile").font(.system(size: 16, design: .rounded))
                 .foregroundColor(.rwTextMuted).frame(width: 40, height: 40)
                 .background(Color.rwCard).clipShape(RoundedRectangle(cornerRadius: RR.md))
             VStack(alignment: .leading, spacing: 3) {
@@ -668,7 +669,7 @@ struct CyranoIntelBanner: View {
             HStack(spacing: 10) {
                 // Icon
                 Image(systemName: intel.type.icon)
-                    .font(.system(size: 14, weight: .semibold))
+                    .font(.system(size: 14, weight: .semibold, design: .rounded))
                     .foregroundColor(intel.type.color)
                     .frame(width: 36, height: 36)
                     .background(intel.type.color.opacity(0.12))
@@ -695,7 +696,7 @@ struct CyranoIntelBanner: View {
 
                 Button(action: onDismiss) {
                     Image(systemName: "xmark")
-                        .font(.system(size: 12, weight: .semibold))
+                        .font(.system(size: 12, weight: .semibold, design: .rounded))
                         .foregroundColor(.rwTextMuted)
                         .frame(width: 28, height: 28)
                         .background(Color.rwSurface)

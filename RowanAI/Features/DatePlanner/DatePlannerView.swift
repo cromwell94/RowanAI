@@ -350,7 +350,7 @@ struct DatePlannerView: View {
                         } label: {
                             HStack(spacing: 4) {
                                 Image(systemName: "plus")
-                                    .font(.system(size: 11, weight: .bold))
+                                    .font(.system(size: 11, weight: .bold, design: .rounded))
                                 Text("New Date").font(RWF.cap(12))
                             }
                             .foregroundColor(.rwAccent)
@@ -367,7 +367,7 @@ struct DatePlannerView: View {
                         } label: {
                             HStack(spacing: 5) {
                                 Image(systemName: "location.viewfinder")
-                                    .font(.system(size: 11, weight: .semibold))
+                                    .font(.system(size: 11, weight: .semibold, design: .rounded))
                                 Text("Midpoint").font(RWF.cap(12))
                             }
                             .foregroundColor(.white)
@@ -594,7 +594,7 @@ struct ExploreMapView: View {
     private var searchBar: some View {
         HStack(spacing: 8) {
             Image(systemName: "magnifyingglass")
-                .font(.system(size: 14, weight: .medium))
+                .font(.system(size: 14, weight: .medium, design: .rounded))
                 .foregroundColor(.rwTextMuted)
 
             TextField("Search venues or any area…", text: $query)
@@ -638,7 +638,7 @@ struct ExploreMapView: View {
                 } label: {
                     HStack(alignment: .top, spacing: 10) {
                         Image(systemName: "mappin")
-                            .font(.system(size: 12, weight: .medium))
+                            .font(.system(size: 12, weight: .medium, design: .rounded))
                             .foregroundColor(.rwAccent)
                             .padding(.top, 3)
                         VStack(alignment: .leading, spacing: 2) {
@@ -672,7 +672,7 @@ struct ExploreMapView: View {
     private func activePill(_ loc: SearchLocation) -> some View {
         HStack(spacing: 8) {
             Image(systemName: pillIcon(loc))
-                .font(.system(size: 11, weight: .semibold))
+                .font(.system(size: 11, weight: .semibold, design: .rounded))
                 .foregroundStyle(LinearGradient.accent)
             Text("Searching near: \(loc.title)")
                 .font(RWF.cap(12))
@@ -684,7 +684,7 @@ struct ExploreMapView: View {
                 withAnimation(.easeOut(duration: 0.2)) { searchLocation = nil }
             } label: {
                 Image(systemName: "xmark")
-                    .font(.system(size: 9, weight: .bold))
+                    .font(.system(size: 9, weight: .bold, design: .rounded))
                     .foregroundColor(.rwTextSecondary)
                     .frame(width: 20, height: 20)
                     .background(Color.rwCard)
@@ -702,7 +702,7 @@ struct ExploreMapView: View {
     private func midpointBanner(name: String) -> some View {
         HStack(spacing: 8) {
             Image(systemName: "location.viewfinder")
-                .font(.system(size: 12, weight: .semibold))
+                .font(.system(size: 12, weight: .semibold, design: .rounded))
                 .foregroundColor(.white)
             Text("Midpoint between you and \(name)")
                 .font(RWF.cap(12))
@@ -758,7 +758,7 @@ struct ExploreMapView: View {
         } label: {
             HStack(spacing: 6) {
                 Image(systemName: cat.icon)
-                    .font(.system(size: 12, weight: .semibold))
+                    .font(.system(size: 12, weight: .semibold, design: .rounded))
                 Text(cat.name)
                     .font(RWF.cap(13))
             }
@@ -850,7 +850,7 @@ struct ExploreMapView: View {
         }()
         return HStack(spacing: 6) {
             Image(systemName: "scope")
-                .font(.system(size: 10, weight: .medium))
+                .font(.system(size: 10, weight: .medium, design: .rounded))
                 .foregroundColor(.rwAccent)
             Text("Within \(Int(distance.rawValue)) miles of \(placeName)")
                 .font(RWF.cap(11))
@@ -873,7 +873,7 @@ struct ExploreMapView: View {
                     .frame(width: 36, height: 36)
                     .overlay(
                         Image(systemName: selectedCategory?.icon ?? "mappin")
-                            .font(.system(size: 14, weight: .bold))
+                            .font(.system(size: 14, weight: .bold, design: .rounded))
                             .foregroundColor(.white)
                     )
 
@@ -892,7 +892,7 @@ struct ExploreMapView: View {
                     Text("View")
                         .font(RWF.cap(12))
                     Image(systemName: "chevron.right")
-                        .font(.system(size: 9, weight: .bold))
+                        .font(.system(size: 9, weight: .bold, design: .rounded))
                 }
                 .foregroundColor(.white)
                 .padding(.horizontal, 12).padding(.vertical, 6)
@@ -903,7 +903,7 @@ struct ExploreMapView: View {
                     withAnimation { selectedItemID = nil }
                 } label: {
                     Image(systemName: "xmark")
-                        .font(.system(size: 10, weight: .bold))
+                        .font(.system(size: 10, weight: .bold, design: .rounded))
                         .foregroundColor(.rwTextMuted)
                         .frame(width: 22, height: 22)
                         .background(Color.rwSurface)
@@ -990,7 +990,7 @@ struct ExploreMapView: View {
     private var emptyStartState: some View {
         VStack(spacing: 10) {
             Image(systemName: "wand.and.stars")
-                .font(.system(size: 30))
+                .font(.system(size: 30, design: .rounded))
                 .foregroundStyle(LinearGradient.accent)
             Text("Pick a category to discover spots")
                 .font(RWF.head(14))
@@ -1011,7 +1011,7 @@ struct ExploreMapView: View {
         }()
         return VStack(spacing: 12) {
             Image(systemName: "mappin.slash")
-                .font(.system(size: 26))
+                .font(.system(size: 26, design: .rounded))
                 .foregroundColor(.rwTextMuted)
             Text("No \(categoryName) found within \(Int(distance.rawValue)) miles of \(placeName)")
                 .font(RWF.head(14))
@@ -1215,7 +1215,7 @@ struct VenuePin: View {
                     .shadow(color: Color.rwAccent.opacity(selected ? 0.55 : 0.35),
                             radius: selected ? 12 : 6, x: 0, y: 3)
                 Image(systemName: icon)
-                    .font(.system(size: selected ? 16 : 13, weight: .bold))
+                    .font(.system(size: selected ? 16 : 13, weight: .bold, design: .rounded))
                     .foregroundColor(.white)
             }
             Triangle()
@@ -1272,7 +1272,7 @@ struct PlannerResultCard: View {
                         .fill(LinearGradient.accentSoft)
                         .frame(width: 44, height: 44)
                     Image(systemName: categoryIcon)
-                        .font(.system(size: 17, weight: .semibold))
+                        .font(.system(size: 17, weight: .semibold, design: .rounded))
                         .foregroundStyle(LinearGradient.accent)
                 }
 
@@ -1307,7 +1307,7 @@ struct PlannerResultCard: View {
                     if let phone = item.phoneNumber {
                         Link(destination: URL(string: "tel:\(phone)") ?? URL(string: "tel:")!) {
                             HStack(spacing: 4) {
-                                Image(systemName: "phone.fill").font(.system(size: 10))
+                                Image(systemName: "phone.fill").font(.system(size: 10, design: .rounded))
                                 Text(phone).font(RWF.cap(11))
                             }
                             .foregroundColor(.rwTextSecondary)
@@ -1332,7 +1332,7 @@ struct PlannerResultCard: View {
                     }
                 } label: {
                     Image(systemName: isSaved ? "heart.fill" : "heart")
-                        .font(.system(size: 16, weight: .semibold))
+                        .font(.system(size: 16, weight: .semibold, design: .rounded))
                         .foregroundColor(isSaved ? .rwAccent : .rwTextMuted)
                         .frame(width: 38, height: 38)
                         .background(Color.rwSurface)
@@ -1346,7 +1346,7 @@ struct PlannerResultCard: View {
                 Button(action: onDirections) {
                     HStack(spacing: 6) {
                         Image(systemName: "arrow.triangle.turn.up.right.diamond.fill")
-                            .font(.system(size: 12, weight: .semibold))
+                            .font(.system(size: 12, weight: .semibold, design: .rounded))
                         Text("Get Directions").font(RWF.cap(12))
                     }
                     .foregroundColor(.rwTextPrimary)
@@ -1360,7 +1360,7 @@ struct PlannerResultCard: View {
                 Button(action: onAddToPlan) {
                     HStack(spacing: 6) {
                         Image(systemName: "calendar.badge.plus")
-                            .font(.system(size: 12, weight: .semibold))
+                            .font(.system(size: 12, weight: .semibold, design: .rounded))
                         Text("Add to Date Plan").font(RWF.cap(12))
                     }
                     .foregroundColor(.white)
@@ -1449,7 +1449,7 @@ struct WishlistCard: View {
         VStack(alignment: .leading, spacing: 12) {
             HStack(spacing: 12) {
                 Image(systemName: venue.category.icon)
-                    .font(.system(size: 16, weight: .semibold))
+                    .font(.system(size: 16, weight: .semibold, design: .rounded))
                     .foregroundColor(venue.isVisited ? .rwTextMuted : .white)
                     .frame(width: 44, height: 44)
                     .background(venue.isVisited ? Color.rwSurface : venue.category.color)
@@ -1464,7 +1464,7 @@ struct WishlistCard: View {
                             .background(venue.category.color.opacity(0.1)).clipShape(Capsule())
                         if !venue.personName.isEmpty {
                             HStack(spacing: 3) {
-                                Image(systemName: "person.fill").font(.system(size: 9))
+                                Image(systemName: "person.fill").font(.system(size: 9, design: .rounded))
                                 Text(venue.personName).font(RWF.micro())
                             }
                             .foregroundColor(.rwAccent).padding(.horizontal, 7).padding(.vertical, 3)
@@ -1476,7 +1476,7 @@ struct WishlistCard: View {
                 Button {
                     store.remove(venue)
                 } label: {
-                    Image(systemName: "trash").font(.system(size: 14)).foregroundColor(.rwTextMuted)
+                    Image(systemName: "trash").font(.system(size: 14, design: .rounded)).foregroundColor(.rwTextMuted)
                 }
                 .buttonStyle(SBS())
             }
@@ -1497,7 +1497,7 @@ struct WishlistCard: View {
                         ForEach(1...5, id: \.self) { i in
                             Button { venue.dateRating = i; store.update(venue) } label: {
                                 Image(systemName: i <= venue.dateRating ? "heart.fill" : "heart")
-                                    .font(.system(size: 14))
+                                    .font(.system(size: 14, design: .rounded))
                                     .foregroundColor(i <= venue.dateRating ? .rwAccent : .rwTextMuted)
                             }
                             .buttonStyle(SBS())
@@ -1615,7 +1615,7 @@ struct AIPicksView: View {
         RWCard {
             VStack(alignment: .leading, spacing: 12) {
                 HStack(spacing: 10) {
-                    Image(systemName: "sparkles").font(.system(size: 18))
+                    Image(systemName: "sparkles").font(.system(size: 18, design: .rounded))
                         .foregroundStyle(LinearGradient.accent)
                     Text("Picks for your scene").font(RWF.head()).foregroundColor(.rwTextPrimary)
                 }
@@ -1642,7 +1642,7 @@ struct AIPicksView: View {
         RWCard {
             VStack(alignment: .leading, spacing: 14) {
                 HStack(spacing: 10) {
-                    Image(systemName: "sparkles").font(.system(size: 18))
+                    Image(systemName: "sparkles").font(.system(size: 18, design: .rounded))
                         .foregroundStyle(LinearGradient.accent)
                     Text("Cyrano's Date Picks").font(RWF.head()).foregroundColor(.rwTextPrimary)
                 }
@@ -1721,7 +1721,7 @@ struct AIPicksView: View {
     private var loadingState: some View {
         VStack(spacing: 12) {
             HStack(spacing: 8) {
-                Image(systemName: "sparkles").font(.system(size: 12))
+                Image(systemName: "sparkles").font(.system(size: 12, design: .rounded))
                     .foregroundStyle(LinearGradient.accent)
                 Text("Cyrano is picking…")
                     .font(RWF.cap(12)).foregroundColor(.rwTextMuted)
@@ -1734,7 +1734,7 @@ struct AIPicksView: View {
     private var errorState: some View {
         VStack(spacing: 12) {
             Image(systemName: "exclamationmark.triangle.fill")
-                .font(.system(size: 28))
+                .font(.system(size: 28, design: .rounded))
                 .foregroundColor(.rwWarning)
             Text("Couldn't get suggestions")
                 .font(RWF.head(15)).foregroundColor(.rwTextPrimary)
@@ -1766,7 +1766,7 @@ struct AIPicksView: View {
     private var emptyState: some View {
         VStack(spacing: 10) {
             Image(systemName: "mappin.slash")
-                .font(.system(size: 26)).foregroundColor(.rwTextMuted)
+                .font(.system(size: 26, design: .rounded)).foregroundColor(.rwTextMuted)
             Text("No matching venues nearby")
                 .font(RWF.head(14)).foregroundColor(.rwTextSecondary)
             Text("Try a different vibe or move the search location.")
@@ -2054,7 +2054,7 @@ struct AIPickCard: View {
             VStack(alignment: .leading, spacing: 12) {
                 HStack(alignment: .top, spacing: 12) {
                     Image(systemName: pick.category.icon)
-                        .font(.system(size: 18, weight: .semibold))
+                        .font(.system(size: 18, weight: .semibold, design: .rounded))
                         .foregroundColor(.white)
                         .frame(width: 48, height: 48)
                         .background(LinearGradient.accent)
@@ -2080,7 +2080,7 @@ struct AIPickCard: View {
                 if let thingToDo = pick.thingToDo, !thingToDo.isEmpty {
                     HStack(alignment: .top, spacing: 8) {
                         Image(systemName: "lightbulb.fill")
-                            .font(.system(size: 11))
+                            .font(.system(size: 11, design: .rounded))
                             .foregroundColor(.rwGold)
                             .padding(.top, 2)
                         Text(thingToDo)
@@ -2093,7 +2093,7 @@ struct AIPickCard: View {
                 if let resolvedName {
                     HStack(spacing: 8) {
                         Image(systemName: "mappin.circle.fill")
-                            .font(.system(size: 13))
+                            .font(.system(size: 13, design: .rounded))
                             .foregroundStyle(LinearGradient.accent)
                         VStack(alignment: .leading, spacing: 1) {
                             Text(resolvedName)
@@ -2119,7 +2119,7 @@ struct AIPickCard: View {
                         }
                         Spacer()
                         Image(systemName: "chevron.right")
-                            .font(.system(size: 12, weight: .medium))
+                            .font(.system(size: 12, weight: .medium, design: .rounded))
                             .foregroundColor(.rwTextMuted)
                     }
                     .padding(SP.sm)
@@ -2128,7 +2128,7 @@ struct AIPickCard: View {
                 } else {
                     HStack(spacing: 6) {
                         Image(systemName: "mappin.slash")
-                            .font(.system(size: 11))
+                            .font(.system(size: 11, design: .rounded))
                             .foregroundColor(.rwTextMuted)
                         Text("No close match in this area")
                             .font(RWF.cap(12))
@@ -2163,7 +2163,7 @@ struct AIPickCard: View {
 struct LocationDeniedCard: View {
     var body: some View {
         VStack(spacing: 14) {
-            Image(systemName: "location.slash.fill").font(.system(size: 36)).foregroundColor(.rwTextMuted)
+            Image(systemName: "location.slash.fill").font(.system(size: 36, design: .rounded)).foregroundColor(.rwTextMuted)
             Text("Location Access Needed").font(RWF.head()).foregroundColor(.rwTextPrimary)
             Text("Enable location in Settings to find venues near you.")
                 .font(RWF.body(14)).foregroundColor(.rwTextSecondary).multilineTextAlignment(.center)
@@ -2300,7 +2300,7 @@ struct MidpointPickerView: View {
                 Spacer()
                 if enabled {
                     Image(systemName: "chevron.right")
-                        .font(.system(size: 12, weight: .medium))
+                        .font(.system(size: 12, weight: .medium, design: .rounded))
                         .foregroundColor(.rwTextMuted)
                 } else {
                     Text("Add location")

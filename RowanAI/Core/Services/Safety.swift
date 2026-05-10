@@ -182,14 +182,14 @@ struct CrisisBanner: View {
             VStack(alignment: .leading, spacing: 12) {
                 HStack(spacing: 10) {
                     Image(systemName: "heart.fill")
-                        .font(.system(size: 16, weight: .semibold))
+                        .font(.system(size: 16, weight: .semibold, design: .rounded))
                         .foregroundColor(.white)
                     Text("We noticed something important")
                         .font(RWF.head(15)).foregroundColor(.white)
                     Spacer()
                     Button { withAnimation { show = false } } label: {
                         Image(systemName: "xmark")
-                            .font(.system(size: 13, weight: .semibold))
+                            .font(.system(size: 13, weight: .semibold, design: .rounded))
                             .foregroundColor(.white.opacity(0.7))
                     }
                 }
@@ -202,7 +202,7 @@ struct CrisisBanner: View {
                     if let call988 = URL(string: "tel:988") {
                         Link(destination: call988) {
                             HStack(spacing: 6) {
-                                Image(systemName: "phone.fill").font(.system(size: 12))
+                                Image(systemName: "phone.fill").font(.system(size: 12, design: .rounded))
                                 Text("Call 988").font(RWF.med(13))
                             }
                             .foregroundColor(Color(hex: "E8356D"))
@@ -214,7 +214,7 @@ struct CrisisBanner: View {
                     if let textLine = URL(string: "sms:741741") {
                         Link(destination: textLine) {
                             HStack(spacing: 6) {
-                                Image(systemName: "message.fill").font(.system(size: 12))
+                                Image(systemName: "message.fill").font(.system(size: 12, design: .rounded))
                                 Text("Text HOME to 741741").font(RWF.med(13))
                             }
                             .foregroundColor(.white)
@@ -394,7 +394,7 @@ struct PrivacySettingsView: View {
                             showExport = true
                         } label: {
                             HStack {
-                                Image(systemName: "square.and.arrow.up").font(.system(size: 16, weight: .semibold))
+                                Image(systemName: "square.and.arrow.up").font(.system(size: 16, weight: .semibold, design: .rounded))
                                     .foregroundColor(.rwTextPrimary).frame(width: 32)
                                 Text("Export My Data").font(RWF.body()).foregroundColor(.rwTextPrimary)
                                 Spacer()
@@ -413,7 +413,7 @@ struct PrivacySettingsView: View {
                             showClearConfirm = true
                         } label: {
                             HStack {
-                                Image(systemName: "trash.fill").font(.system(size: 16, weight: .semibold))
+                                Image(systemName: "trash.fill").font(.system(size: 16, weight: .semibold, design: .rounded))
                                     .foregroundColor(Color(hex: "E8356D")).frame(width: 32)
                                 Text("Delete All My Data").font(RWF.body()).foregroundColor(Color(hex: "E8356D"))
                                 Spacer()
@@ -449,7 +449,7 @@ struct PrivacySettingsView: View {
                     }
 
                     Text("Rowan stores your data on your device. When you use AI features, your messages are sent to Anthropic's servers to generate responses. No data is sold or shared with advertisers.")
-                        .font(.system(size: 11)).foregroundColor(.rwTextMuted)
+                        .font(.system(size: 11, design: .rounded)).foregroundColor(.rwTextMuted)
                         .multilineTextAlignment(.center).padding(.horizontal, SP.xl)
 
                     Spacer().frame(height: 60)
@@ -484,7 +484,7 @@ struct DataRow: View {
     let icon: String; let title: String; let detail: String
     var body: some View {
         HStack(spacing: 12) {
-            Image(systemName: icon).font(.system(size: 15, weight: .semibold))
+            Image(systemName: icon).font(.system(size: 15, weight: .semibold, design: .rounded))
                 .foregroundColor(.rwTextSecondary).frame(width: 24)
             Text(title).font(RWF.body()).foregroundColor(.rwTextPrimary)
             Spacer()
@@ -499,7 +499,7 @@ struct CrisisLink: View {
         if let destination = URL(string: url) {
             Link(destination: destination) {
                 HStack(spacing: 12) {
-                    Image(systemName: icon).font(.system(size: 15, weight: .semibold))
+                    Image(systemName: icon).font(.system(size: 15, weight: .semibold, design: .rounded))
                         .foregroundColor(color).frame(width: 36, height: 36)
                         .background(color.opacity(0.1)).clipShape(Circle())
                     VStack(alignment: .leading, spacing: 2) {
@@ -507,7 +507,7 @@ struct CrisisLink: View {
                         Text(subtitle).font(RWF.cap(12)).foregroundColor(.rwTextSecondary)
                     }
                     Spacer()
-                    Image(systemName: "arrow.up.right").font(.system(size: 12)).foregroundColor(.rwTextMuted)
+                    Image(systemName: "arrow.up.right").font(.system(size: 12, design: .rounded)).foregroundColor(.rwTextMuted)
                 }
             }
             .buttonStyle(SBS())
@@ -534,7 +534,7 @@ struct JailbreakBlockView: View {
             VStack(spacing: SP.xl) {
                 Spacer()
                 Image(systemName: "lock.trianglebadge.exclamationmark.fill")
-                    .font(.system(size: 64))
+                    .font(.system(size: 64, design: .rounded))
                     .foregroundColor(.rwDanger)
                 VStack(spacing: 12) {
                     Text("Security Check Failed")

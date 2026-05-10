@@ -204,7 +204,7 @@ struct CyranoExerciseSuggestionCard: View {
                 ZStack {
                     Circle().fill(LinearGradient.accent).frame(width: 32, height: 32)
                     Image(systemName: "lightbulb.fill")
-                        .font(.system(size: 13, weight: .medium))
+                        .font(.system(size: 13, weight: .medium, design: .rounded))
                         .foregroundColor(.white)
                 }
                 VStack(alignment: .leading, spacing: 2) {
@@ -232,7 +232,7 @@ struct CyranoExerciseSuggestionCard: View {
                 } label: {
                     HStack(spacing: 6) {
                         Image(systemName: "arrow.right.circle.fill")
-                            .font(.system(size: 13, weight: .medium))
+                            .font(.system(size: 13, weight: .medium, design: .rounded))
                         Text("Open exercise").font(RWF.cap(13))
                     }
                     .foregroundColor(.white)

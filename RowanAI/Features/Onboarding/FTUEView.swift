@@ -203,7 +203,7 @@ struct FTUEView: View {
     private var topBar: some View {
         HStack {
             Text("\(index + 1) of \(slides.count)")
-                .font(.system(size: 11, weight: .semibold))
+                .font(.system(size: 11, weight: .semibold, design: .rounded))
                 .foregroundColor(.white.opacity(0.55))
                 .padding(.horizontal, 10).padding(.vertical, 5)
                 .background(Color.white.opacity(0.10))
@@ -213,7 +213,7 @@ struct FTUEView: View {
                 complete()
             } label: {
                 Text("Skip Tour")
-                    .font(.system(size: 13, weight: .semibold))
+                    .font(.system(size: 13, weight: .semibold, design: .rounded))
                     .foregroundColor(.white.opacity(0.7))
                     .padding(.horizontal, 12).padding(.vertical, 6)
                     .background(Color.white.opacity(0.10))
@@ -299,7 +299,7 @@ private struct FTUESlideView: View {
                     .stroke(slide.accent.opacity(0.40), lineWidth: 1)
                     .frame(width: 160, height: 160)
                 Image(systemName: slide.icon)
-                    .font(.system(size: 56, weight: .semibold))
+                    .font(.system(size: 56, weight: .semibold, design: .rounded))
                     .foregroundStyle(LinearGradient(
                         colors: [slide.accent, slide.accent.opacity(0.55)],
                         startPoint: .top,
@@ -317,7 +317,7 @@ private struct FTUESlideView: View {
                     .padding(.horizontal, SP.lg)
 
                 Text(slide.body)
-                    .font(.system(size: 15))
+                    .font(.system(size: 15, design: .rounded))
                     .foregroundColor(.white.opacity(0.78))
                     .multilineTextAlignment(.center)
                     .lineSpacing(3)
@@ -350,7 +350,7 @@ private struct FTUESlideView: View {
             HStack(spacing: 6) {
                 ForEach(slide.pills, id: \.self) { pill in
                     Text(pill)
-                        .font(.system(size: 11, weight: .semibold))
+                        .font(.system(size: 11, weight: .semibold, design: .rounded))
                         .foregroundColor(.white.opacity(0.85))
                         .padding(.horizontal, 10).padding(.vertical, 5)
                         .background(Color.white.opacity(0.10))
@@ -371,7 +371,7 @@ private struct FTUESlideView: View {
                         onStartTrial()
                     } label: {
                         Text("Start Free Trial →")
-                            .font(.system(size: 16, weight: .semibold))
+                            .font(.system(size: 16, weight: .semibold, design: .rounded))
                             .foregroundColor(.white)
                             .frame(maxWidth: .infinity)
                             .padding(.vertical, 14)
@@ -385,7 +385,7 @@ private struct FTUESlideView: View {
                         onStartFree()
                     } label: {
                         Text("Start with Free →")
-                            .font(.system(size: 14, weight: .medium))
+                            .font(.system(size: 14, weight: .medium, design: .rounded))
                             .foregroundColor(.white.opacity(0.65))
                             .frame(maxWidth: .infinity)
                             .padding(.vertical, 12)
@@ -399,7 +399,7 @@ private struct FTUESlideView: View {
                     Text(slideIndex == 0 ? "Show Me Everything" : "Next")
                     Image(systemName: "arrow.right")
                 }
-                .font(.system(size: 16, weight: .semibold))
+                .font(.system(size: 16, weight: .semibold, design: .rounded))
                 .foregroundColor(.white)
                 .frame(maxWidth: .infinity)
                 .padding(.vertical, 14)

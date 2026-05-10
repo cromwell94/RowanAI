@@ -223,7 +223,7 @@ struct ArcMainView: View {
                 Circle().fill(LinearGradient.accent).frame(width: 50, height: 50)
                     .shadow(color: Color.rwAccent.opacity(0.35), radius: 10, x: 0, y: 4)
                 Image(systemName: "bubble.left.and.bubble.right.fill")
-                    .font(.system(size: 18, weight: .semibold)).foregroundColor(.white)
+                    .font(.system(size: 18, weight: .semibold, design: .rounded)).foregroundColor(.white)
             }
         }
         .buttonStyle(SBS())
@@ -259,11 +259,11 @@ private struct ArcButton: View {
                         )
                     if isActive {
                         Image(systemName: dest.icon)
-                            .font(.system(size: 18, weight: .medium))
+                            .font(.system(size: 18, weight: .medium, design: .rounded))
                             .foregroundStyle(LinearGradient.accent)
                     } else {
                         Image(systemName: dest.icon)
-                            .font(.system(size: 18, weight: .medium))
+                            .font(.system(size: 18, weight: .medium, design: .rounded))
                             .foregroundColor(.white)
                     }
                 }
@@ -304,7 +304,7 @@ private struct CenterButton: View {
                     .frame(width: 64, height: 64)
                     .shadow(color: Color.rwAccent.opacity(0.45), radius: 18, x: 0, y: 8)
                 Image(systemName: icon)
-                    .font(.system(size: 22, weight: .medium))
+                    .font(.system(size: 22, weight: .medium, design: .rounded))
                     .foregroundColor(.white)
                     .rotationEffect(.degrees(arcOpen ? 90 : 0))
                     .animation(.spring(response: 0.32, dampingFraction: 0.7), value: arcOpen)
@@ -431,7 +431,7 @@ struct ArcHomeView: View {
         return VStack(alignment: .leading, spacing: 14) {
             HStack(spacing: 8) {
                 Image(systemName: "sparkles")
-                    .font(.system(size: 13, weight: .medium))
+                    .font(.system(size: 13, weight: .medium, design: .rounded))
                     .foregroundStyle(LinearGradient.accent)
                 Text(cur?.type.eyebrow ?? "TODAY")
                     .font(RWF.micro())
@@ -450,7 +450,7 @@ struct ArcHomeView: View {
                 Divider().background(Color.rwBorder)
                 HStack(alignment: .top, spacing: 10) {
                     Image(systemName: "arrow.right")
-                        .font(.system(size: 12, weight: .medium))
+                        .font(.system(size: 12, weight: .medium, design: .rounded))
                         .foregroundStyle(LinearGradient.accent)
                         .padding(.top, 4)
                     Text(cur.actionableTip)
@@ -461,7 +461,7 @@ struct ArcHomeView: View {
                 if streak > 2 {
                     HStack(spacing: 6) {
                         Text("🔥")
-                            .font(.system(size: 14))
+                            .font(.system(size: 14, design: .rounded))
                         Text("Your streak is \(streak) days — don't let it go.")
                             .font(RWF.cap(12))
                             .foregroundColor(.rwTextMuted)
@@ -557,7 +557,7 @@ struct ArcHomeView: View {
                 }
                 Spacer()
                 Image(systemName: "chevron.right")
-                    .font(.system(size: 13, weight: .medium))
+                    .font(.system(size: 13, weight: .medium, design: .rounded))
                     .foregroundColor(.rwTextMuted)
             }
             .padding(SP.lg)
@@ -579,7 +579,7 @@ struct ArcHomeView: View {
             ZStack {
                 Circle().fill(LinearGradient.amber).frame(width: 38, height: 38)
                 Image(systemName: "heart.fill")
-                    .font(.system(size: 15, weight: .medium))
+                    .font(.system(size: 15, weight: .medium, design: .rounded))
                     .foregroundColor(.white)
             }
             VStack(alignment: .leading, spacing: 2) {
@@ -590,7 +590,7 @@ struct ArcHomeView: View {
             }
             Spacer()
             Image(systemName: "chevron.right")
-                .font(.system(size: 12, weight: .medium))
+                .font(.system(size: 12, weight: .medium, design: .rounded))
                 .foregroundColor(.rwTextMuted)
         }
         .padding(SP.md)

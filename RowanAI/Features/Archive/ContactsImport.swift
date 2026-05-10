@@ -151,7 +151,7 @@ struct AddContactChoiceSheet: View {
                 // Header
                 VStack(spacing: 8) {
                     Image(systemName: "person.2.badge.plus.fill")
-                        .font(.system(size: 36))
+                        .font(.system(size: 36, design: .rounded))
                         .foregroundStyle(LinearGradient.accent)
                     Text("Add a Connection")
                         .font(RWF.title(22))
@@ -223,7 +223,7 @@ struct AddContactChoiceSheet: View {
     private func choiceCard(icon: String, title: String, subtitle: String, tint: Color) -> some View {
         HStack(spacing: 14) {
             Image(systemName: icon)
-                .font(.system(size: 22, weight: .semibold))
+                .font(.system(size: 22, weight: .semibold, design: .rounded))
                 .foregroundColor(tint)
                 .frame(width: 44, height: 44)
                 .background(tint.opacity(0.10))
@@ -238,7 +238,7 @@ struct AddContactChoiceSheet: View {
             Spacer()
 
             Image(systemName: "chevron.right")
-                .font(.system(size: 13, weight: .semibold))
+                .font(.system(size: 13, weight: .semibold, design: .rounded))
                 .foregroundColor(.rwTextMuted)
         }
         .padding(SP.md)
@@ -357,7 +357,7 @@ struct ContactImportPickerView: View {
     private func errorState(_ message: String) -> some View {
         VStack(spacing: 14) {
             Image(systemName: "exclamationmark.triangle.fill")
-                .font(.system(size: 28))
+                .font(.system(size: 28, design: .rounded))
                 .foregroundColor(.rwGold)
             Text("Couldn't read contacts").font(RWF.head(16)).foregroundColor(.rwTextPrimary)
             Text(message).font(RWF.body(13)).foregroundColor(.rwTextSecondary)
@@ -378,7 +378,7 @@ struct ContactImportPickerView: View {
     private var emptyState: some View {
         VStack(spacing: 12) {
             Image(systemName: "person.crop.circle.badge.questionmark")
-                .font(.system(size: 32))
+                .font(.system(size: 32, design: .rounded))
                 .foregroundColor(.rwTextMuted)
             Text("No contacts found")
                 .font(RWF.head(16)).foregroundColor(.rwTextPrimary)
@@ -463,11 +463,11 @@ struct ContactImportPickerView: View {
                     Image(systemName: selected.contains(c.identifier)
                           ? "checkmark.circle.fill"
                           : "circle")
-                        .font(.system(size: 22))
+                        .font(.system(size: 22, design: .rounded))
                         .foregroundColor(selected.contains(c.identifier) ? .rwAccent : .rwTextMuted)
                 } else {
                     Image(systemName: "chevron.right")
-                        .font(.system(size: 12, weight: .semibold))
+                        .font(.system(size: 12, weight: .semibold, design: .rounded))
                         .foregroundColor(.rwTextMuted)
                 }
             }
@@ -495,7 +495,7 @@ struct ContactImportPickerView: View {
                     .fill(Color.rwAccent.opacity(0.15))
                     .frame(width: 44, height: 44)
                 Text(c.initial)
-                    .font(.system(size: 18, weight: .bold))
+                    .font(.system(size: 18, weight: .bold, design: .rounded))
                     .foregroundColor(.rwAccent)
             }
         }
@@ -537,7 +537,7 @@ struct ContactImportPickerView: View {
         VStack {
             HStack(spacing: 10) {
                 Image(systemName: "checkmark.circle.fill")
-                    .font(.system(size: 22))
+                    .font(.system(size: 22, design: .rounded))
                     .foregroundColor(.rwSuccess)
                 Text(successPerson.map { "\($0.name) imported" } ?? "Imported")
                     .font(RWF.head(14)).foregroundColor(.rwTextPrimary)

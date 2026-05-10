@@ -273,7 +273,7 @@ struct ProfileCoachEntryCard: View {
                         .fill(LinearGradient.accent)
                         .frame(width: 52, height: 52)
                     Image(systemName: "sparkles.rectangle.stack.fill")
-                        .font(.system(size: 20, weight: .semibold))
+                        .font(.system(size: 20, weight: .semibold, design: .rounded))
                         .foregroundColor(.white)
                 }
 
@@ -294,7 +294,7 @@ struct ProfileCoachEntryCard: View {
 
                 HStack(spacing: 4) {
                     Text("Let's Go").font(RWF.cap(12))
-                    Image(systemName: "arrow.right").font(.system(size: 10, weight: .bold))
+                    Image(systemName: "arrow.right").font(.system(size: 10, weight: .bold, design: .rounded))
                 }
                 .foregroundColor(.white)
                 .padding(.horizontal, 12).padding(.vertical, 7)
@@ -365,7 +365,7 @@ struct ProfileCoachView: View {
                     } label: {
                         HStack(spacing: 4) {
                             Image(systemName: "chevron.left")
-                                .font(.system(size: 13, weight: .semibold))
+                                .font(.system(size: 13, weight: .semibold, design: .rounded))
                             Text("Cyrano").font(RWF.cap(13))
                         }
                         .foregroundColor(.rwAccent)

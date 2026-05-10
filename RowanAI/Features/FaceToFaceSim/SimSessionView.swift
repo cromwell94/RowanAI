@@ -170,7 +170,7 @@ struct SimSessionView: View {
                         .frame(width: 36, height: 36)
                         .overlay(Circle().stroke(Color.rwInkBorder, lineWidth: 1))
                     Image(systemName: "xmark")
-                        .font(.system(size: 13, weight: .semibold))
+                        .font(.system(size: 13, weight: .semibold, design: .rounded))
                         .foregroundColor(.rwInkText)
                 }
                 .frame(width: 44, height: 44)
@@ -195,8 +195,10 @@ struct SimSessionView: View {
             if let limit = environment.timeLimitSeconds {
                 let remaining = max(0, limit - elapsed)
                 HStack(spacing: 5) {
-                    Image(systemName: "clock.fill").font(.system(size: 10, weight: .medium))
-                    Text(format(remaining)).font(RWF.mono(11))
+                    Image(systemName: "clock.fill").font(.system(size: 10, weight: .medium, design: .rounded))
+                    Text(format(remaining))
+                        .font(RWF.mono(11))
+                        .contentTransition(.numericText())
                 }
                 .foregroundColor(remaining < 30 ? .rwAccent : .rwInkText)
                 .padding(.horizontal, 11).padding(.vertical, 6)
@@ -206,6 +208,7 @@ struct SimSessionView: View {
             } else {
                 Text(format(elapsed))
                     .font(RWF.mono(11)).foregroundColor(.rwInkTextMuted)
+                    .contentTransition(.numericText())
                     .padding(.horizontal, 11).padding(.vertical, 6)
                     .background(Color.white.opacity(0.06))
                     .clipShape(Capsule())
@@ -318,7 +321,7 @@ struct SimSessionView: View {
     private var avatarErrorPill: some View {
         HStack(spacing: 10) {
             Image(systemName: "exclamationmark.triangle.fill")
-                .font(.system(size: 13, weight: .medium))
+                .font(.system(size: 13, weight: .medium, design: .rounded))
                 .foregroundColor(.rwAccent)
             Text("Cyrano is unavailable right now — try again in a moment.")
                 .font(RWF.body(13)).foregroundColor(.rwInkText)
@@ -393,7 +396,7 @@ struct SimSessionView: View {
             ZStack {
                 Circle().fill(Color.white.opacity(0.10)).frame(width: 56, height: 56)
                 Image(systemName: "mic.slash.fill")
-                    .font(.system(size: 22, weight: .medium))
+                    .font(.system(size: 22, weight: .medium, design: .rounded))
                     .foregroundColor(.rwAccent)
             }
             Text("Microphone access needed")
@@ -451,7 +454,7 @@ struct SimSessionView: View {
                     .scaleEffect(isHoldingMic ? 1.08 : 1.0)
                     .shadow(color: Color.rwAccent.opacity(0.5), radius: 22, x: 0, y: 10)
                 Image(systemName: "mic.fill")
-                    .font(.system(size: 26, weight: .medium))
+                    .font(.system(size: 26, weight: .medium, design: .rounded))
                     .foregroundColor(.white)
             }
             // Hold-to-talk. DragGesture(minimumDistance: 0) fires onChanged on
@@ -705,7 +708,7 @@ private struct InterruptionBanner: View {
     var body: some View {
         HStack(spacing: 12) {
             Image(systemName: "eye.fill")
-                .font(.system(size: 12, weight: .medium))
+                .font(.system(size: 12, weight: .medium, design: .rounded))
                 .foregroundColor(.white)
                 .frame(width: 30, height: 30)
                 .background(LinearGradient.accent)

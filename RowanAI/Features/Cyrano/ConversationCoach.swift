@@ -62,7 +62,7 @@ struct ConversationCoachView: View {
                 RWCard {
                     HStack(spacing: 12) {
                         Image(systemName: "lightbulb.fill")
-                            .font(.system(size: 20))
+                            .font(.system(size: 20, design: .rounded))
                             .foregroundColor(Color(hex: "F59E0B"))
                             .frame(width: 44, height: 44)
                             .background(Color(hex: "F59E0B").opacity(0.1))
@@ -94,7 +94,7 @@ struct CoachModeCard: View {
         Button(action: onTap) {
             HStack(alignment: .top, spacing: 14) {
                 Image(systemName: icon)
-                    .font(.system(size: 20, weight: .semibold))
+                    .font(.system(size: 20, weight: .semibold, design: .rounded))
                     .foregroundColor(.white)
                     .frame(width: 52, height: 52)
                     .background(LinearGradient(colors: [color, color.opacity(0.75)], startPoint: .topLeading, endPoint: .bottomTrailing))
@@ -115,7 +115,7 @@ struct CoachModeCard: View {
                 }
                 Spacer(minLength: 0)
                 Image(systemName: "chevron.right")
-                    .font(.system(size: 13, weight: .semibold))
+                    .font(.system(size: 13, weight: .semibold, design: .rounded))
                     .foregroundColor(.rwTextMuted).padding(.top, 16)
             }
             .padding(SP.lg).background(Color.rwCard)
@@ -169,7 +169,7 @@ struct PracticeView: View {
             HStack {
                 Button(action: onBack) {
                     Image(systemName: "chevron.left")
-                        .font(.system(size: 16, weight: .semibold))
+                        .font(.system(size: 16, weight: .semibold, design: .rounded))
                         .foregroundColor(.rwTextPrimary)
                         .frame(width: 36, height: 36)
                         .background(Color.rwSurface)
@@ -236,7 +236,7 @@ struct PracticeView: View {
                 ScrollView(showsIndicators: false) {
                     VStack(spacing: SP.lg) {
                         Image(systemName: "checkmark.circle.fill")
-                            .font(.system(size: 52)).foregroundColor(Color(hex: "00BFB3"))
+                            .font(.system(size: 52, design: .rounded)).foregroundColor(Color(hex: "00BFB3"))
                             .padding(.top, 32)
 
                         Text("Cyrano's Feedback")
@@ -321,7 +321,7 @@ struct PracticeView: View {
                         .onSubmit { Task { await send() } }
                     Button { Task { await send() } } label: {
                         Image(systemName: "arrow.up.circle.fill")
-                            .font(.system(size: 30))
+                            .font(.system(size: 30, design: .rounded))
                             .foregroundColor(input.isEmpty ? .rwTextMuted : .rwAccent)
                     }
                     .disabled(input.trimmingCharacters(in: .whitespaces).isEmpty)
@@ -436,7 +436,7 @@ struct LessonsView: View {
             HStack {
                 Button(action: { withAnimation { category = nil }; if category == nil { onBack() } }) {
                     Image(systemName: "chevron.left")
-                        .font(.system(size: 16, weight: .semibold)).foregroundColor(.rwTextPrimary)
+                        .font(.system(size: 16, weight: .semibold, design: .rounded)).foregroundColor(.rwTextPrimary)
                         .frame(width: 36, height: 36).background(Color.rwSurface).clipShape(Circle())
                 }
                 Spacer()
@@ -456,7 +456,7 @@ struct LessonsView: View {
                             Button { withAnimation { category = cat } } label: {
                                 HStack(spacing: 14) {
                                     Image(systemName: cat.icon)
-                                        .font(.system(size: 20, weight: .semibold))
+                                        .font(.system(size: 20, weight: .semibold, design: .rounded))
                                         .foregroundColor(.white).frame(width: 52, height: 52)
                                         .background(cat.color).clipShape(RoundedRectangle(cornerRadius: RR.md))
                                     VStack(alignment: .leading, spacing: 4) {
@@ -513,7 +513,7 @@ struct LessonDetailView: View {
             // Card
             VStack(alignment: .leading, spacing: SP.lg) {
                 Image(systemName: category.icon)
-                    .font(.system(size: 32, weight: .semibold))
+                    .font(.system(size: 32, weight: .semibold, design: .rounded))
                     .foregroundColor(category.color)
                     .frame(width: 64, height: 64)
                     .background(category.color.opacity(0.1))
@@ -542,7 +542,7 @@ struct LessonDetailView: View {
                         withAnimation(.spring(response: 0.4, dampingFraction: 0.8)) { current -= 1 }
                     } label: {
                         Image(systemName: "chevron.left")
-                            .font(.system(size: 16, weight: .semibold)).foregroundColor(.rwTextPrimary)
+                            .font(.system(size: 16, weight: .semibold, design: .rounded)).foregroundColor(.rwTextPrimary)
                             .frame(maxWidth: .infinity).padding(.vertical, 17)
                             .background(Color.rwSurface)
                             .clipShape(RoundedRectangle(cornerRadius: RR.pill))
@@ -598,7 +598,7 @@ struct GameView: View {
             HStack {
                 Button(action: { stopTimer(); onBack() }) {
                     Image(systemName: "chevron.left")
-                        .font(.system(size: 16, weight: .semibold)).foregroundColor(.rwTextPrimary)
+                        .font(.system(size: 16, weight: .semibold, design: .rounded)).foregroundColor(.rwTextPrimary)
                         .frame(width: 36, height: 36).background(Color.rwSurface).clipShape(Circle())
                 }
                 Spacer()
@@ -655,7 +655,7 @@ struct GameView: View {
                     HStack {
                         Spacer()
                         HStack(spacing: 6) {
-                            Image(systemName: "timer").font(.system(size: 14, weight: .semibold))
+                            Image(systemName: "timer").font(.system(size: 14, weight: .semibold, design: .rounded))
                             Text("\(timeLeft)s").font(RWF.head())
                         }
                         .foregroundColor(timeLeft <= 10 ? .rwAccent : .rwTextSecondary)

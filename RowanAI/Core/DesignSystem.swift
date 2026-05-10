@@ -159,7 +159,7 @@ struct RWButton: View {
     var body: some View {
         Button(action: action) {
             HStack(spacing: 10) {
-                if let icon { Image(systemName: icon).font(.system(size: 15, weight: .medium)) }
+                if let icon { Image(systemName: icon).font(.system(size: 15, weight: .medium, design: .rounded)) }
                 Text(title).font(RWF.med(16))
             }
             .foregroundColor(fg)
@@ -315,7 +315,7 @@ struct RWQuickTile: View {
                         .fill(tint.opacity(0.10))
                         .frame(width: 46, height: 46)
                     Image(systemName: icon)
-                        .font(.system(size: 19, weight: .medium))
+                        .font(.system(size: 19, weight: .medium, design: .rounded))
                         .foregroundColor(tint)
                 }
                 VStack(alignment: .leading, spacing: 3) {
@@ -358,7 +358,7 @@ struct RWHeaderBar<Trailing: View>: View {
             if let onClose {
                 Button(action: onClose) {
                     Image(systemName: "xmark")
-                        .font(.system(size: 13, weight: .semibold))
+                        .font(.system(size: 13, weight: .semibold, design: .rounded))
                         .foregroundColor(.rwTextSecondary)
                         .frame(width: 36, height: 36)
                         .background(Color.rwSurface)
@@ -438,7 +438,7 @@ struct RWEmptyState: View {
                 Circle().fill(Color.rwAccent.opacity(0.06)).frame(width: 110, height: 110)
                 Circle().fill(Color.rwAccent.opacity(0.10)).frame(width: 78, height: 78)
                 Image(systemName: icon)
-                    .font(.system(size: 34, weight: .semibold))
+                    .font(.system(size: 34, weight: .semibold, design: .rounded))
                     .foregroundStyle(LinearGradient.accent)
             }
             .scaleEffect(on ? 1 : 0.6)
@@ -501,7 +501,7 @@ struct RWSegmentedPicker<T: Hashable>: View {
                 } label: {
                     HStack(spacing: 5) {
                         if let icon = opt.icon {
-                            Image(systemName: icon).font(.system(size: 11, weight: .semibold))
+                            Image(systemName: icon).font(.system(size: 11, weight: .semibold, design: .rounded))
                         }
                         Text(opt.label).font(RWF.cap(12))
                     }
@@ -560,7 +560,7 @@ struct RowanLogo: View {
         ZStack {
             // Outer heart — teal/violet gradient
             Image(systemName: "heart.fill")
-                .font(.system(size: size))
+                .font(.system(size: size, design: .rounded))
                 .foregroundStyle(
                     LinearGradient(
                         colors: [Color(hex: "5B8DEF"), Color(hex: "00BFB3")],
@@ -570,7 +570,7 @@ struct RowanLogo: View {
 
             // Inner heart — pink
             Image(systemName: "heart.fill")
-                .font(.system(size: size * 0.6))
+                .font(.system(size: size * 0.6, design: .rounded))
                 .foregroundStyle(
                     LinearGradient(
                         colors: [Color(hex: "F0387A"), Color(hex: "E8356D")],

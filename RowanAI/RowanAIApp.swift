@@ -85,10 +85,10 @@ struct RootView: View {
                     }
             }
         }
-        .animation(.easeInOut(duration: 0.35), value: appState.hasCompletedOnboarding)
-        .animation(.easeInOut(duration: 0.35), value: ageVerified)
-        .animation(.easeInOut(duration: 0.35), value: isLocked)
-        .animation(.easeInOut(duration: 0.5), value: showSplash)
+        .animation(.spring(response: 0.5, dampingFraction: 0.85), value: appState.hasCompletedOnboarding)
+        .animation(.spring(response: 0.5, dampingFraction: 0.85), value: ageVerified)
+        .animation(.spring(response: 0.5, dampingFraction: 0.85), value: isLocked)
+        .animation(.spring(response: 0.5, dampingFraction: 0.85), value: showSplash)
         // Privacy overlay — hides sensitive content in the app switcher and prevents screenshots
         // from capturing relationship data, contact archive, or coaching conversations.
         .overlay {
@@ -147,7 +147,7 @@ struct SplashView: View {
                     .offset(y: wordmarkOffset)
 
                 Text("Built for love. Not likes.")
-                    .font(.system(size: 15, weight: .medium))
+                    .font(.system(size: 15, weight: .medium, design: .rounded))
                     .foregroundColor(Color(hex: "9BA8BF"))
                     .opacity(wordmarkOpacity)
                     .offset(y: wordmarkOffset)
