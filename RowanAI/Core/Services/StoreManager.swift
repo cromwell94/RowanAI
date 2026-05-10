@@ -582,21 +582,31 @@ struct PaywallView: View {
 
     // MARK: - Products
     //
-    // Annual is the default after the paywall redesign — the in-paywall
-    // monthly/annual toggle was removed in favour of a cleaner narrative
-    // flow. Users who prefer monthly billing can switch via the App Store
-    // subscription settings post-purchase.
+    // Annual is the default; users can flip to monthly via the small pill
+    // above the tier cards. Both tier prices and the CTA target SKUs follow
+    // the selected billing cycle.
     var monthly: Product? { store.products.first { $0.id == RowanProduct.monthlyPro.rawValue } }
     var annual: Product?  { store.products.first { $0.id == RowanProduct.annualPro.rawValue } }
     var proPlusMonthly: Product? { store.products.first { $0.id == RowanProduct.monthlyProPlus.rawValue } }
     var proPlusAnnual: Product?  { store.products.first { $0.id == RowanProduct.annualProPlus.rawValue } }
 
-    /// Annual Pro — what the "Start 7-Day Free Trial" CTA buys.
-    var proProduct: Product? { annual }
-    /// Annual Pro+ — what the "Get Cyrano Live" CTA buys.
-    var proPlusProduct: Product? { proPlusAnnual }
-
+    @State private var billingCycle: BillingCycle = .annual
     @State private var purchasingProPlus = false
+
+    enum BillingCycle { case monthly, annual }
+
+    /// Pro product matching the currently-selected billing cycle.
+    var proProduct: Product? {
+        billingCycle == .annual ? annual : monthly
+    }
+    /// Pro+ product matching the currently-selected billing cycle.
+    var proPlusProduct: Product? {
+        billingCycle == .annual ? proPlusAnnual : proPlusMonthly
+    }
+    /// "/year" or "/month" suffix shown next to the price.
+    var perPeriodLabel: String {
+        billingCycle == .annual ? "/year" : "/month"
+    }
 
     // Pro+ uses a brand-distinct gold gradient on borders and badge fills.
     static let goldGradient = LinearGradient(
@@ -807,17 +817,74 @@ struct PaywallView: View {
 
     // MARK: - Section 4 — Tier cards
 
-    @ViewBuilder
     private var tierCardsSection: some View {
-        if !store.products.isEmpty {
-            VStack(spacing: 12) {
-                freeTierCard
-                proTierCard
-                proPlusTierCard
+        VStack(spacing: 14) {
+            billingToggle
+            if !store.products.isEmpty {
+                VStack(spacing: 12) {
+                    freeTierCard
+                    proTierCard
+                    proPlusTierCard
+                }
+            } else {
+                pricingFallback
             }
-        } else {
-            pricingFallback
         }
+    }
+
+    /// Two-pill billing-cycle picker. Annual is selected by default and
+    /// shows the savings badge when StoreManager can compute it.
+    private var billingToggle: some View {
+        HStack(spacing: 4) {
+            billingPill(label: "Monthly", cycle: .monthly, savings: nil)
+            billingPill(label: "Annual",
+                        cycle: .annual,
+                        savings: store.annualSavingsPercent())
+        }
+        .padding(4)
+        .background(Color.rwSurface)
+        .clipShape(Capsule())
+        .overlay(Capsule().stroke(Color.rwBorder, lineWidth: 1))
+    }
+
+    private func billingPill(label: String, cycle: BillingCycle, savings: Int?) -> some View {
+        let selected = billingCycle == cycle
+        return Button {
+            withAnimation(.spring(response: 0.3, dampingFraction: 0.85)) {
+                billingCycle = cycle
+            }
+            UIImpactFeedbackGenerator(style: .light).impactOccurred()
+        } label: {
+            HStack(spacing: 6) {
+                Text(label)
+                    .font(RWF.med(13))
+                    .foregroundColor(selected ? .white : .rwTextSecondary)
+                if let savings, savings > 0 {
+                    Text("Save \(savings)%")
+                        .font(.system(size: 10, weight: .bold, design: .rounded))
+                        .foregroundColor(selected ? .white : .rwAccent)
+                        .padding(.horizontal, 6)
+                        .padding(.vertical, 2)
+                        .background(selected
+                                    ? Color.white.opacity(0.22)
+                                    : Color.rwAccent.opacity(0.15))
+                        .clipShape(Capsule())
+                }
+            }
+            .frame(maxWidth: .infinity)
+            .padding(.vertical, 8)
+            .background(
+                Group {
+                    if selected {
+                        LinearGradient.accent
+                    } else {
+                        Color.clear
+                    }
+                }
+            )
+            .clipShape(Capsule())
+        }
+        .buttonStyle(SBS())
     }
 
     @ViewBuilder
@@ -888,7 +955,8 @@ struct PaywallView: View {
                     Text(priceText)
                         .font(.system(size: 26, weight: .bold, design: .rounded))
                         .foregroundColor(.rwTextPrimary)
-                    Text("/year")
+                        .contentTransition(.numericText())
+                    Text(perPeriodLabel)
                         .font(RWF.cap(12))
                         .foregroundColor(.rwTextSecondary)
                 }
@@ -945,7 +1013,8 @@ struct PaywallView: View {
                     Text(priceText)
                         .font(.system(size: 28, weight: .bold, design: .rounded))
                         .foregroundColor(.white)
-                    Text("/year")
+                        .contentTransition(.numericText())
+                    Text(perPeriodLabel)
                         .font(RWF.cap(12))
                         .foregroundColor(.white.opacity(0.7))
                 }
