@@ -285,6 +285,22 @@ private struct FTUESlideView: View {
     let onStartTrial: (() -> Void)?
 
     @State private var appeared = false
+    // Eligibility-aware FTUE CTA — the final slide normally reads "Start
+    // Free Trial →". If the Apple ID has already redeemed the intro offer
+    // on every product, switch to "Subscribe →" so we don't promise a
+    // trial Apple won't grant. Defaults to trial copy while the dict is
+    // loading (empty = unknown = assume eligible). @State + @Observable
+    // store re-evaluates the computed label when the dict flips.
+    @State private var store = StoreManager.shared
+
+    private var trialCTALabel: String {
+        // Empty dict = still loading → assume eligible, show trial copy.
+        // Any product still eligible → show trial copy.
+        if store.trialEligibility.isEmpty { return "Start Free Trial →" }
+        return store.trialEligibility.values.contains(true)
+            ? "Start Free Trial →"
+            : "Subscribe →"
+    }
 
     var body: some View {
         VStack(spacing: SP.lg) {
@@ -370,7 +386,7 @@ private struct FTUESlideView: View {
                     Button {
                         onStartTrial()
                     } label: {
-                        Text("Start Free Trial →")
+                        Text(trialCTALabel)
                             .font(.system(size: 16, weight: .semibold, design: .rounded))
                             .foregroundColor(.white)
                             .frame(maxWidth: .infinity)

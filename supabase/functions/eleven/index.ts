@@ -2,32 +2,36 @@
 //
 // Responsibilities:
 //   - Hide the ElevenLabs API key (lives in this function's secrets, never in the app)
+//   - Require an AUTHENTICATED user JWT (anon JWT rejected) so we can rate-limit
+//     per user.sub
 //   - Allowlist voice_ids so a compromised client can't enumerate the entire
 //     ElevenLabs voice library on the project owner's account
 //   - Allowlist model_ids and cap text length so a compromised client can't
 //     run up the bill with long synthesis jobs
+//   - Apply a per-user rate limit (see _shared/rate-limit.ts) — TTS is per
+//     avatar utterance in a sim session, so the daily cap is sized to cover
+//     a healthy number of sessions worth of audio
 //   - Forward to ElevenLabs and stream the audio/mpeg response back unchanged
 //
 // Deploy:
 //   supabase functions deploy eleven
 //   supabase secrets set ELEVENLABS_API_KEY=...
-//
-// Auth: relies on Supabase's default JWT verification — the app sends the
-// publishable (anon) key as a Bearer token, same as the cyrano function.
+//   supabase secrets set SERVICE_ROLE_KEY=eyJ...   (required by _shared/rate-limit.ts)
 
 import "jsr:@supabase/functions-js/edge-runtime.d.ts";
+import { checkRateLimit, decodeJWTPayload, rateLimitResponse } from "../_shared/rate-limit.ts";
 
 const ELEVENLABS_BASE = "https://api.elevenlabs.io/v1/text-to-speech";
 
-// Voice IDs from RowanAI/Features/FaceToFaceSim/SimModels.swift.
-// Keep in sync when avatars are added or rotated.
+// Voice IDs from RowanAI/Features/Sim/SimModels.swift. Keep in sync when
+// avatars are added or rotated.
 const ALLOWED_VOICE_IDS = new Set([
-  "vDchjyOZZytffNeZXfZK", // Jordan
-  "nf4MCGNSdM0hxM95ZBQR", // Maya
-  "wvk9Caj0nEx4l3I9LaR6", // Alex
-  "ePEc9tlhrIO7VRkiOlQN", // Sam
-  "OYTbf65OHHFELVut7v2H", // Riley
-  "itkUuCeluzmxnISkRimf", // Casey
+  "s3TPKV1kjDlVtZbl4Ksh", // Jordan (Adam)
+  "c51VqUTljshmftbhJEGm", // Maya (Emily)
+  "nf4MCGNSdM0hxM95ZBQR", // Alex (Sarah Eve) — was Maya's voice pre-v1.0
+  "1fz2mW1imKTf5Ryjk5su", // Sam (Kevin)
+  "wrxvN1LZJIfL3HHvffqe", // Riley (Bella)
+  "Pcfg2Zc6kmNWQ9ji3J5F", // Casey (Ethan)
 ]);
 
 const ALLOWED_MODELS = new Set([
@@ -35,9 +39,9 @@ const ALLOWED_MODELS = new Set([
   "eleven_turbo_v2_5",
 ]);
 
-// Hard cap on synthesis input. Avatar lines are 1-3 sentences; 2 KB of text
-// is far more than needed and keeps a malicious client from billing the
-// project owner for paragraphs.
+// Hard cap on synthesis input. Avatar lines are 1-3 sentences; 2 KB is far
+// more than needed and keeps a malicious caller from billing the project
+// owner for paragraphs.
 const MAX_TEXT_LENGTH = 2_000;
 
 // Hard cap on JSON body size. Body is small ({voice_id, text, model_id,
@@ -82,6 +86,16 @@ Deno.serve(async (req) => {
     return jsonError(405, "Method not allowed");
   }
 
+  // Require an authenticated user JWT. The iOS app now sends the user JWT
+  // from SupabaseAuth.shared.currentAccessToken() instead of the publishable
+  // anon key, so we have a per-user `sub` to rate-limit against.
+  const claims = decodeJWTPayload(req.headers.get("Authorization"));
+  if (!claims || claims.role !== "authenticated"
+      || typeof claims.sub !== "string" || !claims.sub) {
+    return jsonError(401, "Authenticated user required");
+  }
+  const userId = claims.sub;
+
   const apiKey = Deno.env.get("ELEVENLABS_API_KEY");
   if (!apiKey) {
     return jsonError(500, "Server not configured");
@@ -117,6 +131,20 @@ Deno.serve(async (req) => {
 
   if (!isVoiceSettings(body.voice_settings)) {
     return jsonError(400, "voice_settings invalid");
+  }
+
+  // Per-user rate limit. Sized to support healthy session use without leaving
+  // the wallet wide open. A sim session typically uses 10-20 TTS calls, plus
+  // the voice-preview button on the avatar picker.
+  // Free: 50/day  ≈ 2-3 sim sessions worth.
+  // Pro:  500/day ≈ 25-50 sessions.
+  // 10/min for both — universal anti-burst.
+  const rl = await checkRateLimit(userId, "eleven", {
+    free: { perMinute: 10, perDay: 50  },
+    pro:  { perMinute: 10, perDay: 500 },
+  });
+  if (!rl.allowed) {
+    return rateLimitResponse(rl, corsHeaders);
   }
 
   const upstreamBody = JSON.stringify({

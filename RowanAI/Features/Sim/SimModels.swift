@@ -425,8 +425,8 @@ enum SimAvatars {
     static let all: [SimAvatar] = [
         SimAvatar(id: "jordan",
                   name: "Jordan",
-                  elevenLabsVoiceID: "vDchjyOZZytffNeZXfZK",
-                  voiceLabel: "Mike",
+                  elevenLabsVoiceID: "s3TPKV1kjDlVtZbl4Ksh",
+                  voiceLabel: "Adam",
                   voiceSettings: VoiceSettings(stability: 0.85, similarityBoost: 0.75, style: 0.2),
                   didPresenterID: nil,
                   gradientStart: "#5B8DEF",
@@ -434,8 +434,8 @@ enum SimAvatars {
                   isFreeTier: true),
         SimAvatar(id: "maya",
                   name: "Maya",
-                  elevenLabsVoiceID: "nf4MCGNSdM0hxM95ZBQR",
-                  voiceLabel: "Sarah Eve",
+                  elevenLabsVoiceID: "c51VqUTljshmftbhJEGm",
+                  voiceLabel: "Emily",
                   voiceSettings: VoiceSettings(stability: 0.65, similarityBoost: 0.70, style: 0.7),
                   didPresenterID: nil,
                   gradientStart: "#E8356D",
@@ -443,8 +443,8 @@ enum SimAvatars {
                   isFreeTier: true),
         SimAvatar(id: "alex",
                   name: "Alex",
-                  elevenLabsVoiceID: "wvk9Caj0nEx4l3I9LaR6",
-                  voiceLabel: "Liz",
+                  elevenLabsVoiceID: "nf4MCGNSdM0hxM95ZBQR",
+                  voiceLabel: "Sarah Eve",
                   voiceSettings: VoiceSettings(stability: 0.75, similarityBoost: 0.80, style: 0.3),
                   didPresenterID: nil,
                   gradientStart: "#00BFB3",
@@ -452,8 +452,8 @@ enum SimAvatars {
                   isFreeTier: true),
         SimAvatar(id: "sam",
                   name: "Sam",
-                  elevenLabsVoiceID: "ePEc9tlhrIO7VRkiOlQN",
-                  voiceLabel: "Alex",
+                  elevenLabsVoiceID: "1fz2mW1imKTf5Ryjk5su",
+                  voiceLabel: "Kevin",
                   voiceSettings: VoiceSettings(stability: 0.55, similarityBoost: 0.70, style: 0.8),
                   didPresenterID: nil,
                   gradientStart: "#9B59B6",
@@ -461,8 +461,8 @@ enum SimAvatars {
                   isFreeTier: false),
         SimAvatar(id: "riley",
                   name: "Riley",
-                  elevenLabsVoiceID: "OYTbf65OHHFELVut7v2H",
-                  voiceLabel: "Hope",
+                  elevenLabsVoiceID: "wrxvN1LZJIfL3HHvffqe",
+                  voiceLabel: "Bella",
                   voiceSettings: VoiceSettings(stability: 0.80, similarityBoost: 0.80, style: 0.3),
                   didPresenterID: nil,
                   gradientStart: "#F59E0B",
@@ -470,8 +470,8 @@ enum SimAvatars {
                   isFreeTier: false),
         SimAvatar(id: "casey",
                   name: "Casey",
-                  elevenLabsVoiceID: "itkUuCeluzmxnISkRimf",
-                  voiceLabel: "Graham",
+                  elevenLabsVoiceID: "Pcfg2Zc6kmNWQ9ji3J5F",
+                  voiceLabel: "Ethan",
                   voiceSettings: VoiceSettings(stability: 0.80, similarityBoost: 0.75, style: 0.4),
                   didPresenterID: nil,
                   gradientStart: "#6B7FD7",
@@ -485,11 +485,18 @@ enum SimAvatars {
 // MARK: - Session message + transcript
 
 struct SimTurn: Identifiable, Codable, Equatable {
-    let id = UUID()
+    let id: UUID
     let role: Role
     let text: String
-    let createdAt = Date()
+    let createdAt: Date
     enum Role: String, Codable { case user, avatar }
+
+    init(id: UUID = UUID(), role: Role, text: String, createdAt: Date = Date()) {
+        self.id = id
+        self.role = role
+        self.text = text
+        self.createdAt = createdAt
+    }
 }
 
 // MARK: - Engagement Meter (Step 5e)

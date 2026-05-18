@@ -1,4 +1,5 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts"
+import { checkRateLimit, rateLimitResponse } from "../_shared/rate-limit.ts"
 
 // LiveKit room-token issuer.
 //
@@ -13,13 +14,19 @@ import { serve } from "https://deno.land/std@0.168.0/http/server.ts"
 //       sim-<avatarId>-<userId>-<unixSeconds>
 //       cyrano-live-<userId>-<unixSeconds>
 //   - participantName length and charset are constrained.
-//   - Token TTL is 15 minutes (was 1 hour).
+//   - Token TTL is 15 minutes.
+//
+// Rate limiting (added in the security hardening pass, raised for v1.0 launch):
+//   - Free: 10 tokens/hour, 50/day
+//   - Pro:  60 tokens/hour, 500/day
+//   - All:  minimum 30 seconds between token issuances
+//   This caps LiveKit per-participant-minute spend. The per-hour ceilings
+//   plus the 30s spacing make it impossible to chain back-to-back 15-minute
+//   sessions without hitting the wall, regardless of tier.
 //
 // Browser callers cannot reach this endpoint (no Allow-Origin header). Native
 // HTTP clients (URLSession) ignore CORS, so the iOS app is unaffected.
 
-// Native-only: no CORS allowance. Browsers will fail; URLSession-based clients
-// don't care about CORS.
 const securityHeaders = {
   "Content-Type": "application/json",
   "X-Content-Type-Options": "nosniff",
@@ -177,6 +184,19 @@ serve(async (req) => {
   if (!apiKey || !apiSecret || !livekitUrl) {
     return jsonError(500, "Server not configured")
   }
+
+  // Per-user rate limit for token issuance. Sessions are expensive (LiveKit
+  // bills per participant-minute) so we cap session starts directly.
+  //   Free: 10 sessions/hour 50/day, Pro: 60/hour 500/day, both with 30s spacing.
+  // Raised from 3/hr 24/day (free) and 30/hr 240/day (pro) for v1.0 launch —
+  // legitimate users were hitting limits during demos and early testing.
+  // perMinute is set to a comfortable 5 so a quick reconnect after a
+  // network blip doesn't trip the bucket, while still bounding burst.
+  const rl = await checkRateLimit(userId, "livekit-token", {
+    free: { perMinute: 5, perDay: 50,  perHour: 10, minSpacingSeconds: 30 },
+    pro:  { perMinute: 5, perDay: 500, perHour: 60, minSpacingSeconds: 30 },
+  })
+  if (!rl.allowed) return rateLimitResponse(rl, securityHeaders)
 
   try {
     const token = await generateLiveKitToken(

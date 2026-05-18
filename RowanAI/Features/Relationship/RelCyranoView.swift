@@ -289,7 +289,7 @@ struct VentView: View {
         If crisis keywords are present: acknowledge feelings, provide 988 and National DV Hotline (1-800-799-7233).
         """
         let rel = RelationshipStore.shared.relationship
-        let context = rel != nil ? "They are in a relationship with \(rel!.partnerName)." : ""
+        let context = rel.map { "They are in a relationship with \($0.partnerName)." } ?? ""
         do {
             response = try await Claude.shared.send(
                 system: system,

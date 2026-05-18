@@ -107,6 +107,13 @@ final class StoreManager {
     var currentTier: SubscriptionTier = .free
     var loadState: StoreLoadState = .idle
     var purchaseError: String = ""
+    /// Product-ID → eligible-for-this-product's-intro-offer. Populated after
+    /// products load (via updateTrialEligibility); refreshed after entitlement
+    /// changes. Missing keys are treated as "eligible" by the paywall (default
+    /// to trial copy while loading — most first-time users qualify).
+    /// No `@Published` here — StoreManager is `@Observable`, the new macro
+    /// auto-tracks property writes; `@Published` only applies to ObservableObject.
+    var trialEligibility: [String: Bool] = [:]
 
     /// Cyrano Live is exclusively Pro+. Use this everywhere instead of a
     /// raw isProPlus check to keep the gating semantically clear.
@@ -171,6 +178,10 @@ final class StoreManager {
             cacheProducts(storeProducts)
             loadState = .loaded
             hasRetried = false
+            // Refresh trial eligibility once products are in hand. Apple's
+            // isEligibleForIntroOffer is async and per-user — eligibility
+            // depends on whether this Apple ID has redeemed the trial before.
+            await updateTrialEligibility()
         } catch is TimeoutError {
             if !isRetry {
                 try? await Task.sleep(nanoseconds: 1_500_000_000)
@@ -269,6 +280,48 @@ final class StoreManager {
         currentTier = highest
         isPro = highest >= .pro
         isProPlus = highest >= .proPlus
+
+        // Mirror the tier server-side so the rate-limit helper in the
+        // cyrano / eleven / livekit-token edge functions applies the right
+        // per-tier limits. Single call covers all four entitlement-change
+        // paths the spec calls out — purchase(), restore(), the
+        // listenForTransactions() task, and prepare() at app launch — all
+        // funnel through this method. Fire-and-forget so a network blip
+        // never blocks UI; if the call fails the user just hits free-tier
+        // limits until the next entitlement check (worst case: next launch).
+        let serverTier = highest >= .pro ? "pro" : "free"
+        Task { try? await SupabaseAuth.shared.setTier(serverTier) }
+
+        // Post-purchase the user's trial eligibility flips (they've now used
+        // the intro offer). Refresh so the paywall — if re-opened — shows the
+        // correct copy. Fire-and-forget like the setTier mirror above.
+        Task { await self.updateTrialEligibility() }
+    }
+
+    // MARK: - Trial Eligibility
+    //
+    // For each loaded subscription product, ask StoreKit whether THIS Apple
+    // ID is still eligible for the product's introductory offer. Used by the
+    // paywall + FTUE to switch CTA copy from "Start 7-Day Free Trial" to
+    // "Continue with Pro" when the user can no longer get a trial — so we
+    // don't promise something Apple will silently deny.
+    //
+    // Products without a `.freeTrial` introductory offer are recorded as
+    // `false` (no trial possible, never was). Products with one are recorded
+    // as the live per-user eligibility flag.
+
+    func updateTrialEligibility() async {
+        var newDict: [String: Bool] = [:]
+        for product in products {
+            if let intro = product.subscription?.introductoryOffer,
+               intro.paymentMode == .freeTrial {
+                let eligible = (await product.subscription?.isEligibleForIntroOffer) ?? false
+                newDict[product.id] = eligible
+            } else {
+                newDict[product.id] = false
+            }
+        }
+        trialEligibility = newDict
     }
 
     // MARK: - Listen for Transactions
@@ -339,7 +392,13 @@ final class StoreManager {
     // MARK: - Free Tier Limits
     // Caps surfaced in the paywall reason copy below — keep in sync.
 
-    static let freeRepliesPerDay = 10
+    // v1.0: lowered from 10 → 5 to match the cyrano edge function's server-
+    // side cap. The UI counter and paywall copy both read this value, so they
+    // now show the same number the server will actually allow.
+    static let freeRepliesPerDay = 5
+    // New for v1.0: Opener mode (Cyrano 5-mode toolkit). Same cap shape as
+    // replies — 5 free/day, server bucket "cyrano_opener" enforces.
+    static let freeOpenersPerDay = 5
     static let freeDebriefsPerMonth = 3
     static let freeArchiveLimit = 5
     static let freeSimSessionsPerWeek = 2
@@ -385,6 +444,29 @@ final class StoreManager {
         if isPro { return 999 }
         let count = UserDefaults.standard.integer(forKey: dayKey("replies"))
         return max(0, StoreManager.freeRepliesPerDay - count)
+    }
+
+    // MARK: - Openers (v1.0)
+    // New Cyrano mode — analyzes a dating-profile screenshot and suggests
+    // three opening messages. Per-day cap mirrors replies.
+
+    func canUseOpener() -> Bool {
+        if isPro { return true }
+        let count = UserDefaults.standard.integer(forKey: dayKey("openers"))
+        return count < StoreManager.freeOpenersPerDay
+    }
+
+    func trackOpenerUsed() {
+        guard !isPro else { return }
+        let key = dayKey("openers")
+        let count = UserDefaults.standard.integer(forKey: key)
+        UserDefaults.standard.set(count + 1, forKey: key)
+    }
+
+    func openersRemainingToday() -> Int {
+        if isPro { return 999 }
+        let count = UserDefaults.standard.integer(forKey: dayKey("openers"))
+        return max(0, StoreManager.freeOpenersPerDay - count)
     }
 
     func canUseDebrief() -> Bool {
@@ -540,6 +622,7 @@ struct PaywallView: View {
     @State private var isPurchasing = false
     @State private var showSuccess = false
     @State private var showTerms = false
+    @State private var showPrivacy = false
     @State private var on = false
 
     let reason: PaywallReason
@@ -547,11 +630,14 @@ struct PaywallView: View {
     enum PaywallReason {
         case repliesLimit, debriefLimit, archiveLimit, simLimit, practiceLimit
         case fillMeInLimit, profilePhotoLimit, profilePromptLimit, profileBioLimit, profileOpenerLimit
+        // v1.0 Cyrano mode limits
+        case openersLimit
         case generic, upgrade
 
         var headline: String {
             switch self {
-            case .repliesLimit:  return "You've used your \(StoreManager.freeRepliesPerDay) free replies today."
+            case .repliesLimit:  return "You've used your \(StoreManager.freeRepliesPerDay) daily Cyrano replies."
+            case .openersLimit:  return "You've used your \(StoreManager.freeOpenersPerDay) daily openers."
             case .debriefLimit:  return "You've used your \(StoreManager.freeDebriefsPerMonth) free debriefs this month."
             case .archiveLimit:  return "You've reached the \(StoreManager.freeArchiveLimit)-connection free limit."
             case .simLimit:      return "You've used your \(StoreManager.freeSimSessionsPerWeek) free The Sim sessions this week."
@@ -567,7 +653,8 @@ struct PaywallView: View {
 
         var subheadline: String {
             switch self {
-            case .repliesLimit:  return "Go Pro for unlimited Cyrano coaching — every day."
+            case .repliesLimit:  return "Upgrade to Pro for 100/day or come back tomorrow."
+            case .openersLimit:  return "Upgrade to Pro for 100/day or come back tomorrow."
             case .debriefLimit:  return "Pro gives you unlimited Date Debriefs every month."
             case .archiveLimit:  return "Pro lets you track unlimited connections."
             case .simLimit:      return "Pro unlocks unlimited The Sim sessions, every avatar, and every environment."
@@ -606,6 +693,50 @@ struct PaywallView: View {
     /// "/year" or "/month" suffix shown next to the price.
     var perPeriodLabel: String {
         billingCycle == .annual ? "/year" : "/month"
+    }
+
+    // MARK: - Trial-eligibility-aware CTA copy
+    //
+    // Defaults to "Start 7-Day Free Trial" while StoreManager.trialEligibility
+    // is still loading (most users are first-time → eligible). Once Apple's
+    // isEligibleForIntroOffer answers per-product, the @Observable write flips
+    // the dict and this view re-renders with accurate copy.
+
+    /// True if the user can still claim the intro offer on the currently-
+    /// selected Pro product (annual or monthly per billingCycle). Defaults
+    /// true while the eligibility dict is loading.
+    private var proTrialEligible: Bool {
+        guard let id = proProduct?.id else { return true }
+        return store.trialEligibility[id] ?? true
+    }
+
+    /// Same for Pro+. Hidden in v1.0 (Cyrano Live flag off) but kept correct
+    /// for the day the flag flips back on.
+    private var proPlusTrialEligible: Bool {
+        guard let id = proPlusProduct?.id else { return true }
+        return store.trialEligibility[id] ?? true
+    }
+
+    private var proCTAText: String {
+        if isPurchasing && !purchasingProPlus { return "Processing..." }
+        return proTrialEligible ? "Start 7-Day Free Trial" : "Continue with Pro"
+    }
+
+    private var proPlusCTAText: String {
+        if isPurchasing && purchasingProPlus { return "Processing..." }
+        return proPlusTrialEligible ? "Start 7-Day Free Trial" : "Continue with Pro+"
+    }
+
+    /// Footer disclaimer — same eligibility-aware shape. Uses the Pro
+    /// product's eligibility as the canonical signal since Pro is the
+    /// primary CTA; Pro+ is conditionally shown.
+    private var trialDisclaimer: String {
+        let cycle = billingCycle == .annual ? "annually" : "monthly"
+        if proTrialEligible {
+            return "7-day free trial, then auto-renews. Cancel anytime in your Apple ID settings. No charges during trial."
+        } else {
+            return "Auto-renews \(cycle). Cancel anytime in your Apple ID settings."
+        }
     }
 
     // Pro+ uses a brand-distinct gold gradient on borders and badge fills.
@@ -665,6 +796,7 @@ struct PaywallView: View {
             }
         }
         .sheet(isPresented: $showTerms) { TermsSheet() }
+        .sheet(isPresented: $showPrivacy) { PrivacyPolicySheet() }
     }
 
     // MARK: - Section 1 — Hero with timeline
@@ -814,7 +946,9 @@ struct PaywallView: View {
                 VStack(spacing: 12) {
                     freeTierCard
                     proTierCard
-                    proPlusTierCard
+                    if FeatureFlags.cyranoLiveEnabled {
+                        proPlusTierCard
+                    }
                 }
             } else {
                 pricingFallback
@@ -884,7 +1018,6 @@ struct PaywallView: View {
             loadErrorCard(message: message)
         case .loading, .idle:
             VStack(spacing: 10) {
-                SkeletonPricingCard()
                 SkeletonPricingCard()
                 SkeletonPricingCard()
             }
@@ -1094,7 +1227,7 @@ struct PaywallView: View {
                 purchasingProPlus = false
                 Task { await beginPurchase(product) }
             } label: {
-                Text(isPurchasing && !purchasingProPlus ? "Processing..." : "Start 7-Day Free Trial")
+                Text(proCTAText)
                     .font(RWF.head(15))
                     .foregroundColor(.white)
                     .frame(maxWidth: .infinity)
@@ -1107,21 +1240,23 @@ struct PaywallView: View {
             .shadow(color: Color.rwAccent.opacity(0.32), radius: 18, x: 0, y: 8)
 
             // Pro+ CTA — navy + gold text.
-            Button {
-                guard let product = proPlusProduct else { return }
-                purchasingProPlus = true
-                Task { await beginPurchase(product) }
-            } label: {
-                Text(isPurchasing && purchasingProPlus ? "Processing..." : "Get Cyrano Live")
-                    .font(RWF.head(15))
-                    .foregroundStyle(Self.goldGradient)
-                    .frame(maxWidth: .infinity)
-                    .padding(.vertical, 16)
-                    .background(Self.proPlusNavy)
-                    .clipShape(Capsule())
+            if FeatureFlags.cyranoLiveEnabled {
+                Button {
+                    guard let product = proPlusProduct else { return }
+                    purchasingProPlus = true
+                    Task { await beginPurchase(product) }
+                } label: {
+                    Text(proPlusCTAText)
+                        .font(RWF.head(15))
+                        .foregroundStyle(Self.goldGradient)
+                        .frame(maxWidth: .infinity)
+                        .padding(.vertical, 16)
+                        .background(Self.proPlusNavy)
+                        .clipShape(Capsule())
+                }
+                .buttonStyle(SBS())
+                .disabled(isPurchasing || proPlusProduct == nil)
             }
-            .buttonStyle(SBS())
-            .disabled(isPurchasing || proPlusProduct == nil)
 
             if !store.purchaseError.isEmpty {
                 Text(store.purchaseError)
@@ -1151,7 +1286,7 @@ struct PaywallView: View {
 
     private var legalFooter: some View {
         VStack(spacing: 6) {
-            Text("7-day free trial, then auto-renews. Cancel anytime in your Apple ID settings. No charges during trial.")
+            Text(trialDisclaimer)
                 .font(.system(size: 11, design: .rounded))
                 .foregroundColor(.rwTextMuted)
                 .multilineTextAlignment(.center)
@@ -1163,7 +1298,7 @@ struct PaywallView: View {
                 Text("·")
                     .font(.system(size: 11, design: .rounded))
                     .foregroundColor(.rwTextMuted)
-                Button("Privacy Policy") { showTerms = true }
+                Button("Privacy Policy") { showPrivacy = true }
                     .font(.system(size: 11, design: .rounded))
                     .foregroundColor(.rwTextMuted)
             }

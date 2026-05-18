@@ -529,28 +529,40 @@ struct ShareSheet: UIViewControllerRepresentable {
     func updateUIViewController(_ uvc: UIActivityViewController, context: Context) {}
 }
 
-// MARK: - Jailbreak Block Screen
+// MARK: - Jailbreak Warning Banner
+//
+// Dismissible top-of-screen warning shown on jailbroken devices instead of a
+// hard block. Surfaces the security signal to the user while keeping the app
+// usable — Apple App Review prefers warning + continue over refusing service
+// to a class of users.
 
-struct JailbreakBlockView: View {
+struct JailbreakWarningBanner: View {
+    let onDismiss: () -> Void
+
     var body: some View {
-        ZStack {
-            Color.rwBackground.ignoresSafeArea()
-            VStack(spacing: SP.xl) {
-                Spacer()
-                Image(systemName: "lock.trianglebadge.exclamationmark.fill")
-                    .font(.system(size: 64, design: .rounded))
-                    .foregroundColor(.rwDanger)
-                VStack(spacing: 12) {
-                    Text("Security Check Failed")
-                        .font(RWF.title()).foregroundColor(.rwTextPrimary)
-                        .multilineTextAlignment(.center)
-                    Text("Rowan cannot run on this device. Your private relationship data requires a secure, unmodified iOS environment.")
-                        .font(RWF.body()).foregroundColor(.rwTextSecondary)
-                        .multilineTextAlignment(.center)
-                        .padding(.horizontal, SP.xl)
-                }
-                Spacer()
+        HStack(alignment: .top, spacing: 12) {
+            Image(systemName: "exclamationmark.triangle.fill")
+                .font(.system(size: 18, weight: .semibold, design: .rounded))
+                .foregroundColor(.white)
+            VStack(alignment: .leading, spacing: 3) {
+                Text("Device may be modified")
+                    .font(RWF.head(14)).foregroundColor(.white)
+                Text("Some security features may not work as expected.")
+                    .font(RWF.body(12)).foregroundColor(.white.opacity(0.9))
+                    .fixedSize(horizontal: false, vertical: true)
             }
+            Spacer(minLength: 8)
+            Button(action: onDismiss) {
+                Image(systemName: "xmark")
+                    .font(.system(size: 12, weight: .semibold, design: .rounded))
+                    .foregroundColor(.white.opacity(0.85))
+                    .padding(8)
+            }
+            .buttonStyle(SBS())
         }
+        .padding(SP.md)
+        .background(Color.rwDanger)
+        .clipShape(RoundedRectangle(cornerRadius: RR.lg))
+        .shadow(color: Color.rwDanger.opacity(0.3), radius: 12, x: 0, y: 4)
     }
 }

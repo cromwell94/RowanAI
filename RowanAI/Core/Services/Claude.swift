@@ -1,5 +1,6 @@
 import Foundation
 import CryptoKit
+import SwiftUI
 import UIKit
 
 // MARK: - Secure Session Delegate (Certificate Validation + Optional Pinning)
@@ -199,7 +200,16 @@ class Claude {
     private func buildSystem(_ role: String) -> String {
         let langInstruction = AuthService.shared.currentUser?.preferredLanguage.promptInstruction ?? ""
         let lang = langInstruction.isEmpty ? "" : "\n\n" + langInstruction
-        return cyranoIdentity + "\n\n" + coachingKnowledge + "\n\n" + safetyRules + "\n\n" + role + "\n\n" + gender.coachingContext + lang
+        // User's chosen display name from @AppStorage("userDisplayName"). Skip
+        // empty (pre-v1.0 users yet to see the migration prompt) and the "you"
+        // sentinel (Skip-for-now on the onboarding step) — Cyrano just stays
+        // in second person in those cases.
+        let displayName = (UserDefaults.standard.string(forKey: "userDisplayName") ?? "")
+            .trimmingCharacters(in: .whitespacesAndNewlines)
+        let nameInstruction = (displayName.isEmpty || displayName == "you")
+            ? ""
+            : "\n\nThe user's name is \(displayName). Use it sparingly and naturally."
+        return cyranoIdentity + "\n\n" + coachingKnowledge + "\n\n" + safetyRules + "\n\n" + role + "\n\n" + gender.coachingContext + lang + nameInstruction
     }
 
     // MARK: - Cyrano Replies
@@ -592,22 +602,91 @@ class Claude {
         return parsed
     }
 
-    // MARK: - Subtext Decode
+    // MARK: - Openers (v1.0 — Cyrano 5-mode toolkit)
+    //
+    // Analyzes a screenshot of someone's dating profile and returns 3 opening
+    // messages — one each in Curious / Witty / Bold styles. Uses the same
+    // vision pipeline as replies(image:). Server function routes to the
+    // "cyrano_opener" rate-limit bucket via the `mode` field on send().
 
-    func subtext(message: String, context: String) async throws -> String {
+    struct CyranoOpenerSuggestion: Identifiable, Equatable, Codable {
+        var id = UUID()
+        let style: Style
+        let text: String
+        let reasoning: String
+
+        enum Style: String, Codable, CaseIterable {
+            case curious = "Curious"
+            case witty   = "Witty"
+            case bold    = "Bold"
+
+            var icon: String {
+                switch self {
+                case .curious: return "questionmark.bubble.fill"
+                case .witty:   return "sparkles"
+                case .bold:    return "flame.fill"
+                }
+            }
+
+            var color: Color {
+                switch self {
+                case .curious: return Color(hex: "5B8DEF")
+                case .witty:   return .rwAccent
+                case .bold:    return .rwGold
+                }
+            }
+        }
+    }
+
+    func openers(image: UIImage) async throws -> [CyranoOpenerSuggestion] {
         guard AISettings.shared.isEnabled else { throw RWError.aiOff }
 
         let role = """
-        YOUR ROLE NOW: Subtext Decoder.
-        Read between the lines of this message. What does it actually mean?
-        Apply your knowledge of attraction signals, attachment patterns, and communication psychology.
-        Be honest — even if the answer isn't what they want to hear.
-        2-3 sentences. Direct. No hedging.
+        YOUR ROLE NOW: Opening Message Coach.
+        The user just shared a screenshot of someone's dating-app profile.
+        Read it carefully and write 3 opening messages — one each in Curious,
+        Witty, and Bold styles. Generic openers ("Hey!", "How's your day?")
+        are forbidden. Each opener must reference something SPECIFIC from
+        what you can see in the profile (a photo, a prompt answer, a bio
+        line, an occupation, a location, a vibe). Match the energy of the
+        profile — don't be flirty with someone who reads serious.
+
+        Style guides:
+        - Curious: shows genuine interest, asks something they'd actually
+          want to answer. Question form ok.
+        - Witty: light, playful, teases without being cocky or condescending.
+        - Bold: confident, leans in, slightly forward but never crude or
+          objectifying.
+
+        Rules:
+        - Each opener: 1-2 sentences max — short enough to type quickly.
+        - Each invites a back-and-forth (not closed yes/no).
+        - No clichés (adventure-seeker, foodie, partner-in-crime, etc.).
+        - Match gender-neutral tone unless their profile signals otherwise.
+
+        Return ONLY this JSON array — no preamble, no markdown:
+        [{"style":"Curious","text":"...","reasoning":"why this works for this profile"},
+         {"style":"Witty","text":"...","reasoning":"..."},
+         {"style":"Bold","text":"...","reasoning":"..."}]
         """
 
-        return try await send(
+        let raw = try await send(
             system: buildSystem(role),
-            user: "Decode this message: \"\(message)\"\(context.isEmpty ? "" : "\nContext: \(context)")")
+            user: "Read this profile screenshot and generate 3 openers.",
+            image: image,
+            mode: "opener",
+            max: 600)
+
+        let cleaned = clean(raw)
+        guard let data = cleaned.data(using: .utf8),
+              let arr  = try? JSONDecoder().decode([[String: String]].self, from: data)
+        else { throw RWError.parse }
+
+        return arr.compactMap { d in
+            guard let text = d["text"], let s = d["style"], let r = d["reasoning"],
+                  let style = CyranoOpenerSuggestion.Style(rawValue: s) else { return nil }
+            return CyranoOpenerSuggestion(style: style, text: text, reasoning: r)
+        }
     }
 
     // MARK: - Date Debrief
@@ -735,11 +814,11 @@ class Claude {
     private static let maxInputLength = 8_000
 
     func send(system: String, user: String, max: Int = 800) async throws -> String {
-        try await send(system: system, user: user, image: nil, model: defaultModel, max: max)
+        try await send(system: system, user: user, image: nil, model: defaultModel, mode: "reply", max: max)
     }
 
     func send(system: String, user: String, model: CyranoModel, max: Int = 800) async throws -> String {
-        try await send(system: system, user: user, image: nil, model: model, max: max)
+        try await send(system: system, user: user, image: nil, model: model, mode: "reply", max: max)
     }
 
     // Multimodal variant. When `image` is non-nil, the message is built as a
@@ -747,20 +826,45 @@ class Claude {
     // standard vision payload shape. The edge function passes the array
     // through verbatim. Image is JPEG-compressed to ≤1 MB before encoding.
     func send(system: String, user: String, image: UIImage?, max: Int = 800) async throws -> String {
-        try await send(system: system, user: user, image: image, model: defaultModel, max: max)
+        try await send(system: system, user: user, image: image, model: defaultModel, mode: "reply", max: max)
+    }
+
+    func send(system: String, user: String, image: UIImage?, mode: String, max: Int = 800) async throws -> String {
+        try await send(system: system, user: user, image: image, model: defaultModel, mode: mode, max: max)
     }
 
     func send(system: String, user: String, image: UIImage?, model: CyranoModel, max: Int = 800) async throws -> String {
+        try await send(system: system, user: user, image: image, model: model, mode: "reply", max: max)
+    }
+
+    // The canonical send — every other overload funnels here. `mode` is the
+    // Cyrano-toolkit mode the call belongs to; the edge function uses it to
+    // pick the per-mode rate-limit bucket ("cyrano_reply", "cyrano_opener",
+    // etc.). Defaults to "reply" so older code paths that haven't been
+    // updated still resolve to a valid bucket.
+    func send(system: String, user: String, image: UIImage?, model: CyranoModel, mode: String, max: Int = 800) async throws -> String {
         guard let requestURL = URL(string: url) else { throw RWError.api }
 
         let safeUser = user.count > Self.maxInputLength
             ? String(user.prefix(Self.maxInputLength))
             : user
 
+        // Authorization is the user's JWT, not the publishable anon key. The
+        // edge function reads `sub` from this JWT to rate-limit per user.
+        // `apikey` stays as the publishable anon key — Supabase uses it for
+        // project routing, separate from auth identity.
+        let userJWT: String
+        do {
+            userJWT = try await SupabaseAuth.shared.currentAccessToken()
+        } catch {
+            Self.log("user JWT unavailable: \(error.localizedDescription)")
+            throw RWError.api
+        }
+
         var req = URLRequest(url: requestURL)
         req.httpMethod = "POST"
         req.setValue("application/json", forHTTPHeaderField: "Content-Type")
-        req.setValue("Bearer \(publishableKey)", forHTTPHeaderField: "Authorization")
+        req.setValue("Bearer \(userJWT)", forHTTPHeaderField: "Authorization")
         req.setValue(publishableKey, forHTTPHeaderField: "apikey")
 
         let messages: [[String: Any]]
@@ -782,7 +886,8 @@ class Claude {
             "model": model.rawValue,
             "max_tokens": max,
             "system": system,
-            "messages": messages
+            "messages": messages,
+            "mode": mode
         ]
         req.httpBody = try JSONSerialization.data(withJSONObject: body)
 
@@ -791,7 +896,7 @@ class Claude {
         print("🔵 Cyrano request URL: \(url)")
         let safeHeaders: [String: String] = [
             "Content-Type": "application/json",
-            "Authorization": "Bearer \(maskKey(publishableKey))",
+            "Authorization": "Bearer \(maskKey(userJWT))",
             "apikey": maskKey(publishableKey)
         ]
         print("🔵 Cyrano request headers: \(safeHeaders)")

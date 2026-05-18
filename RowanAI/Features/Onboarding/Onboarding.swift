@@ -13,7 +13,8 @@ struct OnboardingFlowView: View {
     private func next(after current: Int) -> Int {
         let isRel = user.relationshipStatus == .relationship
         switch current {
-        case 0:  return 1            // Welcome → Language
+        case 0:  return 14           // Welcome → Name (NEW v1.0 — was → Language)
+        case 14: return 1            // Name → Language
         case 1:  return 2            // Language → Disclosure
         case 2:  return 3            // Disclosure → RelStatus
         case 3:  return isRel ? 4 : 8 // RelStatus → PartnerName | Gender
@@ -24,8 +25,9 @@ struct OnboardingFlowView: View {
         case 8:  return isRel ? 10 : 9 // Gender → AttachQuiz | DatingGoal
         case 9:  return 10           // DatingGoal → AttachQuiz
         case 10: return 11           // AttachQuiz → LoveLanguage
-        case 11: return isRel ? 13 : 12 // LoveLanguage → Name | FirstRel
-        case 12: return 13           // FirstRel → Name
+        case 11: return 12           // LoveLanguage → FirstRel (single only;
+                                     //   rel users finish() in body switch)
+        // case 12 (FirstRel) closure calls finish() directly — no advance() target.
         default: return current + 1
         }
     }
@@ -48,6 +50,22 @@ struct OnboardingFlowView: View {
             Color.rwBackground.ignoresSafeArea()
             switch step {
             case 0:  WelcomeView { advance() }
+            case 14: NameEntryView(
+                        eyebrow: "1 OF 13",
+                        headline: "What should Cyrano call you?",
+                        subtext: "Just a first name or nickname is perfect.",
+                        initialValue: user.name,
+                        onContinue: { name in
+                            user.name = name
+                            UserDefaults.standard.set(name, forKey: "userDisplayName")
+                            advance()
+                        },
+                        onSkip: {
+                            user.name = "you"
+                            UserDefaults.standard.set("you", forKey: "userDisplayName")
+                            advance()
+                        }
+                     )
             case 1:  LanguageView(user: $user) { advance() }
             case 2:  DisclosureView { advance() }
             case 3:  RelationshipStatusView(user: $user) { advance() }
@@ -58,9 +76,18 @@ struct OnboardingFlowView: View {
             case 8:  GenderView(user: $user) { advance() }
             case 9:  GoalView(user: $user) { advance() }
             case 10: AttachQuizView(user: $user) { advance() }
-            case 11: LoveLanguageView(user: $user) { advance() }
-            case 12: FirstRelationshipView(user: $user) { advance() }
-            case 13: NameView(user: $user) { finish() }
+            // LoveLanguage is terminal for relationship-mode users (name now
+            // captured at step 14, so the legacy end-of-flow NameView is
+            // skipped). Single users continue into FirstRel which is also
+            // terminal — both call finish() in their closures.
+            case 11: LoveLanguageView(user: $user) {
+                        if user.relationshipStatus == .relationship { finish() }
+                        else { advance() }
+                     }
+            case 12: FirstRelationshipView(user: $user) { finish() }
+            // case 13 (legacy NameView at end of flow) intentionally removed.
+            // The NameView struct lower in this file is left in place so any
+            // out-of-tree reference still resolves, but it's no longer routed.
             default: EmptyView()
             }
         }
@@ -1220,16 +1247,42 @@ struct TermsSheet: View {
         NavigationView {
             ScrollView {
                 VStack(alignment: .leading, spacing: SP.lg) {
-                    Text("Terms of Service & Privacy Policy").font(RWF.title()).foregroundColor(.rwTextPrimary)
+                    Text("Terms of Service").font(RWF.title()).foregroundColor(.rwTextPrimary)
                     Text("Last updated: April 2026").font(RWF.cap()).foregroundColor(.rwTextMuted)
                     TB(t: "What RowanAI Is", b: "An AI-powered dating assistant. NOT a licensed therapist or relationship professional.")
                     TB(t: "AI Limitations", b: "AI suggestions may be wrong. Following them does not guarantee any outcome. Use your own judgment.")
                     TB(t: "Content Policy", b: "RowanAI generates flirtatious and romantic coaching only. Never sexually explicit content. This is a firm policy.")
                     TB(t: "Not a Crisis Resource", b: "If you are in a mental health emergency, call 988 (US) or emergency services. RowanAI cannot handle emergencies.")
-                    TB(t: "Your Data", b: "Stored on your device by default. Never sold. Delete anytime from Profile → Settings.")
                     TB(t: "Age Requirement", b: "You must be 18 or older to use RowanAI.")
+                    TB(t: "Subscriptions", b: "Pro is offered as an auto-renewing subscription. Payment is charged to your Apple ID at confirmation of purchase. Renewal is automatic unless cancelled at least 24 hours before the end of the current period. Manage or cancel anytime in Settings → Apple ID → Subscriptions.")
                     TB(t: "Liability", b: "Rakita Studios LLC is not liable for outcomes of decisions made using RowanAI suggestions.")
                     Text("Questions? legal@rakitastudios.com").font(RWF.body(13)).foregroundColor(.rwTextSecondary)
+                    Spacer().frame(height: 40)
+                }
+                .padding(SP.xl)
+            }
+            .rwBG()
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar { ToolbarItem(placement: .navigationBarTrailing) { Button("Done") { dismiss() }.foregroundColor(.rwAccent) } }
+        }
+    }
+}
+
+struct PrivacyPolicySheet: View {
+    @Environment(\.dismiss) var dismiss
+    var body: some View {
+        NavigationView {
+            ScrollView {
+                VStack(alignment: .leading, spacing: SP.lg) {
+                    Text("Privacy Policy").font(RWF.title()).foregroundColor(.rwTextPrimary)
+                    Text("Last updated: April 2026").font(RWF.cap()).foregroundColor(.rwTextMuted)
+                    TB(t: "What We Store On Device", b: "Your profile, archive, debriefs, journal entries, and coaching history live on your device. They are not uploaded to our servers.")
+                    TB(t: "What Goes To Third-Party AI", b: "When you use AI features, the message and minimal context you provide are sent to Anthropic to generate a response. Voice-coaching audio is sent to ElevenLabs and LiveKit for real-time synthesis. These providers handle requests under their own privacy policies.")
+                    TB(t: "Account Identifier", b: "An anonymous Supabase user id is created on first launch so server-side AI features can identify your session. It is not linked to your name, email, or device identifiers.")
+                    TB(t: "What We Never Do", b: "We do not sell your data. We do not share with advertisers. We do not run third-party analytics or tracking SDKs.")
+                    TB(t: "Retention And Deletion", b: "Delete your data anytime from Profile → Privacy & Security → Delete All My Data. To delete your server-side anonymous account too, use Profile → Delete Account. Both are immediate and irreversible.")
+                    TB(t: "Children", b: "RowanAI is for adults 18 and older. We do not knowingly collect data from anyone under 18.")
+                    TB(t: "Contact", b: "Questions about privacy? Email legal@rakitastudios.com.")
                     Spacer().frame(height: 40)
                 }
                 .padding(SP.xl)
@@ -1623,6 +1676,94 @@ struct PartnerInviteView: View {
             Spacer()
             RWButton("Continue", icon: "arrow.right") { next() }
                 .padding(.horizontal, SP.xl).padding(.bottom, 44)
+        }
+    }
+}
+
+// MARK: - Name Entry (v1.0 — new onboarding step + migration prompt)
+//
+// Shared between the new onboarding step (case 14 in OnboardingFlowView's
+// step machine) and the first-launch migration cover in RowanAIApp.swift's
+// RootView. Same look in both contexts; only the headline copy and
+// callbacks differ.
+//
+// - 20 char max (clamped via .onChange so paste-overflow is handled too).
+// - Continue disabled until 1+ non-whitespace chars.
+// - Optional Skip button (hide by passing onSkip = nil) — the onboarding
+//   step uses it to set the sentinel "you" so Cyrano stays neutral instead
+//   of awkwardly using a placeholder. The migration prompt also offers Skip
+//   for the same reason. The ProfileView edit sheet doesn't (use NameEditSheet
+//   there instead — different button semantics).
+
+struct NameEntryView: View {
+    let eyebrow: String
+    let headline: String
+    let subtext: String
+    var initialValue: String = ""
+    let onContinue: (String) -> Void
+    let onSkip: (() -> Void)?
+
+    @State private var name: String = ""
+    @State private var on = false
+    @FocusState private var focused: Bool
+
+    private var trimmed: String { name.trimmingCharacters(in: .whitespaces) }
+    private var canContinue: Bool { !trimmed.isEmpty }
+
+    var body: some View {
+        VStack(spacing: 0) {
+            OBHead(step: eyebrow, title: headline, sub: subtext)
+
+            Spacer().frame(height: 32)
+
+            TextField("", text: $name, prompt: Text("Your name").foregroundColor(.rwTextMuted))
+                .font(RWF.head(20)).foregroundColor(.rwTextPrimary)
+                .padding(SP.lg).background(Color.rwCard)
+                .clipShape(RoundedRectangle(cornerRadius: RR.lg))
+                .overlay(RoundedRectangle(cornerRadius: RR.lg)
+                    .stroke(focused ? Color.rwAccent.opacity(0.5) : Color.rwBorder,
+                            lineWidth: 1))
+                .focused($focused)
+                .autocorrectionDisabled()
+                .textInputAutocapitalization(.words)
+                .submitLabel(.continue)
+                .onSubmit { if canContinue { onContinue(trimmed) } }
+                .onChange(of: name) { _, newValue in
+                    if newValue.count > 20 {
+                        name = String(newValue.prefix(20))
+                    }
+                }
+                .padding(.horizontal, SP.xl)
+                .opacity(on ? 1 : 0)
+
+            Spacer()
+
+            RWButton("Continue", icon: nil) {
+                if canContinue { onContinue(trimmed) }
+            }
+            .padding(.horizontal, SP.xl)
+            .disabled(!canContinue)
+            .opacity(canContinue ? 1 : 0.5)
+            .opacity(on ? 1 : 0)
+
+            if let onSkip {
+                Button { onSkip() } label: {
+                    Text("Skip for now")
+                        .font(RWF.cap(13))
+                        .foregroundColor(.rwTextMuted)
+                        .padding(.vertical, 14)
+                }
+                .buttonStyle(SBS())
+                .padding(.bottom, 24)
+            } else {
+                Spacer().frame(height: 36)
+            }
+        }
+        .background(Color.rwBackground.ignoresSafeArea())
+        .onAppear {
+            if !initialValue.isEmpty && name.isEmpty { name = initialValue }
+            withAnimation(.easeOut(duration: 0.4)) { on = true }
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) { focused = true }
         }
     }
 }

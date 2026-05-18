@@ -79,6 +79,66 @@ final class SupabaseAuth {
 
     // MARK: - Network
 
+    // MARK: - Sign out / Delete account
+
+    /// Clears the in-memory session and removes the persisted token from
+    /// Keychain. Next call to `ensureSession()` will create a fresh anonymous
+    /// account.
+    func signOut() {
+        session = nil
+        inflight?.cancel()
+        inflight = nil
+        Keychain.delete(Self.keychainKey)
+    }
+
+    /// Deletes the calling user's Supabase auth account server-side via the
+    /// `delete-account` Edge Function (which holds the service role key).
+    /// On success, also signs out locally. Throws on network or server error;
+    /// callers are responsible for surfacing failure to the user.
+    func deleteAccount() async throws {
+        let token = try await currentAccessToken()
+        guard let endpoint = URL(string: "\(supabaseURL)/functions/v1/delete-account") else {
+            throw SupabaseAuthError.invalidURL
+        }
+        var req = URLRequest(url: endpoint)
+        req.httpMethod = "POST"
+        req.setValue(anonKey, forHTTPHeaderField: "apikey")
+        req.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
+        req.setValue("application/json", forHTTPHeaderField: "Content-Type")
+        req.httpBody = try JSONSerialization.data(withJSONObject: [String: String]())
+
+        let (data, resp) = try await URLSession.shared.data(for: req)
+        guard let http = resp as? HTTPURLResponse, (200..<300).contains(http.statusCode) else {
+            let body = String(data: data, encoding: .utf8) ?? ""
+            throw SupabaseAuthError.requestFailed(body)
+        }
+        signOut()
+    }
+
+    /// Mirrors the user's StoreKit-derived subscription tier into the server
+    /// `subscriptions` table so the rate-limit helper in cyrano/eleven/
+    /// livekit-token applies the right per-tier limits. Called from
+    /// `StoreManager.checkEntitlements()` after every entitlement change
+    /// (purchase, restore, transaction-listener update, app launch).
+    /// `tier` must be one of "free" or "pro".
+    func setTier(_ tier: String) async throws {
+        let token = try await currentAccessToken()
+        guard let endpoint = URL(string: "\(supabaseURL)/functions/v1/set-tier") else {
+            throw SupabaseAuthError.invalidURL
+        }
+        var req = URLRequest(url: endpoint)
+        req.httpMethod = "POST"
+        req.setValue(anonKey, forHTTPHeaderField: "apikey")
+        req.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
+        req.setValue("application/json", forHTTPHeaderField: "Content-Type")
+        req.httpBody = try JSONSerialization.data(withJSONObject: ["tier": tier])
+        let (_, resp) = try await URLSession.shared.data(for: req)
+        guard let http = resp as? HTTPURLResponse,
+              (200..<300).contains(http.statusCode) else {
+            throw SupabaseAuthError.requestFailed("setTier failed")
+        }
+    }
+
     private static func signUpAnonymously(url: String, anonKey: String) async throws -> Session {
         guard let endpoint = URL(string: "\(url)/auth/v1/signup") else { throw SupabaseAuthError.invalidURL }
         var req = URLRequest(url: endpoint)

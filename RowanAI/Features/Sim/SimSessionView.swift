@@ -30,6 +30,11 @@ struct SimSessionView: View {
     @State private var showEndAlert = false
     @State private var permissionRequested = false
     @State private var avatarError = false
+    @State private var avatarErrorReason: String? = nil
+
+    // Voice connection (LiveKit) — non-nil when the most recent connect attempt
+    // failed. Surfaced as a tap-to-retry banner at the top of the session view.
+    @State private var voiceConnectionError: String? = nil
 
     // Time tracking
     @State private var elapsed: Int = 0
@@ -83,16 +88,21 @@ struct SimSessionView: View {
         }
         .preferredColorScheme(.dark)
         .overlay(alignment: .top) {
-            if LiveKitService.shared.isConnecting {
-                HStack(spacing: 8) {
-                    ProgressView().scaleEffect(0.7)
-                    Text("Connecting voice...").font(.caption).foregroundColor(.secondary)
+            VStack(spacing: 6) {
+                if LiveKitService.shared.isConnecting {
+                    HStack(spacing: 8) {
+                        ProgressView().scaleEffect(0.7)
+                        Text("Connecting voice...").font(.caption).foregroundColor(.secondary)
+                    }
+                    .padding(.horizontal, 12)
+                    .padding(.vertical, 6)
+                    .background(.ultraThinMaterial, in: Capsule())
                 }
-                .padding(.horizontal, 12)
-                .padding(.vertical, 6)
-                .background(.ultraThinMaterial, in: Capsule())
-                .padding(.top, 8)
+                if let detail = voiceConnectionError {
+                    voiceErrorBanner(detail: detail)
+                }
             }
+            .padding(.top, 8)
         }
         .task {
             speechAuthorized = await speech.requestAuthorization()
@@ -101,16 +111,7 @@ struct SimSessionView: View {
             startTimer()
             await primeOpening()
         }
-        .task {
-            do {
-                let userID = try await LiveKitService.userID()
-                let roomName = LiveKitService.simRoomName(avatarID: avatar.id, userID: userID)
-                await LiveKitService.shared.connect(roomName: roomName,
-                                                    displayName: avatar.name)
-            } catch {
-                // Auth failed; voice session won't connect. UI stays in non-connected state.
-            }
-        }
+        .task { await connectLiveKit() }
         .onDisappear {
             timerCancellable?.cancel()
             speech.stop()
@@ -318,12 +319,14 @@ struct SimSessionView: View {
 
     // Inline error pill — surfaces network/auth failures from Claude and
     // lets the user re-trigger the avatar's turn without leaving the session.
+    // `avatarErrorReason` (when set) replaces the default copy so debugging
+    // a stuck Sim from the simulator console isn't the only way to see why.
     private var avatarErrorPill: some View {
         HStack(spacing: 10) {
             Image(systemName: "exclamationmark.triangle.fill")
                 .font(.system(size: 13, weight: .medium, design: .rounded))
                 .foregroundColor(.rwAccent)
-            Text("Cyrano is unavailable right now — try again in a moment.")
+            Text(avatarErrorReason ?? "Cyrano is unavailable right now — try again in a moment.")
                 .font(RWF.body(13)).foregroundColor(.rwInkText)
                 .fixedSize(horizontal: false, vertical: true)
             Spacer()
@@ -344,6 +347,40 @@ struct SimSessionView: View {
         .clipShape(RoundedRectangle(cornerRadius: RR.md, style: .continuous))
         .overlay(RoundedRectangle(cornerRadius: RR.md, style: .continuous)
             .stroke(Color.white.opacity(0.18), lineWidth: 1))
+    }
+
+    // Top-of-screen banner shown when the LiveKit voice handshake fails.
+    // Tap reruns connectLiveKit(). Two-line layout: short headline + raw
+    // error detail so we can diagnose without the Xcode console.
+    private func voiceErrorBanner(detail: String) -> some View {
+        Button {
+            UIImpactFeedbackGenerator(style: .light).impactOccurred()
+            Task { await connectLiveKit() }
+        } label: {
+            HStack(spacing: 10) {
+                Image(systemName: "waveform.slash")
+                    .font(.system(size: 13, weight: .medium, design: .rounded))
+                    .foregroundColor(.rwAccent)
+                VStack(alignment: .leading, spacing: 2) {
+                    Text("Voice connection failed. Tap to retry.")
+                        .font(RWF.body(13)).foregroundColor(.rwInkText)
+                    Text(detail)
+                        .font(RWF.cap(11)).foregroundColor(.rwInkTextMuted)
+                        .lineLimit(2)
+                }
+                Spacer(minLength: 8)
+                Image(systemName: "arrow.clockwise")
+                    .font(.system(size: 12, weight: .semibold, design: .rounded))
+                    .foregroundColor(.rwInkText)
+            }
+            .padding(.horizontal, 12).padding(.vertical, 8)
+            .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: RR.md, style: .continuous))
+            .overlay(RoundedRectangle(cornerRadius: RR.md, style: .continuous)
+                .stroke(Color.white.opacity(0.18), lineWidth: 1))
+            .padding(.horizontal, SP.lg)
+        }
+        .buttonStyle(SBS())
+        .transition(.opacity.combined(with: .move(edge: .top)))
     }
 
     private func bubble(_ msg: SimTurn) -> some View {
@@ -519,7 +556,11 @@ struct SimSessionView: View {
     private func primeOpening() async {
         // Have the avatar start with a brief opening line so the user has
         // something to react to. Uses Claude with the personality system prompt.
-        guard AISettings.shared.isEnabled else { return }
+        print("[Sim] starting session for \(avatar.name)")
+        guard AISettings.shared.isEnabled else {
+            print("[Sim] primeOpening skipped — AISettings.isEnabled = false")
+            return
+        }
         isThinking = true
         defer { isThinking = false }
         let partner = AuthService.shared.currentUser?.partnerName
@@ -542,7 +583,11 @@ struct SimSessionView: View {
             }
             await speakAvatar(cleaned)
         } catch {
-            // Network down — silent fallback
+            print("[Sim] primeOpening failed — \(error.localizedDescription)")
+            await MainActor.run {
+                avatarErrorReason = "Couldn't load the opening line: \(error.localizedDescription)"
+                withAnimation(.easeOut(duration: 0.2)) { avatarError = true }
+            }
         }
     }
 
@@ -613,6 +658,7 @@ struct SimSessionView: View {
                 let response = SimTurn(role: .avatar, text: cleaned)
                 messages.append(response)
                 avatarError = false
+                avatarErrorReason = nil
             }
             await speakAvatar(cleaned)
 
@@ -622,8 +668,11 @@ struct SimSessionView: View {
         } catch {
             // Surface a retry pill in the transcript instead of polluting the
             // message history with an error glyph that would survive into the
-            // debrief transcript.
+            // debrief transcript. The reason string drives the pill copy so the
+            // user (and we) can see *why* the reply failed.
+            print("[Sim] submitToAvatar failed — \(error.localizedDescription)")
             await MainActor.run {
+                avatarErrorReason = "Reply failed: \(error.localizedDescription)"
                 withAnimation(.easeOut(duration: 0.2)) { avatarError = true }
             }
         }
@@ -635,7 +684,31 @@ struct SimSessionView: View {
     private func retryAvatarTurn() {
         guard !isThinking, !sessionEnded else { return }
         avatarError = false
+        avatarErrorReason = nil
         Task { await submitToAvatar() }
+    }
+
+    // LiveKit voice-handshake. Extracted from the second `.task` so the
+    // top-of-screen `voiceErrorBanner` can re-invoke it without recreating
+    // the whole view. On failure, populates `voiceConnectionError` (which
+    // drives the banner) instead of swallowing silently.
+    private func connectLiveKit() async {
+        do {
+            let userID = try await LiveKitService.userID()
+            let roomName = LiveKitService.simRoomName(avatarID: avatar.id, userID: userID)
+            print("[Sim] LiveKit connection attempt: room=\(roomName)")
+            await MainActor.run { voiceConnectionError = nil }
+            await LiveKitService.shared.connect(roomName: roomName,
+                                                displayName: avatar.name)
+            print("[Sim] LiveKit connection result: success")
+        } catch {
+            print("[Sim] LiveKit connection result: error — \(error.localizedDescription)")
+            await MainActor.run {
+                withAnimation(.easeOut(duration: 0.2)) {
+                    voiceConnectionError = error.localizedDescription
+                }
+            }
+        }
     }
 
     private func speakAvatar(_ text: String) async {
@@ -657,19 +730,23 @@ struct SimSessionView: View {
         #endif
 
         if useEleven {
+            print("[Sim] ElevenLabs speak called for voice=\(avatar.elevenLabsVoiceID)")
             do {
                 try await ElevenLabsService.shared.speak(
                     text,
                     voiceID: avatar.elevenLabsVoiceID,
                     settings: avatar.voiceSettings
                 )
+                print("[Sim] Speak result: success")
             } catch {
+                print("[Sim] Speak result: error — \(error.localizedDescription)")
                 AppleTTSService.shared.speak(text, reason: "ElevenLabs failed — \(error.localizedDescription)")
             }
         } else {
             let reason = avatar.elevenLabsVoiceID.isEmpty
                 ? "avatar has no ElevenLabs voice ID"
                 : "user is not Pro"
+            print("[Sim] Speak result: skipped — \(reason)")
             AppleTTSService.shared.speak(text, reason: reason)
         }
     }

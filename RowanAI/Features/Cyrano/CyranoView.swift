@@ -24,8 +24,17 @@ import Combine
 import PhotosUI
 
 struct CyranoView: View {
-    @State private var cyranoMode: CyranoTab = .reply
+    // v1.0 — Cyrano is now a 5-mode communication toolkit.
+    // Reply / Opener / Translate / Decode / Pulse.
+    // - Reply preserves the existing 3 sub-modes (Reply Coach / Fill Me In / Screenshot).
+    // - Opener ships end-to-end this turn (new vision-based feature).
+    // - Translate / Decode / Pulse render "Coming soon" placeholders for v1.0
+    //   first ship; full implementations land in the next iteration.
+    // - Coach + Lab moved out of Cyrano into arc-nav destinations (see ArcNavigation.swift).
+    @AppStorage("cyranoMode") private var cyranoMode: String = "reply"
+
     @State private var showPaywall = false
+    @State private var paywallReason: PaywallView.PaywallReason = .repliesLimit
     @State private var store = StoreManager.shared
     @State private var intel: ConversationIntel? = nil
     @State private var intelLoading = false
@@ -38,7 +47,6 @@ struct CyranoView: View {
     @State private var replies: [CyranoSuggestion] = []
     @State private var loading  = false
     @State private var error    = ""
-    @State private var subtext  = ""
     @State private var copied: UUID? = nil
     @State private var showCrisis = false
     @State private var showHarmfulWarning = false
@@ -57,47 +65,143 @@ struct CyranoView: View {
     @State private var presentingExercise: CyranoExerciseSuggestion? = nil
     @State private var replayTutorial = false
 
-    enum CyranoTab { case reply, coach, lab }
     enum ReplySubMode: Hashable { case coach, fillMeIn, screenshot }
     @State private var replySub: ReplySubMode = .coach
     @State private var showProfileCoach = false
 
+    // Opener mode state (v1.0)
+    @State private var openerPick: PhotosPickerItem? = nil
+    @State private var openerImage: UIImage? = nil
+    @State private var openers: [Claude.CyranoOpenerSuggestion] = []
+    @State private var openerLoading = false
+    @State private var openerError = ""
+    @State private var openerCopied: UUID? = nil
+
     var body: some View {
         NavigationView {
             VStack(spacing: 0) {
-                // Mode picker
-                RWSegmentedPicker(
-                    options: [
-                        (value: CyranoTab.reply, label: "Reply",   icon: "bubble.left.and.bubble.right.fill"),
-                        (value: CyranoTab.coach, label: "Coach",   icon: "graduationcap.fill"),
-                        (value: CyranoTab.lab,   label: "Lab",     icon: "message.fill")
-                    ],
-                    selected: $cyranoMode
-                )
-                .padding(.horizontal, SP.lg).padding(.top, 8)
+                // 5-mode pill selector — horizontally scrollable so future
+                // additions don't have to fight a fixed segmented control.
+                modeSelector
+                    .padding(.horizontal, SP.lg).padding(.top, 8)
 
-                if cyranoMode == .coach {
-                    ConversationCoachView()
-                        .transition(.asymmetric(insertion: .move(edge: .trailing).combined(with: .opacity), removal: .move(edge: .leading).combined(with: .opacity)))
-                } else if cyranoMode == .lab {
-                    CommunicationLabView()
-                        .transition(.asymmetric(insertion: .move(edge: .trailing).combined(with: .opacity), removal: .move(edge: .leading).combined(with: .opacity)))
-                } else {
-            // Reply mode — has 3 sub-tabs: Reply Coach, Fill Me In, Screenshot.
-            RWSegmentedPicker(
-                options: [
-                    (value: ReplySubMode.coach,      label: "Reply Coach", icon: "bubble.left.fill"),
-                    (value: ReplySubMode.fillMeIn,   label: "Fill Me In",  icon: "list.bullet.rectangle.fill"),
-                    (value: ReplySubMode.screenshot, label: "Screenshot",  icon: "photo.fill")
-                ],
-                selected: $replySub
-            )
-            .padding(.horizontal, SP.lg).padding(.top, 8).padding(.bottom, 4)
+                Group {
+                    switch cyranoMode {
+                    case "opener":
+                        openerModeContent
+                    case "translate":
+                        comingSoonView(
+                            mode: "Translate",
+                            icon: "arrow.triangle.2.circlepath.icloud",
+                            headline: "About to send something you'll regret?",
+                            sub: "Cyrano will rewrite your message so they can actually hear you. Coming soon.")
+                    case "decode":
+                        comingSoonView(
+                            mode: "Decode",
+                            icon: "brain.head.profile",
+                            headline: "Spiraling about a text?",
+                            sub: "See what your anxious/avoidant brain heard vs what they actually meant. Coming soon.")
+                    case "pulse":
+                        comingSoonView(
+                            mode: "Pulse",
+                            icon: "waveform.path.ecg",
+                            headline: "Need a quick read on the situation?",
+                            sub: "Tell Cyrano what's happening. Get instant clarity in 10 seconds. Coming soon.")
+                    default:
+                        replyModeContent
+                    }
+                }
+                .animation(.easeInOut(duration: 0.25), value: cyranoMode)
+            }
+            .rwBG()
+            .navigationTitle("Cyrano")
+            .navigationBarTitleDisplayMode(.large)
+            .sheet(isPresented: $showPaywall) { PaywallView(reason: paywallReason) }
+            .sheet(isPresented: $showProfileCoach) {
+                ProfileCoachView()
+            }
+            .sheet(item: $presentingExercise) { suggestion in
+                CyranoExerciseHost(suggestion: suggestion)
+            }
+            .tutorial(.cyrano, forceShow: $replayTutorial)
+            .onChange(of: message) {
+                let newVal = message
+                intelTask?.cancel()
+                intelDismissed = false
+                intel = nil
+                guard newVal.count > 30 else { return }
+                intelTask = Task {
+                    try? await Task.sleep(nanoseconds: 1_500_000_000)
+                    guard !Task.isCancelled else { return }
+                    let result = await Claude.shared.analyzeConversation(
+                        theirMessage: newVal,
+                        context: context,
+                        gender: AuthService.shared.currentUser?.gender ?? .preferNotToSay
+                    )
+                    await MainActor.run {
+                        withAnimation(.spring(response: 0.4, dampingFraction: 0.8)) {
+                            intel = result
+                        }
+                    }
+                }
+            }
+        }
+    }
 
-            if replySub == .fillMeIn {
-                FillMeInView()
-                    .transition(.asymmetric(insertion: .move(edge: .trailing).combined(with: .opacity), removal: .move(edge: .leading).combined(with: .opacity)))
-            } else {
+    // MARK: - Mode Selector (horizontal pills)
+
+    private var modeSelector: some View {
+        ScrollView(.horizontal, showsIndicators: false) {
+            HStack(spacing: 8) {
+                modePill("reply",     label: "Reply",     icon: "bubble.left.fill")
+                modePill("opener",    label: "Opener",    icon: "person.crop.rectangle.stack")
+                modePill("translate", label: "Translate", icon: "arrow.triangle.2.circlepath.icloud")
+                modePill("decode",    label: "Decode",    icon: "brain.head.profile")
+                modePill("pulse",     label: "Pulse",     icon: "waveform.path.ecg")
+            }
+        }
+    }
+
+    private func modePill(_ value: String, label: String, icon: String) -> some View {
+        let active = cyranoMode == value
+        return Button {
+            withAnimation(.easeInOut(duration: 0.25)) {
+                cyranoMode = value
+            }
+            UIImpactFeedbackGenerator(style: .light).impactOccurred()
+        } label: {
+            HStack(spacing: 6) {
+                Image(systemName: icon).font(.system(size: 11, weight: .semibold, design: .rounded))
+                Text(label).font(RWF.cap(13))
+            }
+            .foregroundColor(active ? .white : .rwTextMuted)
+            .padding(.horizontal, 14).padding(.vertical, 8)
+            .background(active ? AnyShapeStyle(Color.rwAccent) : AnyShapeStyle(Color.clear))
+            .clipShape(Capsule())
+            .overlay(Capsule().stroke(active ? Color.clear : Color.rwBorder, lineWidth: 1))
+        }
+        .buttonStyle(SBS())
+    }
+
+    // MARK: - Reply Mode (preserved — sub-tabs + existing flow, minus Decode-Subtext button)
+
+    @ViewBuilder
+    private var replyModeContent: some View {
+        // Reply mode — preserves the existing 3 sub-tabs.
+        RWSegmentedPicker(
+            options: [
+                (value: ReplySubMode.coach,      label: "Reply Coach", icon: "bubble.left.fill"),
+                (value: ReplySubMode.fillMeIn,   label: "Fill Me In",  icon: "list.bullet.rectangle.fill"),
+                (value: ReplySubMode.screenshot, label: "Screenshot",  icon: "photo.fill")
+            ],
+            selected: $replySub
+        )
+        .padding(.horizontal, SP.lg).padding(.top, 8).padding(.bottom, 4)
+
+        if replySub == .fillMeIn {
+            FillMeInView()
+                .transition(.asymmetric(insertion: .move(edge: .trailing).combined(with: .opacity), removal: .move(edge: .leading).combined(with: .opacity)))
+        } else {
             ScrollView(showsIndicators: false) {
                 VStack(spacing: SP.lg) {
 
@@ -268,7 +372,10 @@ struct CyranoView: View {
                                 .foregroundColor(.rwTextSecondary)
                                 .contentTransition(.numericText())
                             Spacer()
-                            Button { showPaywall = true } label: {
+                            Button {
+                                paywallReason = .repliesLimit
+                                showPaywall = true
+                            } label: {
                                 Text("Go Pro")
                                     .font(RWF.cap(12))
                                     .foregroundStyle(LinearGradient.accent)
@@ -285,6 +392,7 @@ struct CyranoView: View {
                         if store.canUseReplies() {
                             Task { await generate() }
                         } else {
+                            paywallReason = .repliesLimit
                             showPaywall = true
                         }
                     }
@@ -344,20 +452,11 @@ struct CyranoView: View {
                                 ))
                             }
 
-                            if subtext.isEmpty {
-                                RWButton("Decode the Subtext", icon: "eye.fill", style: .ghost) {
-                                    Task { await decode() }
-                                }
-                            } else {
-                                RWCard {
-                                    VStack(alignment: .leading, spacing: 8) {
-                                        Label("What They Actually Mean", systemImage: "brain.head.profile")
-                                            .font(RWF.head(14)).foregroundColor(.rwTextPrimary)
-                                        Text(subtext).font(RWF.body()).foregroundColor(.rwTextSecondary)
-                                            .fixedSize(horizontal: false, vertical: true)
-                                    }
-                                }
-                            }
+                            // "Decode the Subtext" inline button removed in v1.0 —
+                            // the new top-level Decode mode replaces this with a
+                            // richer structured output (what-you-heard vs
+                            // what-they-meant + suggested response). Ships in the
+                            // next iteration; Decode pill currently shows "Coming soon".
 
                             // Pattern-based exercise suggestion (Cyrano notices something).
                             if let suggestion = exerciseSuggestion {
@@ -380,48 +479,240 @@ struct CyranoView: View {
                 }
                 .padding(.horizontal, SP.lg).padding(.top, 20)
             }
-            .rwBG()
             .hideKB()
-            } // end reply-coach/screenshot subtree
-            } // end reply mode
-            }
-            .rwBG()
-            .navigationTitle("Cyrano")
-            .navigationBarTitleDisplayMode(.large)
-            .sheet(isPresented: $showPaywall) { PaywallView(reason: .repliesLimit) }
-            .sheet(isPresented: $showProfileCoach) {
-                ProfileCoachView()
-            }
-            .sheet(item: $presentingExercise) { suggestion in
-                CyranoExerciseHost(suggestion: suggestion)
-            }
-            .tutorial(.cyrano, forceShow: $replayTutorial)
-            .onChange(of: message) {
-                let newVal = message
-                // Debounce — analyze after user stops typing for 1.5 seconds
-                intelTask?.cancel()
-                intelDismissed = false
-                intel = nil
-                guard newVal.count > 30 else { return }
-                intelTask = Task {
-                    try? await Task.sleep(nanoseconds: 1_500_000_000)
-                    guard !Task.isCancelled else { return }
-                    let result = await Claude.shared.analyzeConversation(
-                        theirMessage: newVal,
-                        context: context,
-                        gender: AuthService.shared.currentUser?.gender ?? .preferNotToSay
-                    )
-                    await MainActor.run {
-                        withAnimation(.spring(response: 0.4, dampingFraction: 0.8)) {
-                            intel = result
+        } // end fillMeIn / coach-or-screenshot branch
+    }
+
+    // MARK: - Opener Mode (v1.0 — new)
+
+    @ViewBuilder
+    private var openerModeContent: some View {
+        ScrollView(showsIndicators: false) {
+            VStack(spacing: SP.lg) {
+                if !AISettings.shared.isEnabled {
+                    AIOffBanner(feature: "Opener", msg: "Turn on AI to get opening message suggestions.")
+                }
+
+                VStack(alignment: .leading, spacing: 6) {
+                    Text("OPENER")
+                        .font(RWF.micro())
+                        .foregroundStyle(LinearGradient.accent)
+                        .tracking(1.6)
+                    Text("Got a match? Let's open strong.")
+                        .font(RWF.title(24))
+                        .foregroundColor(.rwTextPrimary)
+                    Text("Screenshot their profile and Cyrano will suggest three openers tailored to them.")
+                        .font(RWF.body(15))
+                        .foregroundColor(.rwTextSecondary)
+                        .fixedSize(horizontal: false, vertical: true)
+                }
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .padding(.top, 4)
+
+                if let img = openerImage {
+                    openerPreviewCard(img)
+                        .transition(.move(edge: .top).combined(with: .opacity))
+                }
+
+                if openerImage == nil && openers.isEmpty && !openerLoading {
+                    VStack(spacing: 14) {
+                        Image(systemName: "person.crop.rectangle.stack")
+                            .font(.system(size: 48, weight: .medium, design: .rounded))
+                            .foregroundStyle(LinearGradient.accent)
+                        Text("Upload a profile screenshot")
+                            .font(RWF.head(15)).foregroundColor(.rwTextPrimary)
+                        Text("Cyrano reads photos, prompts, and bio — then writes Curious, Witty, and Bold openers.")
+                            .font(RWF.cap(12))
+                            .foregroundColor(.rwTextSecondary)
+                            .multilineTextAlignment(.center)
+                            .fixedSize(horizontal: false, vertical: true)
+                            .padding(.horizontal, SP.lg)
+                    }
+                    .padding(.vertical, SP.xl)
+                    .frame(maxWidth: .infinity)
+                }
+
+                PhotosPicker(selection: $openerPick,
+                             matching: .images,
+                             photoLibrary: .shared()) {
+                    HStack(spacing: 8) {
+                        Image(systemName: "photo.on.rectangle.angled")
+                            .font(.system(size: 14, weight: .semibold, design: .rounded))
+                        Text(openerImage == nil ? "Upload profile screenshot" : "Replace screenshot")
+                            .font(RWF.med(14))
+                    }
+                    .foregroundColor(.white)
+                    .frame(maxWidth: .infinity)
+                    .padding(.vertical, 14)
+                    .background(LinearGradient.accent)
+                    .clipShape(Capsule())
+                    .shadow(color: Color.rwAccent.opacity(0.25), radius: 12, x: 0, y: 4)
+                }
+                .buttonStyle(SBS())
+                .onChange(of: openerPick) { _, item in
+                    Task { await loadOpenerImage(item) }
+                }
+
+                if !store.isPro {
+                    HStack(spacing: 8) {
+                        Image(systemName: "sparkle")
+                            .font(.system(size: 11, weight: .medium, design: .rounded))
+                            .foregroundStyle(LinearGradient.accent)
+                        Text("\(store.openersRemainingToday()) free \(store.openersRemainingToday() == 1 ? "opener" : "openers") left today")
+                            .font(RWF.cap(12))
+                            .foregroundColor(.rwTextSecondary)
+                            .contentTransition(.numericText())
+                        Spacer()
+                        Button {
+                            paywallReason = .openersLimit
+                            showPaywall = true
+                        } label: {
+                            Text("Go Pro")
+                                .font(RWF.cap(12))
+                                .foregroundStyle(LinearGradient.accent)
+                        }
+                    }
+                    .padding(.horizontal, 14).padding(.vertical, 10)
+                    .background(Color.rwSurface)
+                    .clipShape(Capsule())
+                    .overlay(Capsule().stroke(Color.rwBorder, lineWidth: 1))
+                }
+
+                if openerImage != nil {
+                    RWButton(openerLoading ? "Reading profile..." : "Generate Openers",
+                             icon: openerLoading ? nil : "sparkles") {
+                        if store.canUseOpener() {
+                            Task { await generateOpeners() }
+                        } else {
+                            paywallReason = .openersLimit
+                            showPaywall = true
+                        }
+                    }
+                    .disabled(openerLoading)
+                }
+
+                if !openerError.isEmpty {
+                    Text(openerError).font(RWF.body(13)).foregroundColor(.rwDanger)
+                        .padding(SP.md).background(Color.rwDanger.opacity(0.1))
+                        .clipShape(RoundedRectangle(cornerRadius: RR.md))
+                }
+
+                if openerLoading { Dots(msg: "Reading their profile...") }
+
+                if !openers.isEmpty {
+                    VStack(spacing: 12) {
+                        RWSectionLabel("YOUR OPENERS")
+                        ForEach(openers) { o in
+                            OpenerCard(opener: o, copied: openerCopied == o.id) {
+                                UIPasteboard.general.string = o.text
+                                UIImpactFeedbackGenerator(style: .light).impactOccurred()
+                                openerCopied = o.id
+                                DispatchQueue.main.asyncAfter(deadline: .now() + 2) { openerCopied = nil }
+                            }
+                            .transition(.asymmetric(
+                                insertion: .move(edge: .bottom).combined(with: .opacity),
+                                removal: .opacity
+                            ))
                         }
                     }
                 }
+
+                Spacer().frame(height: 80)
+            }
+            .padding(.horizontal, SP.lg).padding(.top, 20)
+        }
+        .hideKB()
+    }
+
+    private func openerPreviewCard(_ image: UIImage) -> some View {
+        VStack(alignment: .leading, spacing: 6) {
+            ZStack(alignment: .topTrailing) {
+                Image(uiImage: image)
+                    .resizable()
+                    .scaledToFill()
+                    .frame(maxWidth: .infinity, maxHeight: 200)
+                    .clipped()
+                    .clipShape(RoundedRectangle(cornerRadius: RR.lg))
+                    .overlay(RoundedRectangle(cornerRadius: RR.lg)
+                        .stroke(Color.rwAccent.opacity(0.3), lineWidth: 1))
+                Button {
+                    withAnimation(.easeOut(duration: 0.2)) {
+                        openerImage = nil
+                        openerPick = nil
+                        openers = []
+                    }
+                    UIImpactFeedbackGenerator(style: .light).impactOccurred()
+                } label: {
+                    Image(systemName: "xmark")
+                        .font(.system(size: 11, weight: .bold, design: .rounded))
+                        .foregroundColor(.white)
+                        .frame(width: 28, height: 28)
+                        .background(Color.black.opacity(0.6))
+                        .clipShape(Circle())
+                }
+                .padding(8)
+            }
+            Text("Cyrano will read this profile")
+                .font(RWF.cap(11))
+                .foregroundColor(.rwTextMuted)
+        }
+    }
+
+    @MainActor
+    private func loadOpenerImage(_ item: PhotosPickerItem?) async {
+        guard let item else { return }
+        if let data = try? await item.loadTransferable(type: Data.self),
+           let image = UIImage(data: data) {
+            withAnimation(.spring(response: 0.4, dampingFraction: 0.78)) {
+                openerImage = image
+                openers = []
             }
         }
     }
 
-    // MARK: - Screenshot preview + loader
+    // MARK: - Coming Soon Placeholder (Translate / Decode / Pulse)
+
+    private func comingSoonView(mode: String, icon: String, headline: String, sub: String) -> some View {
+        ScrollView(showsIndicators: false) {
+            VStack(spacing: SP.xl) {
+                VStack(spacing: 14) {
+                    Image(systemName: icon)
+                        .font(.system(size: 48, weight: .medium, design: .rounded))
+                        .foregroundStyle(LinearGradient.accent)
+                        .padding(.top, 60)
+                    Text(mode.uppercased())
+                        .font(RWF.micro())
+                        .foregroundStyle(LinearGradient.accent)
+                        .tracking(1.6)
+                    Text(headline)
+                        .font(RWF.title(22))
+                        .foregroundColor(.rwTextPrimary)
+                        .multilineTextAlignment(.center)
+                    Text(sub)
+                        .font(RWF.body(14))
+                        .foregroundColor(.rwTextSecondary)
+                        .multilineTextAlignment(.center)
+                        .fixedSize(horizontal: false, vertical: true)
+                        .padding(.horizontal, SP.xl)
+                    HStack(spacing: 6) {
+                        Image(systemName: "hourglass")
+                            .font(.system(size: 11, weight: .semibold, design: .rounded))
+                        Text("Coming soon").font(RWF.cap(12))
+                    }
+                    .foregroundColor(.rwAccent)
+                    .padding(.horizontal, 14).padding(.vertical, 6)
+                    .background(Color.rwAccent.opacity(0.1))
+                    .clipShape(Capsule())
+                    .padding(.top, 4)
+                }
+                Spacer()
+            }
+            .padding(SP.lg)
+            .frame(maxWidth: .infinity)
+        }
+    }
+
+    // MARK: - Screenshot preview + loader (Reply mode)
 
     private func screenshotPreviewCard(_ image: UIImage) -> some View {
         VStack(alignment: .leading, spacing: 6) {
@@ -468,7 +759,7 @@ struct CyranoView: View {
     }
 
     func generate() async {
-        loading = true; error = ""; subtext = ""; visionFallback = false
+        loading = true; error = ""; visionFallback = false
         let attachedImage = screenshotImage
         let didIncludeImage = (attachedImage != nil)
         do {
@@ -527,11 +818,71 @@ struct CyranoView: View {
         loading = false
     }
 
-    func decode() async {
-        loading = true
-        do { subtext = try await Claude.shared.subtext(message: message, context: context) }
-        catch let e { error = e.localizedDescription }
-        loading = false
+    // Opener generate — calls Claude.shared.openers(image:) which routes
+    // through the cyrano edge function with mode="opener" so it lands in
+    // the cyrano_opener rate-limit bucket on the server.
+    func generateOpeners() async {
+        guard let img = openerImage else { return }
+        openerLoading = true; openerError = ""
+        do {
+            let result = try await Claude.shared.openers(image: img)
+            openers = result
+            StoreManager.shared.trackOpenerUsed()
+            StreakManager.shared.addPoints(5, reason: "opener")
+        } catch {
+            openerError = "Couldn't read that profile. Try a clearer screenshot."
+        }
+        openerLoading = false
+    }
+
+    // (decode() removed in v1.0 — replaced by the standalone Decode mode,
+    //  which ships in the next iteration.)
+}
+
+// MARK: - Opener Card
+
+struct OpenerCard: View {
+    let opener: Claude.CyranoOpenerSuggestion
+    let copied: Bool
+    let copy: () -> Void
+    var body: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            HStack {
+                HStack(spacing: 5) {
+                    Image(systemName: opener.style.icon).font(.system(size: 11, weight: .bold, design: .rounded))
+                    Text(opener.style.rawValue.uppercased()).font(RWF.micro()).tracking(1.5)
+                }
+                .foregroundColor(opener.style.color).padding(.horizontal, 9).padding(.vertical, 4)
+                .background(opener.style.color.opacity(0.12)).clipShape(Capsule())
+                Spacer()
+                Button(action: copy) {
+                    HStack(spacing: 4) {
+                        Image(systemName: copied ? "checkmark" : "doc.on.doc").font(.system(size: 12, weight: .semibold, design: .rounded))
+                        Text(copied ? "Copied!" : "Copy").font(RWF.cap(12))
+                    }
+                    .foregroundColor(copied ? .white : .rwTextSecondary)
+                    .padding(.horizontal, 10).padding(.vertical, 5)
+                    .background(copied ? Color.rwSuccess : Color.rwCard)
+                    .clipShape(Capsule())
+                    .overlay(Capsule().stroke(copied ? Color.clear : Color.rwBorder, lineWidth: 1))
+                }
+                .buttonStyle(SBS())
+                .animation(.spring(response: 0.3, dampingFraction: 0.7), value: copied)
+            }
+
+            Text(opener.text).font(RWF.body()).foregroundColor(.rwTextPrimary).fixedSize(horizontal: false, vertical: true)
+
+            RWLine()
+
+            HStack(alignment: .top, spacing: 6) {
+                Image(systemName: "lightbulb.fill").font(.system(size: 10, design: .rounded)).foregroundColor(.rwGold)
+                Text(opener.reasoning).font(RWF.body(12)).foregroundColor(.rwTextMuted).fixedSize(horizontal: false, vertical: true)
+            }
+        }
+        .padding(SP.lg).background(Color.rwCard)
+        .clipShape(RoundedRectangle(cornerRadius: RR.xl))
+        .overlay(RoundedRectangle(cornerRadius: RR.xl).stroke(copied ? opener.style.color.opacity(0.3) : Color.rwBorder, lineWidth: 1))
+        .animation(.spring(response: 0.3), value: copied)
     }
 }
 

@@ -51,8 +51,9 @@ struct RelationshipView: View {
                     .animation(.spring(response: 0.4, dampingFraction: 0.85), value: selectedTab)
                 }
                 .rwBG()
-                .navigationTitle(store.relationship?.partnerName.isEmpty == false ?
-                    "You & \(store.relationship!.partnerName)" : "Relationship")
+                .navigationTitle(store.relationship.map {
+                    $0.partnerName.isEmpty ? "Relationship" : "You & \($0.partnerName)"
+                } ?? "Relationship")
                 .navigationBarTitleDisplayMode(.large)
             }
         }

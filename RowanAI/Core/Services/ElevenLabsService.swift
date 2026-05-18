@@ -107,12 +107,23 @@ final class ElevenLabsService {
 
         Self.log("REQUEST → \(url)  voice=\(voiceID)  model=\(modelID)  textLen=\(cleanText.count)")
 
+        // Authorization is the user's JWT, not the publishable anon key — the
+        // edge function reads `sub` from this JWT to rate-limit per user.
+        // `apikey` stays as the publishable anon key for Supabase project routing.
+        let userJWT: String
+        do {
+            userJWT = try await SupabaseAuth.shared.currentAccessToken()
+        } catch {
+            Self.log("user JWT unavailable: \(error.localizedDescription)")
+            throw RWError.api
+        }
+
         var req = URLRequest(url: endpoint)
         req.httpMethod = "POST"
         req.setValue("application/json", forHTTPHeaderField: "Content-Type")
         req.setValue("audio/mpeg",       forHTTPHeaderField: "Accept")
-        req.setValue("Bearer \(publishableKey)", forHTTPHeaderField: "Authorization")
-        req.setValue(publishableKey,             forHTTPHeaderField: "apikey")
+        req.setValue("Bearer \(userJWT)", forHTTPHeaderField: "Authorization")
+        req.setValue(publishableKey,     forHTTPHeaderField: "apikey")
 
         let body: [String: Any] = [
             "voice_id": voiceID,

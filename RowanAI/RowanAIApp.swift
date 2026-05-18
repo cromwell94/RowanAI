@@ -30,12 +30,17 @@ struct RootView: View {
     @State private var showSplash: Bool = true
     @State private var showPrivacyScreen: Bool = false
     @State private var ftue = FTUEManager.shared
+    @State private var showJailbreakWarning: Bool = SafetyManager.isJailbroken
+    // First-launch migration backstop — users who completed onboarding before
+    // v1.0's name-step shipped will have an empty userDisplayName. The
+    // fullScreenCover below catches them and asks for a name before the app
+    // settles. New users won't see it because the onboarding name step writes
+    // userDisplayName before hasCompletedOnboarding flips true.
+    @AppStorage("userDisplayName") private var userDisplayName: String = ""
 
     var body: some View {
         Group {
-            if SafetyManager.isJailbroken {
-                JailbreakBlockView()
-            } else if showSplash {
+            if showSplash {
                 SplashView()
                     .onAppear {
                         DispatchQueue.main.asyncAfter(deadline: .now() + 1.4) {
@@ -89,6 +94,18 @@ struct RootView: View {
         .animation(.spring(response: 0.5, dampingFraction: 0.85), value: ageVerified)
         .animation(.spring(response: 0.5, dampingFraction: 0.85), value: isLocked)
         .animation(.spring(response: 0.5, dampingFraction: 0.85), value: showSplash)
+        // Jailbreak — soft warning instead of a hard block. Shown once per
+        // session on jailbroken devices, dismissible so users can continue.
+        .overlay(alignment: .top) {
+            if showJailbreakWarning {
+                JailbreakWarningBanner {
+                    withAnimation(.easeInOut(duration: 0.2)) { showJailbreakWarning = false }
+                }
+                .padding(.horizontal, 16)
+                .padding(.top, 12)
+                .transition(.move(edge: .top).combined(with: .opacity))
+            }
+        }
         // Privacy overlay — hides sensitive content in the app switcher and prevents screenshots
         // from capturing relationship data, contact archive, or coaching conversations.
         .overlay {
@@ -119,6 +136,29 @@ struct RootView: View {
             set: { ftue.shouldShow = $0 }
         )) {
             FTUEView { ftue.shouldShow = false }
+        }
+        // v1.0 first-launch backstop — users who completed onboarding before
+        // the new in-flow name step shipped have an empty userDisplayName.
+        // The cover auto-dismisses when the callback writes to
+        // userDisplayName (the Binding.get flips false). New users never
+        // see it because the onboarding step writes the value before
+        // hasCompletedOnboarding flips true.
+        .fullScreenCover(isPresented: Binding(
+            get: { appState.hasCompletedOnboarding && userDisplayName.isEmpty },
+            set: { _ in }
+        )) {
+            NameEntryView(
+                eyebrow: "WELCOME BACK",
+                headline: "What should we call you?",
+                subtext: "We've made some upgrades. A first name or nickname is perfect.",
+                initialValue: "",
+                onContinue: { name in
+                    userDisplayName = name
+                },
+                onSkip: {
+                    userDisplayName = "you"
+                }
+            )
         }
     }
 }

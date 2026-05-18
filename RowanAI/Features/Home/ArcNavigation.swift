@@ -9,7 +9,11 @@ enum ArcDestination: Hashable {
     // Primary
     case home, archive, cyrano, sim, relationship
     // Secondary
-    case datePlanner, communicationLab, debrief, profile
+    // v1.0: .coach added (ConversationCoachView, moved out of CyranoView as
+    // part of the Cyrano → 5-mode-toolkit restructure). .communicationLab's
+    // label changed from "Coach" to "Lab" so the two destinations don't
+    // collide.
+    case datePlanner, coach, communicationLab, debrief, profile
 
     var icon: String {
         switch self {
@@ -19,6 +23,7 @@ enum ArcDestination: Hashable {
         case .sim:    return "bubble.left.and.bubble.right.fill"
         case .relationship:     return "heart.fill"
         case .datePlanner:      return "map.fill"
+        case .coach:            return "graduationcap.fill"
         case .communicationLab: return "book.fill"
         case .debrief:          return "doc.text.fill"
         case .profile:          return "person.circle.fill"
@@ -33,7 +38,8 @@ enum ArcDestination: Hashable {
         case .sim:    return "The Sim"
         case .relationship:     return "Relationship"
         case .datePlanner:      return "Planner"
-        case .communicationLab: return "Coach"
+        case .coach:            return "Coach"
+        case .communicationLab: return "Lab"
         case .debrief:          return "Journal"
         case .profile:          return "Profile"
         }
@@ -46,6 +52,7 @@ struct ArcMainView: View {
     @State private var arcOpen = false
     @State private var secondaryLayer = false
     @State private var showGuide = false
+    @State private var showProfile = false
     @State private var auth = AuthService.shared
 
     // Primary slots — fixed positions; visibility flips with the user's
@@ -59,7 +66,7 @@ struct ArcMainView: View {
     }
 
     private var secondarySlots: [ArcDestination] {
-        [.datePlanner, .communicationLab, .debrief, .profile]
+        [.datePlanner, .coach, .communicationLab, .debrief, .profile]
     }
 
     var body: some View {
@@ -76,10 +83,13 @@ struct ArcMainView: View {
                     .onTapGesture { closeArc() }
             }
 
-            // 3. Top-right "Ask Cyrano" guide button — preserved utility.
+            // 3. Top-right utilities — profile icon (left of guide) + Ask Cyrano
+            //    guide button. Sits in the global ArcMainView overlay so the
+            //    profile shortcut is visible on every destination, not just home.
             VStack {
-                HStack {
+                HStack(spacing: 8) {
                     Spacer()
+                    profileButton
                     guideButton
                 }
                 Spacer()
@@ -111,6 +121,31 @@ struct ArcMainView: View {
                 .presentationDetents([.medium, .large])
                 .presentationBackground(Color.rwSurface)
         }
+        .sheet(isPresented: $showProfile) {
+            ProfileView()
+        }
+    }
+
+    // MARK: Profile shortcut
+    //
+    // 28pt person.crop.circle in the top-right, sitting alongside the guide
+    // button so users can reach Settings/Profile from any destination without
+    // opening the arc. 44pt tap target per HIG; SBS() handles the
+    // scale-on-press animation that every other button in the app uses.
+
+    private var profileButton: some View {
+        Button {
+            showProfile = true
+            UIImpactFeedbackGenerator(style: .light).impactOccurred()
+        } label: {
+            Image(systemName: "person.crop.circle")
+                .font(.system(size: 28, weight: .regular, design: .rounded))
+                .foregroundColor(.rwNavy)
+                .frame(width: 44, height: 44)
+                .contentShape(Rectangle())
+        }
+        .buttonStyle(SBS())
+        .accessibilityLabel("Profile and settings")
     }
 
     // MARK: Destination
@@ -126,6 +161,7 @@ struct ArcMainView: View {
         case .sim:    SimView()
         case .relationship:     RelationshipView()
         case .datePlanner:      DatePlannerView()
+        case .coach:            NavigationView { ConversationCoachView() }
         case .communicationLab: NavigationView { CommunicationLabView() }
         case .debrief:          DebriefListView()
         case .profile:          ProfileView()

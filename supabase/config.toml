@@ -16,3 +16,9 @@ verify_jwt = true
 
 [functions.eleven]
 verify_jwt = true
+
+[functions.delete-account]
+verify_jwt = true
+
+[functions.set-tier]
+verify_jwt = true
