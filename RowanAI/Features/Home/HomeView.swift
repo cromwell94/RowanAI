@@ -230,6 +230,7 @@ struct ProfileView: View {
     @State private var anonUserID: String = SupabaseAuth.shared.currentUserID ?? ""
     @AppStorage("userDisplayName") private var displayName: String = ""
     @State private var showNameEdit = false
+    @State private var showAboutYouEdit = false
 
     var body: some View {
         NavigationView {
@@ -423,6 +424,7 @@ struct ProfileView: View {
                         .buttonStyle(SBS())
                         Divider().padding(.horizontal, SP.lg).background(Color.rwBorder)
 
+                        PRow(icon: "sparkles", title: "About You") { showAboutYouEdit = true }
                         PRow(icon: "globe", title: "Language") { showLanguage = true }
                     }
                     .background(Color.rwCard)
@@ -514,6 +516,9 @@ struct ProfileView: View {
                         AuthService.shared.save(user)
                     }
                 }
+            }
+            .sheet(isPresented: $showAboutYouEdit) {
+                AboutYouEditSheet()
             }
             .alert("Reset all tutorials?", isPresented: $resetConfirmation) {
                 Button("Reset", role: .destructive) {
