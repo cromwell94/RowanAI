@@ -1266,8 +1266,8 @@ struct TermsSheet: View {
                     TB(t: "Not a Crisis Resource", b: "If you are in a mental health emergency, call 988 (US) or emergency services. RowanAI cannot handle emergencies.")
                     TB(t: "Age Requirement", b: "You must be 18 or older to use RowanAI.")
                     TB(t: "Subscriptions", b: "Pro is offered as an auto-renewing subscription. Payment is charged to your Apple ID at confirmation of purchase. Renewal is automatic unless cancelled at least 24 hours before the end of the current period. Manage or cancel anytime in Settings → Apple ID → Subscriptions.")
-                    TB(t: "Liability", b: "Rakita Studios LLC is not liable for outcomes of decisions made using RowanAI suggestions.")
-                    Text("Questions? legal@rakitastudios.com").font(RWF.body(13)).foregroundColor(.rwTextSecondary)
+                    TB(t: "Liability", b: "Rakita Organization LLC is not liable for outcomes of decisions made using RowanAI suggestions.")
+                    Text("Questions? legal@rakitaorganization.com").font(RWF.body(13)).foregroundColor(.rwTextSecondary)
                     Spacer().frame(height: 40)
                 }
                 .padding(SP.xl)
@@ -1293,7 +1293,7 @@ struct PrivacyPolicySheet: View {
                     TB(t: "What We Never Do", b: "We do not sell your data. We do not share with advertisers. We do not run third-party analytics or tracking SDKs.")
                     TB(t: "Retention And Deletion", b: "Delete your data anytime from Profile → Privacy & Security → Delete All My Data. To delete your server-side anonymous account too, use Profile → Delete Account. Both are immediate and irreversible.")
                     TB(t: "Children", b: "RowanAI is for adults 18 and older. We do not knowingly collect data from anyone under 18.")
-                    TB(t: "Contact", b: "Questions about privacy? Email legal@rakitastudios.com.")
+                    TB(t: "Contact", b: "Questions about privacy? Email legal@rakitaorganization.com.")
                     Spacer().frame(height: 40)
                 }
                 .padding(SP.xl)

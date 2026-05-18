@@ -555,7 +555,7 @@ struct ProfileView: View {
             AuthService.shared.currentUser = nil
             app.hasCompletedOnboarding = false
         } catch {
-            deleteErrorMessage = "Couldn't delete your account: \(error.localizedDescription). Please try again or contact legal@rakitastudios.com."
+            deleteErrorMessage = "Couldn't delete your account: \(error.localizedDescription). Please try again or contact legal@rakitaorganization.com."
         }
         deleting = false
     }
