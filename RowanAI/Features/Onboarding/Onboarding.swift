@@ -14,7 +14,8 @@ struct OnboardingFlowView: View {
         let isRel = user.relationshipStatus == .relationship
         switch current {
         case 0:  return 14           // Welcome → Name (NEW v1.0 — was → Language)
-        case 14: return 1            // Name → Language
+        case 14: return 15           // Name → About You (NEW)
+        case 15: return 1            // About You → Language
         case 1:  return 2            // Language → Disclosure
         case 2:  return 3            // Disclosure → RelStatus
         case 3:  return isRel ? 4 : 8 // RelStatus → PartnerName | Gender
@@ -65,6 +66,10 @@ struct OnboardingFlowView: View {
                             UserDefaults.standard.set("you", forKey: "userDisplayName")
                             advance()
                         }
+                     )
+            case 15: AboutYouView(
+                        onContinue: { advance() },
+                        onSkip: { advance() }
                      )
             case 1:  LanguageView(user: $user) { advance() }
             case 2:  DisclosureView { advance() }
@@ -1765,5 +1770,346 @@ struct NameEntryView: View {
             withAnimation(.easeOut(duration: 0.4)) { on = true }
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) { focused = true }
         }
+    }
+}
+
+// MARK: - About You
+
+/// Canonical list of vibe chips used on the About You screen. Max selection
+/// is enforced by the chip row itself — tapping a 4th chip is a no-op.
+fileprivate let aboutYouVibeOptions: [String] = [
+    "Witty", "Thoughtful", "Adventurous", "Chill", "Ambitious",
+    "Creative", "Playful", "Romantic", "Direct", "Funny"
+]
+
+fileprivate let aboutYouMaxFieldChars = 200
+fileprivate let aboutYouMaxVibes      = 3
+
+/// Returns the set of selected vibes parsed from the comma-separated
+/// @AppStorage("userVibes") string. Order is normalized to match
+/// aboutYouVibeOptions so the UI feels stable across launches.
+fileprivate func aboutYouParseVibes(_ raw: String) -> Set<String> {
+    let parts = raw
+        .split(separator: ",")
+        .map { $0.trimmingCharacters(in: .whitespaces) }
+        .filter { !$0.isEmpty }
+    return Set(parts)
+}
+
+/// Writes the selected vibes back as a stable, canonical-order CSV.
+fileprivate func aboutYouSerializeVibes(_ selected: Set<String>) -> String {
+    aboutYouVibeOptions.filter { selected.contains($0) }.joined(separator: ", ")
+}
+
+/// Shared body — the four input sections without a header or footer
+/// buttons. Embedded by the onboarding step and the Settings edit sheet
+/// so both surfaces look identical.
+struct AboutYouFormSections: View {
+    @Binding var hobbies: String
+    @Binding var greenFlags: String
+    @Binding var redFlags: String
+    @Binding var vibes: Set<String>
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: SP.lg) {
+            AboutYouMultilineField(
+                label: "HOBBIES & INTERESTS",
+                placeholder: "What do you love doing? Hobbies, interests, weekend activities...",
+                text: $hobbies
+            )
+            AboutYouMultilineField(
+                label: "WHAT YOU'RE LOOKING FOR",
+                placeholder: "What qualities matter most to you in a partner?",
+                text: $greenFlags
+            )
+            AboutYouMultilineField(
+                label: "DEAL BREAKERS",
+                placeholder: "What's an absolute deal-breaker for you?",
+                text: $redFlags
+            )
+            AboutYouVibePicker(selected: $vibes)
+        }
+    }
+}
+
+/// Single labelled multi-line text field with a 200-char clamp.
+struct AboutYouMultilineField: View {
+    let label: String
+    let placeholder: String
+    @Binding var text: String
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 8) {
+            HStack {
+                Text(label)
+                    .font(RWF.micro())
+                    .foregroundStyle(LinearGradient.accent)
+                    .tracking(1.5)
+                Spacer()
+                Text("\(text.count)/\(aboutYouMaxFieldChars)")
+                    .font(RWF.cap(11))
+                    .foregroundColor(.rwTextMuted)
+            }
+            ZStack(alignment: .topLeading) {
+                if text.isEmpty {
+                    Text(placeholder)
+                        .font(RWF.body())
+                        .foregroundColor(.rwTextMuted)
+                        .padding(.horizontal, 14)
+                        .padding(.vertical, 12)
+                        .allowsHitTesting(false)
+                }
+                TextEditor(text: $text)
+                    .font(RWF.body())
+                    .foregroundColor(.rwTextPrimary)
+                    .scrollContentBackground(.hidden)
+                    .padding(.horizontal, 10)
+                    .padding(.vertical, 6)
+                    .frame(minHeight: 86)
+                    .onChange(of: text) { _, new in
+                        if new.count > aboutYouMaxFieldChars {
+                            text = String(new.prefix(aboutYouMaxFieldChars))
+                        }
+                    }
+            }
+            .background(Color.rwCard)
+            .clipShape(RoundedRectangle(cornerRadius: RR.lg))
+            .overlay(RoundedRectangle(cornerRadius: RR.lg).stroke(Color.rwBorder, lineWidth: 1))
+        }
+    }
+}
+
+/// 10-chip multi-select. Tap to toggle; capped at 3.
+struct AboutYouVibePicker: View {
+    @Binding var selected: Set<String>
+
+    private let columns = [
+        GridItem(.adaptive(minimum: 96), spacing: 8)
+    ]
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 8) {
+            HStack {
+                Text("YOUR VIBE")
+                    .font(RWF.micro())
+                    .foregroundStyle(LinearGradient.accent)
+                    .tracking(1.5)
+                Spacer()
+                Text("Pick up to \(aboutYouMaxVibes)")
+                    .font(RWF.cap(11))
+                    .foregroundColor(.rwTextMuted)
+            }
+            LazyVGrid(columns: columns, spacing: 8) {
+                ForEach(aboutYouVibeOptions, id: \.self) { v in
+                    Button {
+                        toggle(v)
+                    } label: {
+                        Text(v)
+                            .font(RWF.med(13))
+                            .foregroundColor(selected.contains(v) ? .white : .rwTextPrimary)
+                            .padding(.horizontal, 14).padding(.vertical, 10)
+                            .frame(maxWidth: .infinity)
+                            .background(selected.contains(v) ? Color.rwAccent : Color.rwCard)
+                            .clipShape(Capsule())
+                            .overlay(Capsule().stroke(selected.contains(v) ? Color.rwAccent : Color.rwBorder, lineWidth: 1))
+                    }
+                    .buttonStyle(SBS())
+                    .animation(.spring(response: 0.3, dampingFraction: 0.85), value: selected.contains(v))
+                }
+            }
+        }
+    }
+
+    private func toggle(_ v: String) {
+        if selected.contains(v) {
+            selected.remove(v)
+        } else if selected.count < aboutYouMaxVibes {
+            selected.insert(v)
+            UIImpactFeedbackGenerator(style: .light).impactOccurred()
+        }
+    }
+}
+
+// MARK: - About You — Onboarding step
+
+/// Onboarding step body. Uses the same OBHead as other onboarding screens.
+/// Continue is always enabled (every field is optional); Skip-for-now writes
+/// nothing and advances.
+struct AboutYouView: View {
+    let onContinue: () -> Void
+    let onSkip: () -> Void
+
+    @AppStorage("userHobbies")    private var hobbies: String    = ""
+    @AppStorage("userGreenFlags") private var greenFlags: String = ""
+    @AppStorage("userRedFlags")   private var redFlags: String   = ""
+    @AppStorage("userVibes")      private var vibesRaw: String   = ""
+
+    @State private var vibes: Set<String> = []
+    @State private var on = false
+
+    var body: some View {
+        VStack(spacing: 0) {
+            OBHead(
+                step: "ABOUT YOU",
+                title: "Help Cyrano know you better",
+                sub: "The more Cyrano knows, the more personalized your coaching gets. Skip any field and come back later."
+            )
+            .opacity(on ? 1 : 0)
+
+            ScrollView(showsIndicators: false) {
+                AboutYouFormSections(
+                    hobbies: $hobbies,
+                    greenFlags: $greenFlags,
+                    redFlags: $redFlags,
+                    vibes: Binding(
+                        get: { vibes },
+                        set: { new in
+                            vibes = new
+                            vibesRaw = aboutYouSerializeVibes(new)
+                        }
+                    )
+                )
+                .padding(.horizontal, SP.xl)
+                .padding(.top, SP.lg)
+                .padding(.bottom, 24)
+            }
+            .opacity(on ? 1 : 0)
+
+            RWButton("Continue", icon: "arrow.right") { onContinue() }
+                .padding(.horizontal, SP.xl)
+                .opacity(on ? 1 : 0)
+
+            Button { onSkip() } label: {
+                Text("Skip for now")
+                    .font(RWF.cap(13))
+                    .foregroundColor(.rwTextMuted)
+                    .padding(.vertical, 14)
+            }
+            .buttonStyle(SBS())
+            .padding(.bottom, 24)
+        }
+        .background(Color.rwBackground.ignoresSafeArea())
+        .onAppear {
+            vibes = aboutYouParseVibes(vibesRaw)
+            withAnimation(.easeOut(duration: 0.4)) { on = true }
+        }
+    }
+}
+
+// MARK: - About You — Edit Sheet (Settings + Migration)
+
+/// Sheet presentation used from ProfileView → PREFERENCES → About You and
+/// from the migration cover after the user taps "Let's go". Same fields as
+/// the onboarding step but presented in a NavigationView with Cancel/Save.
+struct AboutYouEditSheet: View {
+    @Environment(\.dismiss) var dismiss
+
+    @AppStorage("userHobbies")    private var hobbiesStore: String    = ""
+    @AppStorage("userGreenFlags") private var greenFlagsStore: String = ""
+    @AppStorage("userRedFlags")   private var redFlagsStore: String   = ""
+    @AppStorage("userVibes")      private var vibesRawStore: String   = ""
+
+    @State private var hobbies: String = ""
+    @State private var greenFlags: String = ""
+    @State private var redFlags: String = ""
+    @State private var vibes: Set<String> = []
+
+    var body: some View {
+        NavigationView {
+            ScrollView(showsIndicators: false) {
+                AboutYouFormSections(
+                    hobbies: $hobbies,
+                    greenFlags: $greenFlags,
+                    redFlags: $redFlags,
+                    vibes: $vibes
+                )
+                .padding(.horizontal, SP.lg)
+                .padding(.top, SP.lg)
+                .padding(.bottom, 40)
+            }
+            .background(Color.rwBackground.ignoresSafeArea())
+            .navigationTitle("About You")
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .navigationBarLeading) {
+                    Button("Cancel") { dismiss() }.foregroundColor(.rwTextMuted)
+                }
+                ToolbarItem(placement: .navigationBarTrailing) {
+                    Button("Save") { save() }
+                        .foregroundColor(.rwAccent)
+                }
+            }
+        }
+        .onAppear {
+            // Snapshot stored values into local state so Cancel can bail
+            // without writing.
+            hobbies    = hobbiesStore
+            greenFlags = greenFlagsStore
+            redFlags   = redFlagsStore
+            vibes      = aboutYouParseVibes(vibesRawStore)
+        }
+    }
+
+    private func save() {
+        hobbiesStore    = hobbies
+        greenFlagsStore = greenFlags
+        redFlagsStore   = redFlags
+        vibesRawStore   = aboutYouSerializeVibes(vibes)
+        dismiss()
+    }
+}
+
+// MARK: - About You — Migration Prompt
+
+/// First-launch prompt shown to users who completed onboarding before this
+/// feature shipped. Two outcomes:
+///   • "Let's go" → set dismissed flag, then open the AboutYouEditSheet.
+///   • "Maybe later" → set dismissed flag and never show again.
+/// Hosted in RowanAIApp.swift's RootView via fullScreenCover.
+struct AboutYouMigrationPrompt: View {
+    let onAccept: () -> Void
+    let onDecline: () -> Void
+    @State private var on = false
+
+    var body: some View {
+        VStack(spacing: 0) {
+            Spacer()
+            VStack(spacing: 18) {
+                Image(systemName: "sparkles")
+                    .font(.system(size: 44, weight: .semibold, design: .rounded))
+                    .foregroundStyle(LinearGradient.accent)
+                Text("ABOUT YOU")
+                    .font(RWF.micro())
+                    .foregroundStyle(LinearGradient.accent)
+                    .tracking(1.8)
+                Text("We've added personalization.")
+                    .font(RWF.display(28))
+                    .foregroundColor(.rwTextPrimary)
+                    .multilineTextAlignment(.center)
+                Text("Want Cyrano to know you better? It only takes 30 seconds.")
+                    .font(RWF.body())
+                    .foregroundColor(.rwTextSecondary)
+                    .multilineTextAlignment(.center)
+                    .padding(.horizontal, SP.xl)
+            }
+            .opacity(on ? 1 : 0)
+            .offset(y: on ? 0 : 14)
+            Spacer()
+            VStack(spacing: 10) {
+                RWButton("Let's go", icon: "arrow.right") { onAccept() }
+                Button { onDecline() } label: {
+                    Text("Maybe later")
+                        .font(RWF.cap(13))
+                        .foregroundColor(.rwTextMuted)
+                        .padding(.vertical, 14)
+                }
+                .buttonStyle(SBS())
+            }
+            .padding(.horizontal, SP.xl)
+            .padding(.bottom, 36)
+            .opacity(on ? 1 : 0)
+        }
+        .background(Color.rwBackground.ignoresSafeArea())
+        .onAppear { withAnimation(.easeOut(duration: 0.4)) { on = true } }
     }
 }
