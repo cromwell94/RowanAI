@@ -52,7 +52,7 @@ struct OnboardingFlowView: View {
             switch step {
             case 0:  WelcomeView { advance() }
             case 14: NameEntryView(
-                        eyebrow: "1 OF 13",
+                        eyebrow: "1 OF 14",
                         headline: "What should Cyrano call you?",
                         subtext: "Just a first name or nickname is perfect.",
                         initialValue: user.name,
