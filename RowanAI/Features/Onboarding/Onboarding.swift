@@ -1803,7 +1803,10 @@ fileprivate func aboutYouSerializeVibes(_ selected: Set<String>) -> String {
 
 /// Shared body — the four input sections without a header or footer
 /// buttons. Embedded by the onboarding step and the Settings edit sheet
-/// so both surfaces look identical.
+/// so both surfaces share the same fields, validation, and visual treatment.
+/// (Outer horizontal padding may differ per host: onboarding uses SP.xl
+/// to match other onboarding screens; the edit sheet uses SP.lg to match
+/// sheet conventions.)
 struct AboutYouFormSections: View {
     @Binding var hobbies: String
     @Binding var greenFlags: String
@@ -1933,8 +1936,9 @@ struct AboutYouVibePicker: View {
 // MARK: - About You — Onboarding step
 
 /// Onboarding step body. Uses the same OBHead as other onboarding screens.
-/// Continue is always enabled (every field is optional); Skip-for-now writes
-/// nothing and advances.
+/// Continue is always enabled (every field is optional); Skip-for-now
+/// advances without clearing typed content — fields are bound directly to
+/// @AppStorage, so anything the user typed before tapping Skip persists.
 struct AboutYouView: View {
     let onContinue: () -> Void
     let onSkip: () -> Void
@@ -1987,6 +1991,7 @@ struct AboutYouView: View {
             }
             .buttonStyle(SBS())
             .padding(.bottom, 24)
+            .opacity(on ? 1 : 0)
         }
         .background(Color.rwBackground.ignoresSafeArea())
         .onAppear {
