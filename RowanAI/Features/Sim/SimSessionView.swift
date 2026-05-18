@@ -564,8 +564,9 @@ struct SimSessionView: View {
         isThinking = true
         defer { isThinking = false }
         let partner = AuthService.shared.currentUser?.partnerName
+        let profile = Claude.userProfileBlock(forSim: true)
         let frame = """
-        \(personality.systemPrompt)\(mode.systemPromptOverlay(partnerName: partner))
+        \(personality.systemPrompt)\(mode.systemPromptOverlay(partnerName: partner))\(profile)
 
         SETTING: \(environment.openingScene(for: mode))
         Open the conversation with a single short line in character — 1-2 sentences max.
@@ -635,8 +636,9 @@ struct SimSessionView: View {
         }()
 
         let partner = AuthService.shared.currentUser?.partnerName
+        let profile = Claude.userProfileBlock(forSim: true)
         let frame = """
-        \(personality.systemPrompt)\(mode.systemPromptOverlay(partnerName: partner))
+        \(personality.systemPrompt)\(mode.systemPromptOverlay(partnerName: partner))\(profile)
 
         SETTING: \(environment.openingScene(for: mode))
         \(engagementHint)
