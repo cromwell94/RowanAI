@@ -68,8 +68,14 @@ struct OnboardingFlowView: View {
                         }
                      )
             case 15: AboutYouView(
-                        onContinue: { advance() },
-                        onSkip: { advance() }
+                        onContinue: {
+                            UserDefaults.standard.set(true, forKey: "aboutYouMigrationDismissed")
+                            advance()
+                        },
+                        onSkip: {
+                            UserDefaults.standard.set(true, forKey: "aboutYouMigrationDismissed")
+                            advance()
+                        }
                      )
             case 1:  LanguageView(user: $user) { advance() }
             case 2:  DisclosureView { advance() }

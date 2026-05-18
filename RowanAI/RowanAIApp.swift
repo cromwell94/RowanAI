@@ -37,14 +37,16 @@ struct RootView: View {
     // settles. New users won't see it because the onboarding name step writes
     // userDisplayName before hasCompletedOnboarding flips true.
     @AppStorage("userDisplayName") private var userDisplayName: String = ""
-    // v1.1 About You migration — set true by either button in the prompt
-    // (Let's go or Maybe later) so the cover is one-shot. Existing users with
-    // an empty userHobbies / userGreenFlags / userRedFlags / userVibes get
-    // one chance to see it; new users never do because the onboarding step
-    // either fills the fields or leaves them empty after a deliberate Skip
-    // — we treat the migration dismiss flag as automatically true for them
-    // (see binding below — once any field has content OR they completed
-    // onboarding *after* this build, we just skip).
+    // v1.1 About You migration. Two ways the dismiss flag gets set to true:
+    //   1. The migration prompt itself — either "Let's go" or "Maybe later"
+    //      sets it (one-shot cover).
+    //   2. The onboarding step (case 15 in OnboardingFlowView) sets it on
+    //      both Continue and Skip-for-now. Any user who completed the new
+    //      onboarding flow has already had their chance to fill in About
+    //      You, so the migration cover should never fire for them.
+    // The 4-empty check below is a second line of defense: even if the
+    // flag hasn't been set for some reason, a user with any About You
+    // content won't see the prompt.
     @AppStorage("aboutYouMigrationDismissed") private var aboutYouMigrationDismissed: Bool = false
     @AppStorage("userHobbies")    private var userHobbies: String    = ""
     @AppStorage("userGreenFlags") private var userGreenFlags: String = ""
