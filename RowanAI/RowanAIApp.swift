@@ -37,6 +37,21 @@ struct RootView: View {
     // settles. New users won't see it because the onboarding name step writes
     // userDisplayName before hasCompletedOnboarding flips true.
     @AppStorage("userDisplayName") private var userDisplayName: String = ""
+    // v1.1 About You migration — set true by either button in the prompt
+    // (Let's go or Maybe later) so the cover is one-shot. Existing users with
+    // an empty userHobbies / userGreenFlags / userRedFlags / userVibes get
+    // one chance to see it; new users never do because the onboarding step
+    // either fills the fields or leaves them empty after a deliberate Skip
+    // — we treat the migration dismiss flag as automatically true for them
+    // (see binding below — once any field has content OR they completed
+    // onboarding *after* this build, we just skip).
+    @AppStorage("aboutYouMigrationDismissed") private var aboutYouMigrationDismissed: Bool = false
+    @AppStorage("userHobbies")    private var userHobbies: String    = ""
+    @AppStorage("userGreenFlags") private var userGreenFlags: String = ""
+    @AppStorage("userRedFlags")   private var userRedFlags: String   = ""
+    @AppStorage("userVibes")      private var userVibes: String      = ""
+
+    @State private var showAboutYouSheet: Bool = false
 
     var body: some View {
         Group {
@@ -159,6 +174,44 @@ struct RootView: View {
                     userDisplayName = "you"
                 }
             )
+        }
+        // v1.1 About You migration — shown once to users who completed
+        // onboarding before this feature shipped. Gated on:
+        //   • onboarding complete
+        //   • the one-shot dismiss flag is still false
+        //   • all four About You fields are empty (otherwise they've
+        //     already engaged with the feature — no need to prompt).
+        //   • name migration is settled (userDisplayName non-empty) so
+        //     the two covers don't stack on first launch.
+        .fullScreenCover(isPresented: Binding(
+            get: {
+                appState.hasCompletedOnboarding
+                    && !aboutYouMigrationDismissed
+                    && !userDisplayName.isEmpty
+                    && userHobbies.isEmpty
+                    && userGreenFlags.isEmpty
+                    && userRedFlags.isEmpty
+                    && userVibes.isEmpty
+            },
+            set: { _ in }
+        )) {
+            AboutYouMigrationPrompt(
+                onAccept: {
+                    aboutYouMigrationDismissed = true
+                    // Open the edit sheet on the next runloop tick so the
+                    // cover has time to dismiss cleanly before the sheet
+                    // presents.
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.25) {
+                        showAboutYouSheet = true
+                    }
+                },
+                onDecline: {
+                    aboutYouMigrationDismissed = true
+                }
+            )
+        }
+        .sheet(isPresented: $showAboutYouSheet) {
+            AboutYouEditSheet()
         }
     }
 }
