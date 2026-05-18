@@ -195,6 +195,46 @@ class Claude {
     - Content policy: coaching may be flirtatious, romantic, and bold. Never sexually graphic.
     """
 
+    // MARK: - User Profile Block
+    //
+    // Reads the four @AppStorage("userHobbies" / "userGreenFlags" /
+    // "userRedFlags" / "userVibes") fields and returns a formatted block
+    // for the system prompt. Returns "" when every field is empty so
+    // callers can append unconditionally. Shared by buildSystem() and the
+    // Sim session frame so both paths personalize from the same source.
+    //
+    // forSim=true reframes the block from "USER PROFILE" (Cyrano's view of
+    // the user) to "USER PROFILE (the person you're chatting with)" so the
+    // avatar treats it as their conversation partner's details, not their
+    // own. Same fields either way.
+    static func userProfileBlock(forSim: Bool = false) -> String {
+        let d = UserDefaults.standard
+        let hobbies     = (d.string(forKey: "userHobbies")     ?? "").trimmingCharacters(in: .whitespacesAndNewlines)
+        let greenFlags  = (d.string(forKey: "userGreenFlags")  ?? "").trimmingCharacters(in: .whitespacesAndNewlines)
+        let redFlags    = (d.string(forKey: "userRedFlags")    ?? "").trimmingCharacters(in: .whitespacesAndNewlines)
+        let vibes       = (d.string(forKey: "userVibes")       ?? "").trimmingCharacters(in: .whitespacesAndNewlines)
+
+        if hobbies.isEmpty && greenFlags.isEmpty && redFlags.isEmpty && vibes.isEmpty {
+            return ""
+        }
+
+        var lines: [String] = []
+        if !hobbies.isEmpty    { lines.append("- Hobbies & interests: \(hobbies)") }
+        if !greenFlags.isEmpty { lines.append("- Looking for: \(greenFlags)") }
+        if !redFlags.isEmpty   { lines.append("- Deal breakers: \(redFlags)") }
+        if !vibes.isEmpty      { lines.append("- Personal vibe: \(vibes)") }
+
+        let header = forSim
+            ? "USER PROFILE (the person you're chatting with):"
+            : "USER PROFILE:"
+
+        let guidance = forSim
+            ? "Use this naturally. If they reference one of their interests, engage authentically. Match their personal vibe when it surfaces. Don't list these traits or quiz them on them."
+            : "Use this context naturally. Reference their actual interests when generating replies, openers, or coaching. Don't list these traits — weave them in. Match their personal vibe in tone."
+
+        return "\n\n" + header + "\n" + lines.joined(separator: "\n") + "\n\n" + guidance
+    }
+
     // MARK: - Full System Prompt Builder
 
     private func buildSystem(_ role: String) -> String {
@@ -209,7 +249,7 @@ class Claude {
         let nameInstruction = (displayName.isEmpty || displayName == "you")
             ? ""
             : "\n\nThe user's name is \(displayName). Use it sparingly and naturally."
-        return cyranoIdentity + "\n\n" + coachingKnowledge + "\n\n" + safetyRules + "\n\n" + role + "\n\n" + gender.coachingContext + lang + nameInstruction
+        return cyranoIdentity + "\n\n" + coachingKnowledge + "\n\n" + safetyRules + "\n\n" + role + "\n\n" + gender.coachingContext + lang + nameInstruction + Claude.userProfileBlock()
     }
 
     // MARK: - Cyrano Replies
