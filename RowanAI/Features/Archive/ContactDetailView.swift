@@ -244,7 +244,7 @@ struct ContactDetailView: View {
         RWSegmentedPicker<DetailSection>(
             options: [
                 (value: .overview,      label: "Overview",      icon: nil),
-                (value: .conversations, label: "Conversations", icon: nil),
+                (value: .conversations, label: "Chats",         icon: nil),
                 (value: .dates,         label: "Dates",         icon: nil),
                 (value: .intel,         label: "Intel",         icon: nil),
                 (value: .notes,         label: "Notes",         icon: nil),
