@@ -41,19 +41,24 @@ struct SimView: View {
                     personalityPicker
                     Spacer().frame(height: 24)
                     RWButton("Start Session", icon: "play.fill") {
-                        if StoreManager.shared.canUseSimSession() {
-                            StoreManager.shared.trackSimSessionUsed()
+                        // Freemium taste-test: 2 lifetime free sessions with
+                        // real ElevenLabs voice, then paywall. Tracking of the
+                        // counter happens inside SimSessionView's .task so
+                        // a user who taps Start but never actually loads the
+                        // session view doesn't get charged.
+                        if StoreManager.shared.canStartFreeSim() {
                             showBrief = true
                         } else {
-                            paywallReason = .simLimit
+                            paywallReason = .simSessionsLimit
                             showPaywall = true
                         }
                     }
                         .padding(.horizontal, SP.lg)
                     if !StoreManager.shared.isPro {
-                        let remaining = StoreManager.shared.simSessionsRemainingThisWeek()
+                        let remaining = StoreManager.shared.sessionsRemainingForFreeTier()
+                        let total = StoreManager.freeSimSessionLimit
                         VStack(spacing: 4) {
-                            Text("\(remaining) free \(remaining == 1 ? "session" : "sessions") left this week")
+                            Text("\(remaining) of \(total) free \(total == 1 ? "session" : "sessions") remaining")
                                 .font(RWF.cap(12)).foregroundColor(.rwTextSecondary)
                             Button("Unlock unlimited sessions + all avatars") {
                                 paywallReason = .upgrade

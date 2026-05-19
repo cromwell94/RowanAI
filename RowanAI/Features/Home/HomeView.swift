@@ -232,6 +232,22 @@ struct ProfileView: View {
     @State private var showNameEdit = false
     @State private var showAboutYouEdit = false
 
+    // Developer toggle — unlocks ElevenLabs voice for the current device
+    // regardless of Pro status or free-tier counter. Visible in DEBUG builds
+    // and TestFlight (sandbox receipt); hidden in production App Store builds.
+    @AppStorage("debugForceElevenLabsVoice") private var debugForceElevenLabsVoice: Bool = false
+
+    /// True in Xcode debug builds and in TestFlight (both have a sandbox
+    /// StoreKit receipt). False in App Store production. Used to hide the
+    /// Developer section from real customers.
+    private var showDeveloperSection: Bool {
+        #if DEBUG
+        return true
+        #else
+        return Bundle.main.appStoreReceiptURL?.lastPathComponent == "sandboxReceipt"
+        #endif
+    }
+
     var body: some View {
         NavigationView {
             ScrollView(showsIndicators: false) {
@@ -430,6 +446,35 @@ struct ProfileView: View {
                     .background(Color.rwCard)
                     .clipShape(RoundedRectangle(cornerRadius: RR.xl))
                     .overlay(RoundedRectangle(cornerRadius: RR.xl).stroke(Color.rwBorder, lineWidth: 1))
+
+                    // === DEVELOPER ===
+                    // Only visible in Xcode debug builds and TestFlight. Hidden
+                    // in App Store production via `showDeveloperSection`.
+                    if showDeveloperSection {
+                        RWSectionLabel("DEVELOPER")
+                        VStack(spacing: 0) {
+                            HStack(spacing: 14) {
+                                Image(systemName: "waveform.circle.fill")
+                                    .font(.system(size: 15, weight: .semibold, design: .rounded))
+                                    .foregroundColor(.rwAccent).frame(width: 30)
+                                VStack(alignment: .leading, spacing: 2) {
+                                    Text("Force unlock ElevenLabs voice")
+                                        .font(RWF.body()).foregroundColor(.rwTextPrimary)
+                                    Text(debugForceElevenLabsVoice
+                                         ? "On — real voice regardless of Pro/free-tier limit"
+                                         : "Testing only — bypasses Pro and the 2-session free-tier cap")
+                                        .font(RWF.cap(11)).foregroundColor(.rwTextMuted)
+                                }
+                                Spacer()
+                                Toggle("", isOn: $debugForceElevenLabsVoice)
+                                    .tint(.rwAccent).labelsHidden()
+                            }
+                            .padding(.horizontal, SP.lg).padding(.vertical, 14)
+                        }
+                        .background(Color.rwCard)
+                        .clipShape(RoundedRectangle(cornerRadius: RR.xl))
+                        .overlay(RoundedRectangle(cornerRadius: RR.xl).stroke(Color.rwBorder, lineWidth: 1))
+                    }
 
                     // === LEGAL ===
                     RWSectionLabel("LEGAL")

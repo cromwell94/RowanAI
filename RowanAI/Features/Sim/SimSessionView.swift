@@ -109,6 +109,13 @@ struct SimSessionView: View {
             permissionRequested = true
             scheduleFirstInterruption()
             startTimer()
+            // Burn one lifetime free-tier credit per session start (not per
+            // avatar reply). The picker's canStartFreeSim() gate guarantees
+            // we only get here with credits remaining. Pro users and testers
+            // with the debug override don't consume the counter.
+            if !StoreManager.shared.isPro && !StoreManager.shared.debugForceElevenLabsVoice {
+                StoreManager.shared.trackSimSessionStarted()
+            }
             await primeOpening()
         }
         .task { await connectLiveKit() }
@@ -722,13 +729,21 @@ struct SimSessionView: View {
         // of the avatar's voice line. The mic gesture is gated on
         // `!isThinking`, so the user can't record over the avatar.
 
-        // DEBUG override — always try ElevenLabs in development builds so we
-        // can test voices without an active subscription. Production builds
-        // still gate on isPro.
+        // Voice gate — three paths grant real ElevenLabs voice in production:
+        //   1. Pro / Pro+ subscriber (unlimited)
+        //   2. Free user inside the 2-session lifetime taste-test
+        //   3. Tester with the "Force unlock ElevenLabs voice" debug toggle on
+        // The #if DEBUG override below ALWAYS allows voice in Xcode dev
+        // builds so I can iterate on voice tuning without burning the taste-
+        // test counter. TestFlight uses the production branch.
         #if DEBUG
-        let useEleven = !avatar.elevenLabsVoiceID.isEmpty
+        let useEleven = !avatar.elevenLabsVoiceID.isEmpty  // dev-only — bypasses freemium gate
         #else
-        let useEleven = StoreManager.shared.isPro && !avatar.elevenLabsVoiceID.isEmpty
+        let useEleven = !avatar.elevenLabsVoiceID.isEmpty && (
+            StoreManager.shared.isPro ||
+            StoreManager.shared.debugForceElevenLabsVoice ||
+            StoreManager.shared.simFreeSessionsUsedTotal < StoreManager.freeSimSessionLimit
+        )
         #endif
 
         if useEleven {

@@ -107,6 +107,41 @@ final class StoreManager {
     var currentTier: SubscriptionTier = .free
     var loadState: StoreLoadState = .idle
     var purchaseError: String = ""
+
+    // MARK: - Lifetime Sim freemium counter
+    //
+    // Free users get 2 lifetime Sim sessions with real ElevenLabs voice; after
+    // that the avatar-picker's "Start Session" button shows the paywall on
+    // .simSessionsLimit. Tracking fires once per session in
+    // SimSessionView's `.task` block — never per avatar reply. Persisted via
+    // @AppStorage so it survives reinstalls of the same Apple ID? No — it
+    // lives in UserDefaults, which IS wiped on uninstall. That's the same
+    // accountability story every other freemium counter in this file has.
+
+    /// Lifetime count of Sim sessions a free-tier user has started with real
+    /// ElevenLabs voice enabled. Capped behaviorally by `canStartFreeSim()`
+    /// — the counter itself is uncapped and grows monotonically.
+    ///
+    /// `@ObservationIgnored` is required because `@AppStorage` synthesizes a
+    /// `_simFreeSessionsUsedTotal` backing field, and `@Observable` does the
+    /// same — they collide. We don't need Observable tracking on this
+    /// property (SimView re-reads on body re-render after sheet dismiss).
+    @ObservationIgnored
+    @AppStorage("simFreeSessionsUsedTotal") var simFreeSessionsUsedTotal: Int = 0
+
+    /// Debug override toggle, surfaced in Profile → Developer for me + TestFlight
+    /// testers. When true, ElevenLabs voice is unlocked regardless of Pro
+    /// status or free-tier counter — and consuming a session does NOT
+    /// increment `simFreeSessionsUsedTotal` (so the toggle never expires).
+    /// Same `@ObservationIgnored` rationale as above.
+    @ObservationIgnored
+    @AppStorage("debugForceElevenLabsVoice") var debugForceElevenLabsVoice: Bool = false
+
+    /// Lifetime cap for free-tier Sim sessions with real voice. Static to
+    /// match the rest of this file's `freeXxx` caps and to be readable from
+    /// `PaywallReason.headline` (which is nonisolated and can't touch
+    /// @MainActor instance state).
+    static let freeSimSessionLimit = 2
     /// Product-ID → eligible-for-this-product's-intro-offer. Populated after
     /// products load (via updateTrialEligibility); refreshed after entitlement
     /// changes. Missing keys are treated as "eligible" by the paywall (default
@@ -507,6 +542,37 @@ final class StoreManager {
         return max(0, StoreManager.freeSimSessionsPerWeek - count)
     }
 
+    // MARK: - Lifetime Sim freemium taste-test
+    //
+    // The Sim picker uses these instead of the weekly helpers above. The
+    // weekly helpers stay defined for any callers we haven't migrated, but
+    // the picker's gate is now lifetime, not weekly: 2 sessions with real
+    // voice, ever, then paywall.
+
+    /// True if the user can start a Sim session with real ElevenLabs voice.
+    /// Pro users always pass; testers with the debug toggle on always pass;
+    /// free-tier users pass until they've consumed `freeSimSessionLimit`.
+    func canStartFreeSim() -> Bool {
+        if isPro { return true }
+        if debugForceElevenLabsVoice { return true }
+        return simFreeSessionsUsedTotal < StoreManager.freeSimSessionLimit
+    }
+
+    /// Increments the lifetime free-tier Sim counter. Caller is responsible
+    /// for the `!isPro && !debugForceElevenLabsVoice` guard — calling this
+    /// for a Pro user or a debug-override tester would burn a credit they
+    /// shouldn't be paying.
+    func trackSimSessionStarted() {
+        simFreeSessionsUsedTotal += 1
+    }
+
+    /// Free-tier sessions remaining out of `freeSimSessionLimit`. Pro returns
+    /// a sentinel high number so call sites can use `>= 1` without branching.
+    func sessionsRemainingForFreeTier() -> Int {
+        if isPro { return 999 }
+        return max(0, StoreManager.freeSimSessionLimit - simFreeSessionsUsedTotal)
+    }
+
     func canAddToArchive() -> Bool {
         if isPro { return true }
         return ArchiveStore.shared.active.count < StoreManager.freeArchiveLimit
@@ -632,6 +698,9 @@ struct PaywallView: View {
         case fillMeInLimit, profilePhotoLimit, profilePromptLimit, profileBioLimit, profileOpenerLimit
         // v1.0 Cyrano mode limits
         case openersLimit
+        // v1.x Sim freemium taste-test — fires after the 2 lifetime free
+        // sessions are consumed at the avatar-picker's Start Session button.
+        case simSessionsLimit
         case generic, upgrade
 
         var headline: String {
@@ -641,6 +710,8 @@ struct PaywallView: View {
             case .debriefLimit:  return "You've used your \(StoreManager.freeDebriefsPerMonth) free debriefs this month."
             case .archiveLimit:  return "You've reached the \(StoreManager.freeArchiveLimit)-connection free limit."
             case .simLimit:      return "You've used your \(StoreManager.freeSimSessionsPerWeek) free The Sim sessions this week."
+            case .simSessionsLimit:
+                return "You've used your \(StoreManager.freeSimSessionLimit) free Sim sessions."
             case .practiceLimit: return "Practice Mode is a Pro feature."
             case .fillMeInLimit: return "You've used your \(StoreManager.freeFillMeInsPerWeek) free Fill Me In analyses this week."
             case .profilePhotoLimit:  return "You've used your \(StoreManager.freeProfilePhotosPerWeek) free photo analyses this week."
@@ -658,6 +729,8 @@ struct PaywallView: View {
             case .debriefLimit:  return "Pro gives you unlimited Date Debriefs every month."
             case .archiveLimit:  return "Pro lets you track unlimited connections."
             case .simLimit:      return "Pro unlocks unlimited The Sim sessions, every avatar, and every environment."
+            case .simSessionsLimit:
+                return "Upgrade to Pro for unlimited Sim practice with every avatar."
             case .practiceLimit: return "Practice real scenarios with Cyrano as your partner."
             case .fillMeInLimit: return "Pro unlocks unlimited Fill Me In coaching, every week."
             case .profilePhotoLimit, .profilePromptLimit, .profileBioLimit, .profileOpenerLimit:
