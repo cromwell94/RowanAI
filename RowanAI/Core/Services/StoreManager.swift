@@ -427,13 +427,16 @@ final class StoreManager {
     // MARK: - Free Tier Limits
     // Caps surfaced in the paywall reason copy below — keep in sync.
 
-    // v1.0: lowered from 10 → 5 to match the cyrano edge function's server-
-    // side cap. The UI counter and paywall copy both read this value, so they
-    // now show the same number the server will actually allow.
-    static let freeRepliesPerDay = 5
-    // New for v1.0: Opener mode (Cyrano 5-mode toolkit). Same cap shape as
-    // replies — 5 free/day, server bucket "cyrano_opener" enforces.
-    static let freeOpenersPerDay = 5
+    // v1.0 freemium rebalance: raised to 30/day (was 5) to give testers
+    // enough headroom to actually experience Cyrano replies before hitting
+    // the paywall. The cyrano edge function enforces the same 30/day cap
+    // server-side (cyrano_reply bucket); the UI counter and paywall copy
+    // read this constant so the numbers stay in sync.
+    static let freeRepliesPerDay = 30
+    // v1.0 freemium rebalance: 10/day (was 5). Openers stay tighter than
+    // replies because users tend to regenerate openers repeatedly while
+    // browsing for one they like. Server bucket "cyrano_opener" enforces.
+    static let freeOpenersPerDay = 10
     static let freeDebriefsPerMonth = 3
     static let freeArchiveLimit = 5
     static let freeSimSessionsPerWeek = 2
@@ -724,8 +727,8 @@ struct PaywallView: View {
 
         var subheadline: String {
             switch self {
-            case .repliesLimit:  return "Upgrade to Pro for 100/day or come back tomorrow."
-            case .openersLimit:  return "Upgrade to Pro for 100/day or come back tomorrow."
+            case .repliesLimit:  return "Upgrade to Pro for unlimited Cyrano replies, or come back tomorrow."
+            case .openersLimit:  return "Upgrade to Pro for unlimited openers, or come back tomorrow."
             case .debriefLimit:  return "Pro gives you unlimited Date Debriefs every month."
             case .archiveLimit:  return "Pro lets you track unlimited connections."
             case .simLimit:      return "Pro unlocks unlimited The Sim sessions, every avatar, and every environment."

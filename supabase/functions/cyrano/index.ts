@@ -18,7 +18,12 @@
 //   supabase secrets set SERVICE_ROLE_KEY=eyJ...   (required by _shared/rate-limit.ts)
 
 import "jsr:@supabase/functions-js/edge-runtime.d.ts";
-import { checkRateLimit, decodeJWTPayload, rateLimitResponse } from "../_shared/rate-limit.ts";
+import {
+  checkRateLimit,
+  decodeJWTPayload,
+  rateLimitResponse,
+  type TierLimits,
+} from "../_shared/rate-limit.ts";
 
 const ANTHROPIC_URL = "https://api.anthropic.com/v1/messages";
 const ANTHROPIC_VERSION = "2023-06-01";
@@ -30,10 +35,10 @@ const ALLOWED_MODELS = new Set([
 ]);
 
 // v1.0: Cyrano is now a 5-mode communication toolkit. The mode is sent in
-// the request body and used to bucket usage_events per mode so each gets
-// its own daily limit (5/day free, 100/day pro). Unknown / missing modes
-// default to "reply" so older iOS builds that haven't been updated still
-// route through the rate-limit helper safely.
+// the request body and used to bucket usage_events per mode. Per-mode
+// limits live in RATE_LIMITS below. Unknown / missing modes default to
+// "reply" so older iOS builds that haven't been updated still route through
+// the rate-limit helper safely.
 const ALLOWED_MODES = new Set([
   "reply",
   "opener",
@@ -41,6 +46,19 @@ const ALLOWED_MODES = new Set([
   "decode",
   "pulse",
 ]);
+
+// Per-mode rate limits. Reply / translate / decode / pulse share the same
+// generous daily bucket; openers are tighter because openers tend to get
+// regenerated repeatedly while users browse for one they like. Pro daily caps
+// are set to an effectively-unbounded sanity value (100k) — the per-minute
+// cap is the only real ceiling a paying user can hit.
+const RATE_LIMITS: Record<string, TierLimits> = {
+  reply:     { free: { perMinute: 10, perDay: 30 }, pro: { perMinute: 30, perDay: 100_000 } },
+  opener:    { free: { perMinute: 5,  perDay: 10 }, pro: { perMinute: 30, perDay: 100_000 } },
+  translate: { free: { perMinute: 10, perDay: 30 }, pro: { perMinute: 30, perDay: 100_000 } },
+  decode:    { free: { perMinute: 10, perDay: 30 }, pro: { perMinute: 30, perDay: 100_000 } },
+  pulse:     { free: { perMinute: 10, perDay: 30 }, pro: { perMinute: 30, perDay: 100_000 } },
+};
 
 // Anthropic Messages API body whitelist — only these keys are forwarded
 // upstream. Internal fields like `mode` (used for our per-mode rate-limit
@@ -238,16 +256,13 @@ Deno.serve(async (req) => {
 
   // Per-user, per-mode rate limit. v1.0 buckets are:
   //   cyrano_reply / cyrano_opener / cyrano_translate / cyrano_decode / cyrano_pulse
-  // Each gets 5/day free, 100/day pro. The per-minute cap is per-mode here
-  // (10/min/mode); a stricter "10/min across all modes" needs a second
-  // checkRateLimit call against a shared "cyrano_all" bucket and is deferred
-  // to a future iteration if the per-mode cap proves too loose in practice.
+  // Limits are looked up per-mode from RATE_LIMITS (see top of file). Unknown
+  // modes fall through to "reply"; ALLOWED_MODES has already normalised
+  // rawMode by the time we get here, so the fallback is just belt-and-suspenders.
   const rawMode = typeof body.mode === "string" ? body.mode : "reply";
   const mode = ALLOWED_MODES.has(rawMode) ? rawMode : "reply";
-  const rl = await checkRateLimit(userId, `cyrano_${mode}`, {
-    free: { perMinute: 10, perDay: 5   },
-    pro:  { perMinute: 10, perDay: 100 },
-  });
+  const tierLimits = RATE_LIMITS[mode] ?? RATE_LIMITS.reply;
+  const rl = await checkRateLimit(userId, `cyrano_${mode}`, tierLimits);
   if (!rl.allowed) return rateLimitResponse(rl, securityHeaders);
 
   // Filter body to the Anthropic-accepted whitelist. This drops our internal

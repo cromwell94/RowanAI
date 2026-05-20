@@ -1263,6 +1263,11 @@ struct RelationshipAnalysis: Codable, Identifiable {
 
 enum RWError: LocalizedError {
     case parse, api, aiOff, crisisDetected, harmfulContent
+    // Server-side rate-limit hit. Payload is the user-facing message the
+    // edge function returned in the 429 body so callers can surface the
+    // specific cap that was hit (daily vs per-minute, free vs pro) and
+    // route taps to the paywall.
+    case rateLimited(String)
 
     var errorDescription: String? {
         switch self {
@@ -1271,6 +1276,15 @@ enum RWError: LocalizedError {
         case .aiOff:          return "AI is off. Turn it on in Profile → Settings."
         case .crisisDetected: return "crisis"
         case .harmfulContent: return "harmful"
+        case .rateLimited(let msg): return msg
         }
+    }
+
+    /// True when this error represents a user hitting a daily/per-minute cap
+    /// and is therefore recoverable by upgrading to Pro (or waiting). UI uses
+    /// this to swap the Retry button for an upgrade CTA.
+    var isRateLimit: Bool {
+        if case .rateLimited = self { return true }
+        return false
     }
 }

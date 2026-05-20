@@ -965,13 +965,20 @@ class Claude {
                 Self.log("non-HTTP response from \(url)")
                 throw RWError.api
             }
-            // Auth failures (401/403) and any other non-200 collapse into a
-            // single user-facing "Cyrano unavailable" message. The user can't
-            // fix a Supabase auth failure — there's no local key to enter.
-            // The DEBUG log preserves the distinction for diagnostics.
+            // Auth failures (401/403) collapse into the generic
+            // "Cyrano unavailable" message — the user can't fix a Supabase
+            // auth failure. The DEBUG log preserves the distinction.
             if h.statusCode == 401 || h.statusCode == 403 {
                 Self.log("auth failure \(h.statusCode) from \(url) — \(Self.previewBody(data))")
                 throw RWError.api
+            }
+            // 429 carries the edge function's user-facing message in
+            // `{"error": "..."}`. Parse it so callers can show the specific
+            // cap that was hit (and route the row to the paywall).
+            if h.statusCode == 429 {
+                Self.log("HTTP 429 from \(url) — \(Self.previewBody(data))")
+                throw RWError.rateLimited(Self.extractServerMessage(data)
+                    ?? "You've used your free quota for now. Upgrade to Pro for unlimited.")
             }
             guard h.statusCode == 200 else {
                 Self.log("HTTP \(h.statusCode) from \(url) — \(Self.previewBody(data))")
@@ -1009,6 +1016,14 @@ class Claude {
     private static func previewBody(_ data: Data, limit: Int = 240) -> String {
         guard let s = String(data: data, encoding: .utf8) else { return "<\(data.count) bytes binary>" }
         return s.count > limit ? String(s.prefix(limit)) + "…" : s
+    }
+
+    /// Extracts the `"error"` string from an edge function JSON error body
+    /// (`{"error": "..."}`). Returns nil if the body isn't shaped like that —
+    /// the caller falls back to a generic copy.
+    private static func extractServerMessage(_ data: Data) -> String? {
+        struct ErrEnvelope: Decodable { let error: String? }
+        return (try? JSONDecoder().decode(ErrEnvelope.self, from: data))?.error
     }
 
     // Compress a UIImage to a JPEG that fits under `maxBytes`. Steps down

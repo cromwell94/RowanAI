@@ -31,6 +31,12 @@ struct SimSessionView: View {
     @State private var permissionRequested = false
     @State private var avatarError = false
     @State private var avatarErrorReason: String? = nil
+    // When the avatar error is a rate-limit (RWError.rateLimited), tapping
+    // the pill opens the paywall instead of retrying. The reason drives
+    // which Pro pitch the PaywallView shows.
+    @State private var avatarErrorIsRateLimit = false
+    @State private var showPaywall = false
+    @State private var paywallReason: PaywallView.PaywallReason = .repliesLimit
 
     // Voice connection (LiveKit) — non-nil when the most recent connect attempt
     // failed. Surfaced as a tap-to-retry banner at the top of the session view.
@@ -151,6 +157,13 @@ struct SimSessionView: View {
             }
         } message: {
             Text("Your progress will be saved for the debrief.")
+        }
+        // Paywall surface — opened when the user taps the avatar error pill
+        // after hitting a Cyrano rate limit. `paywallReason` is set by the
+        // catch block (opener vs reply) so the PaywallView headline matches
+        // which cap was hit.
+        .sheet(isPresented: $showPaywall) {
+            PaywallView(reason: paywallReason)
         }
     }
 
@@ -324,10 +337,14 @@ struct SimSessionView: View {
         }
     }
 
-    // Inline error pill — surfaces network/auth failures from Claude and
-    // lets the user re-trigger the avatar's turn without leaving the session.
-    // `avatarErrorReason` (when set) replaces the default copy so debugging
-    // a stuck Sim from the simulator console isn't the only way to see why.
+    // Inline error pill — surfaces network/auth/rate-limit failures from Claude.
+    // Behaviour depends on the underlying error type:
+    //   - Rate-limit: whole pill is tappable and opens the paywall; the
+    //     trailing button reads "Get Pro" instead of "Retry" (retrying a
+    //     capped account would just produce another 429).
+    //   - Network/auth/other: pill is non-interactive; trailing "Retry"
+    //     button re-runs the call. Retry is disabled while a request is
+    //     already in flight so spam-tapping can't manufacture per-minute 429s.
     private var avatarErrorPill: some View {
         HStack(spacing: 10) {
             Image(systemName: "exclamationmark.triangle.fill")
@@ -337,23 +354,50 @@ struct SimSessionView: View {
                 .font(RWF.body(13)).foregroundColor(.rwInkText)
                 .fixedSize(horizontal: false, vertical: true)
             Spacer()
-            Button {
-                UIImpactFeedbackGenerator(style: .light).impactOccurred()
-                retryAvatarTurn()
-            } label: {
-                Label("Retry", systemImage: "arrow.clockwise")
-                    .font(RWF.cap(12)).foregroundColor(.white)
-                    .padding(.horizontal, 12).padding(.vertical, 7)
-                    .background(LinearGradient.accent)
-                    .clipShape(Capsule())
+            if avatarErrorIsRateLimit {
+                Button {
+                    UIImpactFeedbackGenerator(style: .light).impactOccurred()
+                    showPaywall = true
+                } label: {
+                    Label("Get Pro", systemImage: "sparkles")
+                        .font(RWF.cap(12)).foregroundColor(.white)
+                        .padding(.horizontal, 12).padding(.vertical, 7)
+                        .background(LinearGradient.accent)
+                        .clipShape(Capsule())
+                }
+                .buttonStyle(SBS())
+            } else {
+                Button {
+                    UIImpactFeedbackGenerator(style: .light).impactOccurred()
+                    retryAvatarTurn()
+                } label: {
+                    Label("Retry", systemImage: "arrow.clockwise")
+                        .font(RWF.cap(12)).foregroundColor(.white)
+                        .padding(.horizontal, 12).padding(.vertical, 7)
+                        .background(isThinking
+                                    ? AnyShapeStyle(Color.gray.opacity(0.45))
+                                    : AnyShapeStyle(LinearGradient.accent))
+                        .clipShape(Capsule())
+                }
+                .buttonStyle(SBS())
+                .disabled(isThinking)
             }
-            .buttonStyle(SBS())
         }
         .padding(SP.md)
         .background(.ultraThinMaterial)
         .clipShape(RoundedRectangle(cornerRadius: RR.md, style: .continuous))
         .overlay(RoundedRectangle(cornerRadius: RR.md, style: .continuous)
             .stroke(Color.white.opacity(0.18), lineWidth: 1))
+        .contentShape(RoundedRectangle(cornerRadius: RR.md, style: .continuous))
+        .onTapGesture {
+            // Tapping anywhere on the pill — not just the CTA button —
+            // opens the paywall when this is a rate-limit error.
+            // Non-rate-limit errors fall through (the Retry button is the
+            // only interactive surface).
+            guard avatarErrorIsRateLimit else { return }
+            UIImpactFeedbackGenerator(style: .light).impactOccurred()
+            showPaywall = true
+        }
     }
 
     // Top-of-screen banner shown when the LiveKit voice handshake fails.
@@ -582,6 +626,8 @@ struct SimSessionView: View {
             let raw = try await Claude.shared.send(
                 system: frame,
                 user: "Begin.",
+                image: nil,
+                mode: "opener",
                 max: 120
             )
             let cleaned = raw.trimmingCharacters(in: .whitespacesAndNewlines)
@@ -593,7 +639,14 @@ struct SimSessionView: View {
         } catch {
             print("[Sim] primeOpening failed — \(error.localizedDescription)")
             await MainActor.run {
-                avatarErrorReason = "Couldn't load the opening line: \(error.localizedDescription)"
+                if let rwe = error as? RWError, case .rateLimited(let msg) = rwe {
+                    avatarErrorReason = msg
+                    avatarErrorIsRateLimit = true
+                    paywallReason = .openersLimit
+                } else {
+                    avatarErrorReason = "Couldn't load the opening line: \(error.localizedDescription)"
+                    avatarErrorIsRateLimit = false
+                }
                 withAnimation(.easeOut(duration: 0.2)) { avatarError = true }
             }
         }
@@ -668,6 +721,7 @@ struct SimSessionView: View {
                 messages.append(response)
                 avatarError = false
                 avatarErrorReason = nil
+                avatarErrorIsRateLimit = false
             }
             await speakAvatar(cleaned)
 
@@ -681,7 +735,14 @@ struct SimSessionView: View {
             // user (and we) can see *why* the reply failed.
             print("[Sim] submitToAvatar failed — \(error.localizedDescription)")
             await MainActor.run {
-                avatarErrorReason = "Reply failed: \(error.localizedDescription)"
+                if let rwe = error as? RWError, case .rateLimited(let msg) = rwe {
+                    avatarErrorReason = msg
+                    avatarErrorIsRateLimit = true
+                    paywallReason = .repliesLimit
+                } else {
+                    avatarErrorReason = "Reply failed: \(error.localizedDescription)"
+                    avatarErrorIsRateLimit = false
+                }
                 withAnimation(.easeOut(duration: 0.2)) { avatarError = true }
             }
         }
@@ -694,6 +755,7 @@ struct SimSessionView: View {
         guard !isThinking, !sessionEnded else { return }
         avatarError = false
         avatarErrorReason = nil
+        avatarErrorIsRateLimit = false
         Task { await submitToAvatar() }
     }
 
